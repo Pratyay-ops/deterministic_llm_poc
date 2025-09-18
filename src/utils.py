@@ -1,4 +1,4 @@
-"""Utility functions for M4 optimization"""
+# src/utils.py
 
 import torch
 import psutil
@@ -8,20 +8,26 @@ from typing import Dict, Any
 def check_mps_availability() -> bool:
     """Check if MPS is available and working"""
     if not torch.backends.mps.is_available():
+        print("MPS not available on this system")
         return False
     
     try:
         # Test MPS with a simple operation
         test_tensor = torch.tensor([1.0]).to('mps')
         _ = test_tensor * 2
+        torch.mps.synchronize()  # Ensure operation completes
         return True
-    except:
+    except Exception as e:
+        print(f"MPS test failed: {e}")
         return False
 
 def get_m4_config() -> Dict[str, Any]:
     """Get optimal configuration for M4 based on available RAM"""
     
-    ram_gb = psutil.virtual_memory().total / (1024**3)
+    try:
+        ram_gb = psutil.virtual_memory().total / (1024**3)
+    except:
+        ram_gb = 16  # Default assumption
     
     if ram_gb >= 24:
         return {
@@ -47,11 +53,14 @@ def hash_output(text: str) -> str:
 def measure_memory_usage():
     """Measure current memory usage"""
     if torch.backends.mps.is_available():
-        # MPS memory
-        allocated = torch.mps.current_allocated_memory() / 1024**3
-        reserved = torch.mps.driver_allocated_memory() / 1024**3
-        return {
-            "allocated_gb": allocated,
-            "reserved_gb": reserved
-        }
+        try:
+            # MPS memory tracking
+            allocated = torch.mps.current_allocated_memory() / 1024**3
+            reserved = torch.mps.driver_allocated_memory() / 1024**3
+            return {
+                "allocated_gb": allocated,
+                "reserved_gb": reserved
+            }
+        except:
+            pass
     return {"allocated_gb": 0, "reserved_gb": 0}

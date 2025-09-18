@@ -1,11 +1,8 @@
-# deterministic_mps_inference.py
-"""
-Deterministic LLM inference using M4 GPU cores via MPS
-"""
+# src/deterministic_mps_inference.py
 
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig
-from src.batch_invariant_ops_mps import set_mps_batch_invariant_mode
+from .batch_invariant_ops_mps import set_mps_batch_invariant_mode
 import time
 
 class DeterministicMPSModel:
@@ -24,48 +21,28 @@ class DeterministicMPSModel:
             trust_remote_code=True
         )
         
-        # Load model optimized for MPS
+        # Load model optimized for MPS - fix the deprecated warning
         self.model = AutoModelForCausalLM.from_pretrained(
             model_name,
-            torch_dtype=torch.float16,  # Use float16 for GPU efficiency
+            dtype=torch.float16,  # Changed from torch_dtype
             trust_remote_code=True,
-            device_map={"": self.device},  # Force everything to MPS
+            device_map={"": self.device},
             low_cpu_mem_usage=True
         )
         
         self.model.eval()
         
-        # Monkey-patch attention mechanism for batch invariance
-        self._patch_attention_for_determinism()
+        # DON'T patch attention for now - it's causing issues
+        # We'll rely on the batch_invariant_mode context manager instead
         
-        # Generation config
+        # Generation config - remove unsupported parameters
         self.generation_config = GenerationConfig(
-            temperature=0.0,
-            do_sample=False,
+            do_sample=False,  # For deterministic generation
             top_p=1.0,
-            top_k=1,
             num_beams=1,
             pad_token_id=self.tokenizer.pad_token_id,
             eos_token_id=self.tokenizer.eos_token_id,
         )
-    
-    def _patch_attention_for_determinism(self):
-        """
-        Patch attention layers to ensure batch invariance
-        Following thinking-machines-lab approach
-        """
-        for name, module in self.model.named_modules():
-            if "attention" in name.lower() or "attn" in name.lower():
-                # Store original forward
-                original_forward = module.forward
-                
-                def deterministic_forward(self, *args, **kwargs):
-                    # Force attention computation to use fixed patterns
-                    with set_mps_batch_invariant_mode(True):
-                        return original_forward(*args, **kwargs)
-                
-                # Replace forward method
-                module.forward = deterministic_forward.__get__(module, module.__class__)
     
     def generate(self, prompt: str, max_new_tokens: int = 100) -> tuple[str, float]:
         """Generate with timing information"""
@@ -80,7 +57,8 @@ class DeterministicMPSModel:
             
             with torch.no_grad():
                 # Use torch.mps.synchronize() for accurate timing
-                torch.mps.synchronize()
+                if torch.backends.mps.is_available():
+                    torch.mps.synchronize()
                 
                 outputs = self.model.generate(
                     **inputs,
@@ -88,7 +66,8 @@ class DeterministicMPSModel:
                     max_new_tokens=max_new_tokens
                 )
                 
-                torch.mps.synchronize()
+                if torch.backends.mps.is_available():
+                    torch.mps.synchronize()
             
             response = self.tokenizer.decode(
                 outputs[0][inputs.input_ids.shape[1]:],
