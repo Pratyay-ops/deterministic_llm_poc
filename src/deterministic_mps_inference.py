@@ -5,7 +5,7 @@ Deterministic LLM inference using M4 GPU cores via MPS
 
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer, GenerationConfig
-from batch_invariant_ops_mps import set_mps_batch_invariant_mode
+from src.batch_invariant_ops_mps import set_mps_batch_invariant_mode
 import time
 
 class DeterministicMPSModel:
