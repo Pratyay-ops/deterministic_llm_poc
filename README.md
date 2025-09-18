@@ -1,4 +1,5 @@
 # Deterministic LLM Inference
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/Pratyay-ops/deterministic_llm_poc)
 
 Implementation of batch-invariant operations for deterministic LLM inference on Apple Silicon, based on research from [Thinking Machines Lab](https://thinkingmachines.ai/blog/defeating-nondeterminism-in-llm-inference/).
 
