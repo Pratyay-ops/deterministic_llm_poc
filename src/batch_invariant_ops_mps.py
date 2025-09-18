@@ -1,4 +1,4 @@
-# batch_invariant_ops_mps.py
+# src/batch_invariant_ops_mps.py
 """
 Batch-invariant operations for Apple Silicon GPU (Metal Performance Shaders)
 Adapted from thinking-machines-lab/batch_invariant_ops for M4 GPU
@@ -19,6 +19,11 @@ class MPSBatchInvariantOps:
         self.original_ops = {}
         self.enabled = False
         self._configure_metal_for_determinism()
+        
+        # Store original operations BEFORE any replacement
+        self.original_matmul = torch.matmul
+        self.original_mm = torch.mm
+        self.original_softmax = torch.nn.functional.softmax
     
     def _configure_metal_for_determinism(self):
         """Configure Metal for maximum determinism"""
@@ -36,6 +41,9 @@ class MPSBatchInvariantOps:
             return tensor.to('mps')
         return tensor
 
+# Global instance to store original operations
+_ops_instance = MPSBatchInvariantOps()
+
 # Batch-invariant kernel implementations for MPS
 def mps_batch_invariant_mm(input: torch.Tensor, mat2: torch.Tensor) -> torch.Tensor:
     """
@@ -48,6 +56,7 @@ def mps_batch_invariant_mm(input: torch.Tensor, mat2: torch.Tensor) -> torch.Ten
         input = input.to('mps')
         mat2 = mat2.to('mps')
     
+    # Use the ORIGINAL matmul function to avoid recursion
     # Fixed chunk size for consistent computation pattern
     FIXED_CHUNK_SIZE = 16  # Always process in chunks of 16, padding if needed
     
@@ -63,13 +72,14 @@ def mps_batch_invariant_mm(input: torch.Tensor, mat2: torch.Tensor) -> torch.Ten
         else:
             padded_input = input
         
-        # Perform computation with fixed chunk pattern
-        result = torch.matmul(padded_input, mat2)
+        # Use ORIGINAL matmul to avoid recursion
+        result = _ops_instance.original_matmul(padded_input, mat2)
         
         # Remove padding from result
         return result[:batch_size]
     else:
-        return torch.matmul(input, mat2)
+        # Use ORIGINAL matmul for other cases
+        return _ops_instance.original_matmul(input, mat2)
 
 def mps_batch_invariant_softmax(input: torch.Tensor, dim: int = -1) -> torch.Tensor:
     """
@@ -118,35 +128,60 @@ def kahan_sum(tensor: torch.Tensor, dim: int, keepdim: bool = False) -> torch.Te
     
     return sum_result
 
+# Track whether batch invariant mode is enabled
+_batch_invariant_enabled = False
+
 @contextmanager
 def set_mps_batch_invariant_mode(enabled: bool = True):
     """
     Context manager for MPS batch-invariant operations
     """
-    if not torch.backends.mps.is_available():
-        raise RuntimeError("MPS backend not available on this system")
+    global _batch_invariant_enabled
     
-    original_mm = torch.matmul
-    original_softmax = torch.nn.functional.softmax
+    if not torch.backends.mps.is_available():
+        # Silently fall back to CPU mode
+        yield
+        return
+    
+    # Skip if already in the desired state
+    if _batch_invariant_enabled == enabled:
+        yield
+        return
     
     if enabled:
-        print("Enabling MPS batch-invariant mode...")
+        # Only print once when actually enabling
+        if not _batch_invariant_enabled:
+            print("Enabling MPS batch-invariant mode...")
+        
+        _batch_invariant_enabled = True
         
         # Configure PyTorch for determinism
         torch.use_deterministic_algorithms(True, warn_only=True)
         torch.manual_seed(42)
         torch.mps.manual_seed(42)
         
-        # Replace operations
+        # Replace operations with batch-invariant versions
         torch.matmul = mps_batch_invariant_mm
         torch.mm = mps_batch_invariant_mm
         torch.nn.functional.softmax = mps_batch_invariant_softmax
+    else:
+        if _batch_invariant_enabled:
+            print("Disabling MPS batch-invariant mode...")
+        
+        _batch_invariant_enabled = False
+        
+        # Restore original operations
+        torch.matmul = _ops_instance.original_matmul
+        torch.mm = _ops_instance.original_mm
+        torch.nn.functional.softmax = _ops_instance.original_softmax
     
     try:
         yield
     finally:
+        # Restore state after context
         if enabled:
+            _batch_invariant_enabled = False
             # Restore original operations
-            torch.matmul = original_mm
-            torch.mm = original_mm
-            torch.nn.functional.softmax = original_softmax
+            torch.matmul = _ops_instance.original_matmul
+            torch.mm = _ops_instance.original_mm
+            torch.nn.functional.softmax = _ops_instance.original_softmax
