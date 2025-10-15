@@ -3,7 +3,7 @@
 import torch
 from typing import List, Tuple
 import hashlib
-from .batch_invariant_ops_mps import set_mps_batch_invariant_mode
+from .batch_invariant_ops_cuda import set_mps_batch_invariant_mode
 
 def validate_batch_invariance() -> bool:
     """

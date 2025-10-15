@@ -1,0 +1,9 @@
+torch
+transformers
+accelerate
+sentencepiece
+protobuf
+flask
+pytest
+numpy
+tqdm
