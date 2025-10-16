@@ -24,7 +24,7 @@ except ImportError:
     print("⚠ vLLM not installed. Install with: pip install vllm")
 
 try:
-    from batch_invariant_ops import set_batch_invariant_mode, is_batch_invariant_mode_enabled
+    from batch_invariant_ops.batch_invariant_ops import set_batch_invariant_mode, is_batch_invariant_mode_enabled
     BATCH_INVARIANT_AVAILABLE = True
 except ImportError:
     BATCH_INVARIANT_AVAILABLE = False
@@ -53,7 +53,7 @@ class vLLMEngine(DeterministicEngine):
         dtype: torch.dtype = torch.float16,
         enable_deterministic: bool = False,
         tensor_parallel_size: int = 1,
-        gpu_memory_utilization: float = 0.9,
+        gpu_memory_utilization: float = 0.5,  # Reduced from 0.9 for parallel loading
         max_model_len: Optional[int] = None,
         **kwargs
     ):

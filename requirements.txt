@@ -6,56 +6,198 @@
 #
 accelerate==1.10.1
     # via -r requirements.in
-blinker==1.9.0
-    # via flask
+aiohappyeyeballs==2.6.1
+    # via aiohttp
+aiohttp==3.13.0
+    # via vllm
+aiosignal==1.4.0
+    # via aiohttp
+annotated-types==0.7.0
+    # via pydantic
+anyio==4.11.0
+    # via
+    #   httpx
+    #   openai
+    #   starlette
+    #   watchfiles
+astor==0.8.1
+    # via depyf
+attrs==25.4.0
+    # via
+    #   aiohttp
+    #   jsonschema
+    #   referencing
+av==16.0.1
+    # via qwen-vl-utils
+blake3==1.0.8
+    # via vllm
+cachetools==6.2.1
+    # via vllm
+cbor2==5.7.0
+    # via vllm
 certifi==2025.10.5
-    # via requests
+    # via
+    #   httpcore
+    #   httpx
+    #   requests
+    #   sentry-sdk
+cffi==2.0.0
+    # via soundfile
 charset-normalizer==3.4.4
     # via requests
-click==8.3.0
-    # via flask
+click==8.2.1
+    # via
+    #   ray
+    #   rich-toolkit
+    #   typer
+    #   uvicorn
+cloudpickle==3.1.1
+    # via vllm
+compressed-tensors==0.11.0
+    # via vllm
+cupy-cuda12x==13.6.0
+    # via ray
+depyf==0.19.0
+    # via vllm
+dill==0.4.0
+    # via depyf
+diskcache==5.6.3
+    # via vllm
+distro==1.9.0
+    # via openai
+dnspython==2.8.0
+    # via email-validator
+einops==0.8.1
+    # via vllm
+email-validator==2.3.0
+    # via
+    #   fastapi
+    #   pydantic
+execnet==2.1.1
+    # via pytest-xdist
+fastapi[standard]==0.119.0
+    # via vllm
+fastapi-cli[standard]==0.0.13
+    # via fastapi
+fastapi-cloud-cli==0.3.1
+    # via fastapi-cli
+fastrlock==0.8.3
+    # via cupy-cuda12x
 filelock==3.20.0
     # via
     #   huggingface-hub
+    #   ray
     #   torch
     #   transformers
-flask==3.1.2
-    # via -r requirements.in
+    #   vllm
+frozendict==2.4.6
+    # via compressed-tensors
+frozenlist==1.8.0
+    # via
+    #   aiohttp
+    #   aiosignal
 fsspec==2025.9.0
     # via
     #   huggingface-hub
     #   torch
+gguf==0.17.1
+    # via vllm
+h11==0.16.0
+    # via
+    #   httpcore
+    #   uvicorn
 hf-xet==1.1.10
     # via huggingface-hub
+httpcore==1.0.9
+    # via httpx
+httptools==0.7.1
+    # via uvicorn
+httpx==0.28.1
+    # via
+    #   fastapi
+    #   fastapi-cloud-cli
+    #   openai
 huggingface-hub==0.35.3
     # via
     #   accelerate
     #   tokenizers
     #   transformers
 idna==3.11
-    # via requests
+    # via
+    #   anyio
+    #   email-validator
+    #   httpx
+    #   requests
+    #   yarl
 iniconfig==2.1.0
     # via pytest
-itsdangerous==2.2.0
-    # via flask
+interegular==0.3.3
+    # via lm-format-enforcer
 jinja2==3.1.6
     # via
-    #   flask
+    #   fastapi
     #   torch
-markupsafe==3.0.3
+jiter==0.11.0
+    # via openai
+jsonschema==4.25.1
     # via
-    #   flask
-    #   jinja2
-    #   werkzeug
+    #   mistral-common
+    #   ray
+jsonschema-specifications==2025.9.1
+    # via jsonschema
+lark==1.2.2
+    # via vllm
+llguidance==0.7.30
+    # via vllm
+llvmlite==0.44.0
+    # via numba
+lm-format-enforcer==0.11.3
+    # via vllm
+markdown-it-py==4.0.0
+    # via rich
+markupsafe==3.0.3
+    # via jinja2
+mdurl==0.1.2
+    # via markdown-it-py
+mistral-common[audio,image,opencv,soundfile,soxr]==1.8.5
+    # via
+    #   mistral-common
+    #   vllm
 mpmath==1.3.0
     # via sympy
+msgpack==1.1.2
+    # via ray
+msgspec==0.19.0
+    # via vllm
+multidict==6.7.0
+    # via
+    #   aiohttp
+    #   yarl
 networkx==3.5
     # via torch
-numpy==2.3.3
+ninja==1.13.0
+    # via
+    #   vllm
+    #   xgrammar
+numba==0.61.2
+    # via vllm
+numpy==2.2.6
     # via
     #   -r requirements.in
     #   accelerate
+    #   cupy-cuda12x
+    #   gguf
+    #   mistral-common
+    #   numba
+    #   opencv-python-headless
+    #   scipy
+    #   soundfile
+    #   soxr
+    #   torchvision
     #   transformers
+    #   vllm
+    #   xformers
+    #   xgrammar
 nvidia-cublas-cu12==12.8.4.1
     # via
     #   nvidia-cudnn-cu12
@@ -93,66 +235,266 @@ nvidia-nvjitlink-cu12==12.8.93
     #   torch
 nvidia-nvtx-cu12==12.8.90
     # via torch
+openai==2.4.0
+    # via vllm
+openai-harmony==0.0.4
+    # via vllm
+opencv-python-headless==4.12.0.88
+    # via
+    #   mistral-common
+    #   vllm
+outlines-core==0.2.11
+    # via vllm
 packaging==25.0
     # via
     #   accelerate
     #   huggingface-hub
+    #   lm-format-enforcer
     #   pytest
+    #   qwen-vl-utils
+    #   ray
     #   transformers
+partial-json-parser==0.2.1.1.post6
+    # via vllm
+pillow==12.0.0
+    # via
+    #   mistral-common
+    #   qwen-vl-utils
+    #   torchvision
+    #   vllm
 pluggy==1.6.0
     # via pytest
-protobuf==6.32.1
-    # via -r requirements.in
+prometheus-client==0.23.1
+    # via
+    #   prometheus-fastapi-instrumentator
+    #   vllm
+prometheus-fastapi-instrumentator==7.1.0
+    # via vllm
+propcache==0.4.1
+    # via
+    #   aiohttp
+    #   yarl
+protobuf==6.33.0
+    # via
+    #   -r requirements.in
+    #   ray
+    #   vllm
 psutil==7.1.0
-    # via accelerate
-pygments==2.19.2
-    # via pytest
-pytest==8.4.2
-    # via -r requirements.in
-pyyaml==6.0.3
     # via
     #   accelerate
+    #   vllm
+py-cpuinfo==9.0.0
+    # via vllm
+pybase64==1.4.2
+    # via vllm
+pycountry==24.6.1
+    # via pydantic-extra-types
+pycparser==2.23
+    # via cffi
+pydantic[email]==2.12.2
+    # via
+    #   compressed-tensors
+    #   fastapi
+    #   fastapi-cloud-cli
+    #   lm-format-enforcer
+    #   mistral-common
+    #   openai
+    #   openai-harmony
+    #   pydantic-extra-types
+    #   vllm
+    #   xgrammar
+pydantic-core==2.41.4
+    # via pydantic
+pydantic-extra-types[pycountry]==2.10.6
+    # via mistral-common
+pygments==2.19.2
+    # via
+    #   pytest
+    #   rich
+pytest==8.4.2
+    # via
+    #   -r requirements.in
+    #   pytest-xdist
+pytest-xdist==3.8.0
+    # via -r requirements.in
+python-dotenv==1.1.1
+    # via uvicorn
+python-json-logger==4.0.0
+    # via vllm
+python-multipart==0.0.20
+    # via fastapi
+pyyaml==6.0.3
+    # via
+    #   -r requirements.in
+    #   accelerate
+    #   gguf
     #   huggingface-hub
+    #   lm-format-enforcer
+    #   ray
     #   transformers
+    #   uvicorn
+    #   vllm
+pyzmq==27.1.0
+    # via vllm
+qwen-vl-utils==0.0.14
+    # via -r requirements.in
+ray[cgraph]==2.50.0
+    # via vllm
+referencing==0.37.0
+    # via
+    #   jsonschema
+    #   jsonschema-specifications
 regex==2025.9.18
-    # via transformers
+    # via
+    #   tiktoken
+    #   transformers
+    #   vllm
 requests==2.32.5
     # via
     #   huggingface-hub
+    #   mistral-common
+    #   qwen-vl-utils
+    #   ray
+    #   tiktoken
     #   transformers
+    #   vllm
+rich==14.2.0
+    # via
+    #   rich-toolkit
+    #   typer
+rich-toolkit==0.15.1
+    # via
+    #   fastapi-cli
+    #   fastapi-cloud-cli
+rignore==0.7.1
+    # via fastapi-cloud-cli
+rpds-py==0.27.1
+    # via
+    #   jsonschema
+    #   referencing
 safetensors==0.6.2
     # via
     #   accelerate
     #   transformers
+scipy==1.16.2
+    # via vllm
 sentencepiece==0.2.1
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   vllm
+sentry-sdk==2.42.0
+    # via fastapi-cloud-cli
+setproctitle==1.3.7
+    # via vllm
+shellingham==1.5.4
+    # via typer
+six==1.17.0
+    # via vllm
+sniffio==1.3.1
+    # via
+    #   anyio
+    #   openai
+soundfile==0.13.1
+    # via mistral-common
+soxr==1.0.0
+    # via mistral-common
+starlette==0.48.0
+    # via
+    #   fastapi
+    #   prometheus-fastapi-instrumentator
 sympy==1.14.0
     # via torch
+tiktoken==0.12.0
+    # via
+    #   mistral-common
+    #   vllm
 tokenizers==0.22.1
-    # via transformers
+    # via
+    #   transformers
+    #   vllm
 torch==2.8.0
     # via
     #   -r requirements.in
     #   accelerate
+    #   compressed-tensors
+    #   torchaudio
+    #   torchvision
+    #   vllm
+    #   xformers
+    #   xgrammar
+torchaudio==2.8.0
+    # via vllm
+torchvision==0.23.0
+    # via vllm
 tqdm==4.67.1
     # via
     #   -r requirements.in
+    #   gguf
     #   huggingface-hub
+    #   openai
     #   transformers
+    #   vllm
 transformers==4.57.1
-    # via -r requirements.in
+    # via
+    #   -r requirements.in
+    #   compressed-tensors
+    #   vllm
+    #   xgrammar
 triton==3.4.0
     # via
     #   -r requirements.in
     #   torch
+    #   xgrammar
+typer==0.19.2
+    # via
+    #   fastapi-cli
+    #   fastapi-cloud-cli
 typing-extensions==4.15.0
     # via
+    #   aiosignal
+    #   anyio
+    #   fastapi
     #   huggingface-hub
+    #   mistral-common
+    #   openai
+    #   pydantic
+    #   pydantic-core
+    #   pydantic-extra-types
+    #   referencing
+    #   rich-toolkit
+    #   starlette
     #   torch
+    #   typer
+    #   typing-inspection
+    #   vllm
+    #   xgrammar
+typing-inspection==0.4.2
+    # via pydantic
 urllib3==2.5.0
-    # via requests
-werkzeug==3.1.3
-    # via flask
+    # via
+    #   requests
+    #   sentry-sdk
+uvicorn[standard]==0.37.0
+    # via
+    #   fastapi
+    #   fastapi-cli
+    #   fastapi-cloud-cli
+uvloop==0.21.0
+    # via uvicorn
+vllm==0.11.0
+    # via -r requirements.in
+watchfiles==1.1.1
+    # via
+    #   uvicorn
+    #   vllm
+websockets==15.0.1
+    # via uvicorn
+xformers==0.0.32.post1
+    # via vllm
+xgrammar==0.1.25
+    # via vllm
+yarl==1.22.0
+    # via aiohttp
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
