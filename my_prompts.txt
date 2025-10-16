@@ -1,53 +1,19 @@
-# Custom Prompts for Determinism Testing
-# ========================================
-# One prompt per line
-# Complex prompts are better at exposing non-determinism
-# Save as: my_prompts.txt
+# Complex Prompts for Determinism Testing
+# These prompts are designed to expose non-determinism in BASELINE
+# One prompt per line, # for comments
 
-# Complex reasoning task
+Design a distributed rate limiter for an API handling 1 million requests per second across 100 servers. Explain: architecture with specific data structures, consensus mechanism for distributed counting, failure handling and automatic recovery, how to ensure fairness across users while preventing abuse, and optimization strategies to maintain latency below 10ms. Include discussion of CAP theorem trade-offs and provide pseudocode for the core rate limiting algorithm with exact implementation details.
+
+Implement a thread-safe LRU cache in Python that supports O(1) get and put operations with the following requirements: configurable maximum capacity with automatic eviction, TTL (time-to-live) expiration for individual entries with background cleanup, thread-safe operations using appropriate synchronization primitives without deadlocks, memory-efficient storage minimizing overhead, comprehensive type hints for all methods and classes, detailed docstrings explaining complexity and invariants, proper error handling for all edge cases including concurrent access, and a complete test suite with at least 10 test cases covering normal operation and race conditions.
+
+Analyze this complex algorithmic problem in detail: Given an array of integers, find the longest increasing subsequence. Provide four complete solutions: 1) Brute force with detailed time and space complexity analysis including recurrence relation, 2) Dynamic programming solution with clear explanation of state definition, transitions, and base cases, 3) Optimized solution using binary search with full complexity proof and invariant maintenance, 4) Space-optimized variant. For each solution, include working code with comprehensive comments, analysis of when each is preferable, and comparison table showing practical runtime for arrays of size 10, 100, 1000, 10000.
+
+Debug and completely analyze this distributed system failure: A microservices architecture experiences cascading failures under load. Symptoms: intermittent HTTP 500 errors starting at 1000 req/s, errors escalate to 50% failure rate at 1200 req/s, API gateway logs show connection pool exhausted messages, backend service CPU usage only 30% during failures, database connections are below limits, latency spikes from 50ms to 5000ms, recovery takes 10 minutes after load returns to normal. Provide: root cause analysis with specific failure mode, why it's load-dependent with mathematical explanation, detailed cascade failure scenario with timeline, three immediate mitigations with implementation code, long-term architectural fixes with system design diagrams, and comprehensive monitoring strategy with specific metrics to track and alert thresholds.
+
+Compare three database paradigms for a social media platform with 50 million users and 500 million posts: 1) Relational database with PostgreSQL using normalized schema with proper indexing strategy, 2) Document database with MongoDB using denormalized collections, 3) Graph database with Neo4j for relationship-heavy queries. For each approach, analyze in depth: specific query patterns with actual query examples and their performance characteristics, horizontal scalability approach with sharding or replication strategies and limitations, data consistency guarantees and CAP theorem positioning, ACID properties and isolation levels, data modeling complexity with schema evolution challenges, operational overhead including backup, monitoring, and disaster recovery, cost analysis at scale for compute and storage, and three specific use cases where each database excels. Provide a comprehensive decision matrix with at least 8 evaluation criteria weighted by importance, and make a final recommendation with detailed justification based on the platform's requirements for real-time feeds, user relationships, content discovery, and analytics.
+
 you are a creative poet and you are tasked with Writting a haiku about programming, give a poem
 
-# Multi-step problem with calculation
 Tell me about Richard Feynman
-
-# Code generation with constraints
-You are SQL code parser agent that extracts all the source tables used in the SQL query.
-The SQL query is:
-%%sql
-drop table if exists p1_ctu_imm;
-create table p1_ctu_imm as
-select distinct A.*, (A.frst_nm||' '||A.last_nm) as pres_name from p1_ctu A where A.cycl_time_id = 202412 and A.bu_cd = '018' and A.sf_team_cd in ('007','171','344')
-
------------------------------------------------------------------------------------------------------------------------------------------------
-
--- Inclusions and Exclusions
--- Creating Pres_Del_table
-
-%%sql
-drop table if exists pres_del_table;
-create table pres_del_table as
-select 202412 as cycl_time_id,pres_id as bp_id 
-from p1_rem_list_imm_plg where cycl_time_id = 202412 and r_type = 'PD' -- Prescriber level Deletion (BP ID)
-
-
--- Creating Pres_Del_Terr_Table
-
-%%sql
-drop table if exists pres_del_terr_table;
-create table pres_del_terr_table as
-select cycl_time_id,pres_id as bp_id,pod
-from p1_rem_list_imm_plg where cycl_time_id = 202412 and r_type = 'PDT' -- Prescriber - Terr Deletion (BPID - TERR)
-
-
--- Creating Pres_Add_Table
-
-%%sql
-drop table if exists pres_add_table;
-create table pres_add_table as
-select 202412 as cycl_time_id,pres_id as bp_id,pod,prim_spty_cd_4 as primary_speciality_cd,secdy_dpty_cd as secondary_speciality_cd
-from p1_rem_list_imm_plg where cycl_time_id = 202412 and a_type = 'PA' -- Prescriber Addition
-For each provided query you will extract the source table names from it and provide the target table that is created from the source table along with transformation description. Do not pick out any intermediate tables used as source tables.
-DO NOT provide any table name that are not present in the query.
-You Should ONLY provide the result as python dictionary with key source_table_name, target_table_name and transformation_description for each source table inside a python list.
-Return the output in JSON, and no other format.
-The Source table names and target table names as a dictionary is:
+ 
+You are SQL code parser agent that extracts all the source tables used in the SQL query.The SQL query is:%%sql drop table if exists p1_ctu_imm; create table p1_ctu_imm as select distinct A.*, (A.frst_nm||' '||A.last_nm) as pres_name from p1_ctu A where A.cycl_time_id = 202412 and A.bu_cd = '018' and A.sf_team_cd in ('007','171','344') ----------------------------------------------------------------------------------------------------------------------------------------------- -- Inclusions and Exclusions -- Creating Pres_Del_table %%sql drop table if exists pres_del_table; create table pres_del_table as select 202412 as cycl_time_id,pres_id as bp_id from p1_rem_list_imm_plg where cycl_time_id = 202412 and r_type = 'PD' -- Prescriber level Deletion (BP ID) -- Creating Pres_Del_Terr_Table %%sqldrop table if exists pres_del_terr_table; create table pres_del_terr_table as select cycl_time_id,pres_id as bp_id,pod from p1_rem_list_imm_plg where cycl_time_id = 202412 and r_type = 'PDT' -- Prescriber - Terr Deletion (BPID - TERR) -- Creating Pres_Add_Table %%sql drop table if exists pres_add_table; create table pres_add_table as select 202412 as cycl_time_id,pres_id as bp_id,pod,prim_spty_cd_4 as primary_speciality_cd,secdy_dpty_cd as secondary_speciality_cd from p1_rem_list_imm_plg where cycl_time_id = 202412 and a_type = 'PA' -- Prescriber Addition For each provided query you will extract the source table names from it and provide the target table that is created from the source table along with transformation description. Do not pick out any intermediate tables used as source tables. DO NOT provide any table name that are not present in the query. You Should ONLY provide the result as python dictionary with key source_table_name, target_table_name and transformation_description for each source table inside a python list. Return the output in JSON, and no other format. The Source table names and target table names as a dictionary is:
