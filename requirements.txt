@@ -142,7 +142,9 @@ tqdm==4.67.1
 transformers==4.57.1
     # via -r requirements.in
 triton==3.4.0
-    # via torch
+    # via
+    #   -r requirements.in
+    #   torch
 typing-extensions==4.15.0
     # via
     #   huggingface-hub
