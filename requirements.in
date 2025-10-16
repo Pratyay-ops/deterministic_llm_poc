@@ -1,9 +1,13 @@
 torch
 transformers
 accelerate
+vllm
 sentencepiece
 protobuf
-flask
+qwen-vl-utils
+triton
 pytest
+pytest-xdist
 numpy
 tqdm
+pyyaml

@@ -1,0 +1,53 @@
+# Custom Prompts for Determinism Testing
+# ========================================
+# One prompt per line
+# Complex prompts are better at exposing non-determinism
+# Save as: my_prompts.txt
+
+# Complex reasoning task
+you are a creative poet and you are tasked with Writting a haiku about programming, give a poem
+
+# Multi-step problem with calculation
+Tell me about Richard Feynman
+
+# Code generation with constraints
+You are SQL code parser agent that extracts all the source tables used in the SQL query.
+The SQL query is:
+%%sql
+drop table if exists p1_ctu_imm;
+create table p1_ctu_imm as
+select distinct A.*, (A.frst_nm||' '||A.last_nm) as pres_name from p1_ctu A where A.cycl_time_id = 202412 and A.bu_cd = '018' and A.sf_team_cd in ('007','171','344')
+
+-----------------------------------------------------------------------------------------------------------------------------------------------
+
+-- Inclusions and Exclusions
+-- Creating Pres_Del_table
+
+%%sql
+drop table if exists pres_del_table;
+create table pres_del_table as
+select 202412 as cycl_time_id,pres_id as bp_id 
+from p1_rem_list_imm_plg where cycl_time_id = 202412 and r_type = 'PD' -- Prescriber level Deletion (BP ID)
+
+
+-- Creating Pres_Del_Terr_Table
+
+%%sql
+drop table if exists pres_del_terr_table;
+create table pres_del_terr_table as
+select cycl_time_id,pres_id as bp_id,pod
+from p1_rem_list_imm_plg where cycl_time_id = 202412 and r_type = 'PDT' -- Prescriber - Terr Deletion (BPID - TERR)
+
+
+-- Creating Pres_Add_Table
+
+%%sql
+drop table if exists pres_add_table;
+create table pres_add_table as
+select 202412 as cycl_time_id,pres_id as bp_id,pod,prim_spty_cd_4 as primary_speciality_cd,secdy_dpty_cd as secondary_speciality_cd
+from p1_rem_list_imm_plg where cycl_time_id = 202412 and a_type = 'PA' -- Prescriber Addition
+For each provided query you will extract the source table names from it and provide the target table that is created from the source table along with transformation description. Do not pick out any intermediate tables used as source tables.
+DO NOT provide any table name that are not present in the query.
+You Should ONLY provide the result as python dictionary with key source_table_name, target_table_name and transformation_description for each source table inside a python list.
+Return the output in JSON, and no other format.
+The Source table names and target table names as a dictionary is:
