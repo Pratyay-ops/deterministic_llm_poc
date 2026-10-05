@@ -87,7 +87,7 @@ def _headline(run: dict[str, Any]) -> str:
     by_model: dict[str, dict[str, dict[str, Any]]] = {}
     for job in _by_experiment(run, "vllm_completions"):
         s = _summary(job)
-        if job["spec"]["id"].startswith(("completions-", "run-")):
+        if job["spec"]["id"].startswith(("completions-", "moe-completions-", "run-", "vllm_completions-")):
             by_model.setdefault(s.get("model", "?"), {})[s.get("mode", "?")] = s
     for model, modes in by_model.items():
         base, bi = modes.get("baseline"), modes.get("batch_invariant")
@@ -168,7 +168,7 @@ def _ops(run: dict[str, Any]) -> str:
                 job["spec"]["mode"],
                 demo.get("max_abs_diff", demo.get("error")),
                 rtr.get("mismatches", rtr.get("error")),
-                f"{s.get('n_invariant')}/{s.get('n_ops') - s.get('n_errors', 0)}",
+                f"{s.get('n_invariant')}/{(s.get('n_ops') or 0) - (s.get('n_errors') or 0)}",
             ]
         )
     return (

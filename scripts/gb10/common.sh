@@ -29,6 +29,7 @@ docker_run_args() {
     -e HF_TOKEN
     -e HUGGING_FACE_HUB_TOKEN
     -e HF_HUB_OFFLINE
+    -e TRITON_PTXAS_PATH
     -e "DETLLM_BASE_IMAGE=$BASE_IMAGE"
   )
 }
