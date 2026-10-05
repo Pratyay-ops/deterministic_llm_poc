@@ -1,0 +1,58 @@
+name: blog
+description: >
+  Closest-to-the-blog settings that fit on a GB10 (roughly 2-3 h): Qwen3-8B for the completion and
+  throughput experiments (the blog's performance model and batch_invariant_ops' vLLM example
+  model), Qwen3-4B-Instruct-2507 needle sweeps, and the Qwen3-30B-A3B-Instruct-2507 MoE as the
+  nearest stand-in for the blog's Qwen3-235B-A22B-Instruct-2507 (exclusive, ~80 GB). Skip the MoE
+  with `--exclude 'moe-*'`.
+memory_budget_gb: 100
+max_parallel: 4
+defaults:
+  seed: 0
+jobs:
+  - experiment: preflight
+    id: preflight
+
+  # 1000 x 1000 tokens, temperature 0, "Tell me about Richard Feynman" - exactly the blog's request.
+  - experiment: vllm_completions
+    id: completions-{model}-{mode}
+    matrix: {model: [qwen3-8b], mode: [baseline, batch_invariant]}
+    params: {n: 1000, max_tokens: 1000, max_num_seqs: 96, kv_cache_gb: 16}
+
+  # batch_invariant_ops/deterministic_vllm_inference.py as published: `vllm serve Qwen/Qwen3-8B
+  # --enforce-eager`, 1000 concurrent chat requests, 100 tokens (repo README: 18 unique -> 1).
+  - experiment: vllm_completions
+    id: tml-poc-{model}-{mode}
+    matrix: {model: [qwen3-8b], mode: [baseline, batch_invariant]}
+    params:
+      n: 1000
+      max_tokens: 100
+      api: chat
+      prompt: {file: configs/prompts/random_numbers.txt}
+      chat_template_kwargs: {thinking: false}
+      enforce_eager: true
+      kv_cache_gb: 8
+
+  - experiment: vllm_batch_sweep
+    id: sweep-{model}-{mode}
+    matrix: {model: [qwen3-4b-instruct-2507], mode: [baseline, batch_invariant]}
+    params: {batch_sizes: [1, 2, 4, 8, 16, 32, 64, 128], trials: 2, max_tokens: 256, max_num_seqs: 128, kv_cache_gb: 14}
+
+  - experiment: hf_invariance
+    id: hf-{model}-{mode}
+    matrix: {model: [qwen3-8b], mode: [baseline, official_full]}
+    params: {batch_sizes: [1, 2, 4, 8, 16], max_new_tokens: 128}
+
+  # Blog: "Performance" - Qwen3-8B, 1000 requests of 90-110 tokens, alone on the GPU.
+  - experiment: vllm_perf
+    id: perf-{model}-{mode}
+    matrix: {model: [qwen3-8b], mode: [baseline, batch_invariant]}
+    exclusive: true
+    params: {n: 1000, output_len_range: [90, 110], max_num_seqs: 256, kv_cache_gb: 10}
+
+  # MoE stand-in for the blog's 235B-A22B model (exclusive: it needs most of the memory).
+  - experiment: vllm_completions
+    id: moe-completions-{model}-{mode}
+    matrix: {model: [qwen3-30b-a3b-instruct-2507], mode: [baseline, batch_invariant]}
+    exclusive: true
+    params: {n: 1000, max_tokens: 1000, max_num_seqs: 96, kv_cache_gb: 12}

@@ -1,0 +1,70 @@
+# Model presets.
+#
+# Memory planning for GB10 (~122 GB usable, shared by CPU and GPU):
+#   vLLM job memory = weights_gb + kv_cache_gb + overhead_gb   (kv_cache_gb can be overridden per job)
+#   kv_kib_per_token = 2 (K,V) x layers x kv_heads x head_dim x 2 bytes / 1024   (bf16)
+# The scheduler packs jobs until the suite's memory_budget_gb is reached.
+#
+# The blog's model (Qwen/Qwen3-235B-A22B-Instruct-2507, ~470 GB in bf16) does not fit on a GB10.
+# Qwen3-4B-Instruct-2507 is its closest small non-thinking sibling; Qwen3-30B-A3B-Instruct-2507 is
+# the closest MoE that fits; Qwen3-8B is the blog's performance-experiment model.
+
+models:
+  qwen3-0.6b:
+    hf_id: Qwen/Qwen3-0.6B
+    chat_template_kwargs: {enable_thinking: false}
+    weights_gb: 1.5
+    kv_kib_per_token: 112
+    kv_cache_gb: 4
+    overhead_gb: 4
+    hf_mem_gb: 6
+    notes: Tiny; handy for debugging the harness itself.
+
+  qwen3-1.7b:
+    hf_id: Qwen/Qwen3-1.7B
+    chat_template_kwargs: {enable_thinking: false}
+    weights_gb: 4.1
+    kv_kib_per_token: 112
+    kv_cache_gb: 8
+    overhead_gb: 5
+    hf_mem_gb: 10
+    notes: >-
+      vLLM's own batch-invariance test model; vLLM >= 0.31 ships GB10/sm120-tuned batch-invariant
+      matmul tiles for its shapes.
+
+  qwen3-4b-instruct-2507:
+    hf_id: Qwen/Qwen3-4B-Instruct-2507
+    weights_gb: 8.1
+    kv_kib_per_token: 144
+    kv_cache_gb: 10
+    overhead_gb: 5
+    hf_mem_gb: 16
+    notes: Non-thinking 2507 instruct model - smallest sibling of the blog's Qwen3-235B-A22B-Instruct-2507.
+
+  qwen3-8b:
+    hf_id: Qwen/Qwen3-8B
+    chat_template_kwargs: {enable_thinking: false}
+    weights_gb: 16.4
+    kv_kib_per_token: 144
+    kv_cache_gb: 16
+    overhead_gb: 6
+    hf_mem_gb: 26
+    notes: The blog's performance model and batch_invariant_ops' vLLM example model.
+
+  qwen2.5-1.5b-instruct:
+    hf_id: Qwen/Qwen2.5-1.5B-Instruct
+    weights_gb: 3.1
+    kv_kib_per_token: 28
+    kv_cache_gb: 4
+    overhead_gb: 4
+    hf_mem_gb: 8
+    notes: This repository's previous default model (attention q/k/v have biases -> exercises aten::addmm).
+
+  qwen3-30b-a3b-instruct-2507:
+    hf_id: Qwen/Qwen3-30B-A3B-Instruct-2507
+    weights_gb: 61.1
+    kv_kib_per_token: 96
+    kv_cache_gb: 12
+    overhead_gb: 7
+    hf_mem_gb: 80
+    notes: MoE like the blog's model; ~80 GB in total, so run it exclusive (alone).

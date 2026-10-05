@@ -1,0 +1,38 @@
+# Batch partners ("other users' requests") for the batch-invariance experiments and the
+# throughput test. One prompt per line; lines starting with '#' are ignored.
+Explain how a hash map works and when its operations stop being O(1).
+Write a short poem about the ocean at night.
+What is the capital of Australia, and why is it not Sydney?
+Summarize the causes of the French Revolution in five bullet points.
+Write a Python function that checks whether a string is a palindrome, with tests.
+Describe the water cycle to a ten-year-old.
+What are the trade-offs between TCP and UDP?
+Translate "the weather is lovely today" into French, Spanish and German.
+Give me a recipe for a vegetarian lasagna.
+Explain the difference between supervised, unsupervised and reinforcement learning.
+How does a transistor work?
+List ten interesting facts about octopuses.
+Write a SQL query that returns the top three customers by total order value.
+What happened during the Apollo 13 mission?
+Explain gradient descent with a simple numerical example.
+Write a haiku about debugging code at 3am.
+Compare the economic systems of capitalism and socialism.
+How do vaccines train the immune system?
+Describe the plot of Hamlet in one paragraph.
+What is the time complexity of quicksort in the best, average and worst case, and why?
+Draft a polite email asking a colleague to review a pull request.
+Explain how public-key cryptography lets two strangers agree on a secret.
+What are black holes and how are they detected?
+Give step-by-step instructions to change a flat bicycle tyre.
+Explain what a GPU streaming multiprocessor is and why matrix multiplication maps well onto it.
+Write a limerick about a cat who learned to code.
+What is the difference between weather and climate?
+Explain floating-point rounding errors with an example in Python.
+Describe three famous paintings by Vincent van Gogh.
+How does the PageRank algorithm work?
+Design a REST API for a library management system.
+Why is the sky blue?
+Explain the CAP theorem and give an example of a CP and an AP system.
+What should I consider when choosing a database for a social media application?
+Tell me about Marie Curie.
+Explain how attention works in a transformer model.
