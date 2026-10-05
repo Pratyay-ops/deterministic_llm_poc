@@ -1,0 +1,10 @@
+# Everything in this repo runs on Linux (the GB10 / DGX OS). Keep LF line endings even when the
+# code is edited on Windows, otherwise the bash scripts break with "bad interpreter: ^M".
+* text=auto eol=lf
+*.sh text eol=lf
+*.py text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.md text eol=lf
+*.toml text eol=lf
+Dockerfile text eol=lf

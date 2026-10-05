@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "detllm"
+version = "0.2.0"
+description = "Reproduce Thinking Machines Lab's 'Defeating Nondeterminism in LLM Inference' on NVIDIA GB10 / DGX Spark"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+# Core dependencies are tiny on purpose: the GPU stack (torch, triton, transformers, vLLM) comes
+# from the NVIDIA / vLLM container image and must not be reinstalled on top of it.
+dependencies = ["pyyaml>=6.0", "numpy>=1.24"]
+
+[project.optional-dependencies]
+# Only for a native (non-container) install - see scripts/gb10/setup_native.sh.
+gpu = [
+  "torch>=2.9",
+  "triton>=3.4",
+  "transformers>=4.56",
+  "vllm>=0.29",
+  "httpx>=0.27",
+  "huggingface_hub>=0.24",
+]
+dev = ["pytest>=8", "ruff>=0.6"]
+
+[project.scripts]
+detllm = "detllm.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+addopts = "-ra"
+markers = ["gpu: needs a CUDA GPU (run inside the container on the GB10)"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+src = ["src", "tests"]
+extend-exclude = ["batch_invariant_ops"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP"]
+ignore = ["E501"]
