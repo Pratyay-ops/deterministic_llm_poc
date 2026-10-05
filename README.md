@@ -25,8 +25,9 @@ bash scripts/gb10/run_suite.sh parallel    # main reproduction (small models, ru
 # -> results/parallel-<timestamp>/report.md
 ```
 
-Everything runs inside NVIDIA's vLLM container (`nvcr.io/nvidia/vllm:26.09-py3` by default); the
-repository is mounted into it, so nothing is installed on the host apart from the Docker image.
+Everything runs inside the vLLM container (`vllm/vllm-openai:v0.31.0` by default, NVIDIA's
+`nvcr.io/nvidia/vllm:26.09-py3` as an alternative); the repository is mounted into it, so nothing
+is installed on the host apart from the Docker image.
 
 ## What is reproduced
 
@@ -63,7 +64,7 @@ configs/
   models.yaml            model presets + unified-memory budgets
   suites/                smoke.yaml, parallel.yaml, blog.yaml
   prompts/               the blog prompt, the library's PoC prompt, batch fillers, your prompts
-docker/                  Dockerfile (thin layer on the NGC / upstream vLLM image) + entrypoint
+docker/                  Dockerfile (thin layer on the upstream / NGC vLLM image) + entrypoint
 scripts/gb10/            setup.sh, run_suite.sh, run.sh, collect_results.sh, setup_native.sh
 src/detllm/
   cli.py, runner.py      `python3 -m detllm ...`; memory-aware parallel scheduler (resumable)

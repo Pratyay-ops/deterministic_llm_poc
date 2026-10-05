@@ -4,7 +4,7 @@
 #   bash scripts/gb10/setup.sh                 # checks, submodule, image, model download for `parallel`
 #   bash scripts/gb10/setup.sh --suite smoke   # download only what the smoke suite needs
 #   bash scripts/gb10/setup.sh --skip-download
-#   BASE_IMAGE=vllm/vllm-openai:v0.31.0 bash scripts/gb10/setup.sh   # newest vLLM instead of NGC
+#   BASE_IMAGE=nvcr.io/nvidia/vllm:26.09-py3 bash scripts/gb10/setup.sh   # NVIDIA's NGC build instead
 set -euo pipefail
 source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 

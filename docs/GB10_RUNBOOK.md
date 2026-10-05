@@ -25,7 +25,7 @@ Step-by-step instructions for running the reproduction on a **Dell Pro Max with 
 | Docker + NVIDIA Container Toolkit (preinstalled on DGX OS) | `docker run --rm --gpus all ubuntu nvidia-smi` |
 | Your user in the `docker` group | `docker ps` works without sudo; otherwise `sudo usermod -aG docker $USER && newgrp docker` |
 | Disk space | ~20 GB for the image, ~20 GB of models for `smoke` + `parallel`, ~110 GB more for `blog` |
-| Network access | `nvcr.io` (container image), `huggingface.co` (models), `github.com` (code) |
+| Network access | Docker Hub (`vllm/vllm-openai` image; `nvcr.io` only if you switch to the NGC image), `huggingface.co` (models), `github.com` (code) |
 | Optional: Hugging Face token | Qwen models are public; a token only raises rate limits: `export HF_TOKEN=hf_...` |
 | `tmux` (recommended) | long runs survive an SSH disconnect: `tmux new -s detllm` |
 
@@ -37,7 +37,9 @@ Facts about the platform that shaped this setup:
 * **Compute capability 12.1 (sm_121), consumer-Blackwell-class.** About 99 KB of shared memory per
   thread block, compared with 227 KB on H100. Triton tiles tuned for data-center GPUs can fail to
   launch (see §9).
-* **aarch64 + CUDA 13.** NVIDIA's NGC containers are the supported way to run vLLM/PyTorch here.
+* **aarch64 + CUDA 13.** Run vLLM/PyTorch from a container built for arm64 and CUDA 13: the
+  default is the upstream `vllm/vllm-openai:v0.31.0`, with NVIDIA's NGC build as the alternative
+  (§8).
 
 ## 2. Get the code
 
@@ -61,9 +63,10 @@ What it does (safe to re-run):
 1. Host checks: architecture, `/etc/dgx-release`, driver, Docker + NVIDIA runtime, free disk/memory.
    Saves them to `results/host_info.txt`.
 2. Initialises the `batch_invariant_ops` submodule.
-3. Pulls `nvcr.io/nvidia/vllm:26.09-py3`, which is large. This is the slowest step the first time.
+3. Pulls `vllm/vllm-openai:v0.31.0` from Docker Hub, which is large. This is the slowest step the
+   first time.
 4. Builds `detllm:latest`, a thin layer that adds only `pytest` and environment variables. Torch,
-   Triton, vLLM and transformers come from NVIDIA's image untouched.
+   Triton, vLLM and transformers come from the base image untouched.
 5. Runs `python3 -m detllm env` inside the container. Check that it reports the GB10 and `cuda_available: true`.
 6. Downloads the models used by the `smoke` and `parallel` suites (Qwen3-1.7B,
    Qwen3-4B-Instruct-2507) into `~/.cache/huggingface`.
@@ -190,24 +193,25 @@ mode, which is why the suites also compare logprobs bitwise.
 
 | Image | vLLM | Notes |
 |---|---|---|
-| `nvcr.io/nvidia/vllm:26.09-py3` (default) | 0.29.0 | NVIDIA's supported build for DGX Spark / GB10; PyTorch 2.14 pre-release build, CUDA 13.4.1, Python 3.12, Transformers 5.15 |
-| `vllm/vllm-openai:v0.31.0` | 0.31.0 | newest batch-invariance code, including Triton matmul tiles tuned for 12.x GPUs (GB10 class) for Qwen3-1.7B/4B/8B; NVIDIA's Spark playbook also uses upstream images for some models |
+| `vllm/vllm-openai:v0.31.0` (default) | 0.31.0 | upstream release (2026-10-04, arm64 included) with the newest batch-invariance code, including Triton matmul tiles tuned for 12.x GPUs (GB10 class) for Qwen3-1.7B/4B/8B. CUDA 13.0, kernels built for compute capability 12.0 (runs on 12.1), Python 3.12. NVIDIA's Spark playbook also uses upstream vLLM images |
+| `nvcr.io/nvidia/vllm:26.09-py3` | 0.29.0 | NVIDIA's NGC build, validated by NVIDIA for DGX Spark / GB10; PyTorch 2.14 pre-release build, CUDA 13.4.1, Python 3.12, Transformers 5.15. No GB10-tuned batch-invariant tiles yet (correct, but slower in batch-invariant mode) |
 
-Switching to the upstream image:
+Switching to the NGC image (start a fresh run so results from the two images are not mixed):
 
 ```bash
-BASE_IMAGE=vllm/vllm-openai:v0.31.0 bash scripts/gb10/setup.sh --skip-download
-BASE_IMAGE=vllm/vllm-openai:v0.31.0 bash scripts/gb10/run_suite.sh parallel --no-resume
+BASE_IMAGE=nvcr.io/nvidia/vllm:26.09-py3 bash scripts/gb10/setup.sh --skip-download
+BASE_IMAGE=nvcr.io/nvidia/vllm:26.09-py3 bash scripts/gb10/run_suite.sh parallel --no-resume
 ```
 
 The image actually used is recorded in every `env.json` and in the report's environment table.
 `python3 -m detllm run preflight` shows whether the installed vLLM has a tuned batch-invariant table
-for your GPU (`tuned_matmul_table_for_this_gpu`).
+for your GPU (`tuned_matmul_table_for_this_gpu`; expected `true` with v0.31.0).
 
-The NGC image uses CUDA 13.4 while DGX OS ships driver 580 (CUDA 13.0). CUDA minor-version
-compatibility normally covers this, and NVIDIA's own Spark playbooks use these images. If
-`detllm env` reports no GPU or a driver/CUDA mismatch, update DGX OS, or try an older tag such as
-`BASE_IMAGE=nvcr.io/nvidia/vllm:26.05-py3` (the tag NVIDIA's Spark playbook was written against).
+Driver compatibility: DGX OS 7 ships driver 580, which supports CUDA 13.0 natively, matching the
+default image. If `detllm env` reports no GPU or a driver/CUDA mismatch, update DGX OS, or use the
+CUDA 12.9 build of the same release: `BASE_IMAGE=vllm/vllm-openai:v0.31.0-cu129`. The NGC image
+uses CUDA 13.4 and relies on CUDA minor-version compatibility with driver 580; NVIDIA's own Spark
+playbooks use NGC images this way.
 
 ## 9. Troubleshooting
 

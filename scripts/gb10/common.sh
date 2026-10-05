@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Shared settings for the GB10 helper scripts. Override any of them through the environment, e.g.
-#   BASE_IMAGE=vllm/vllm-openai:v0.31.0 bash scripts/gb10/setup.sh
+#   BASE_IMAGE=nvcr.io/nvidia/vllm:26.09-py3 bash scripts/gb10/setup.sh
 
 REPO_DIR="${REPO_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}"
-BASE_IMAGE="${BASE_IMAGE:-nvcr.io/nvidia/vllm:26.09-py3}"
+BASE_IMAGE="${BASE_IMAGE:-vllm/vllm-openai:v0.31.0}"
 IMAGE="${IMAGE:-detllm:latest}"
 HF_CACHE_DIR="${HF_CACHE_DIR:-$HOME/.cache/huggingface}"
 DETLLM_CACHE_DIR="${DETLLM_CACHE_DIR:-$HOME/.cache/detllm}"

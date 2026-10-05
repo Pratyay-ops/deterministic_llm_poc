@@ -1,13 +1,15 @@
 # Thin layer over a CUDA + PyTorch + Triton + vLLM image that runs on GB10 (aarch64, sm_121).
 #
-# Default base: NVIDIA's NGC vLLM container, validated for DGX Spark / GB10.
-#   26.09-py3 -> vLLM 0.29.0, PyTorch 2.14 (pre-release build), CUDA 13.4.1, Python 3.12, Transformers 5.15
-# Alternative: the upstream image with the newest batch-invariance code (GB10/sm120-tuned tiles):
-#   docker build --build-arg BASE_IMAGE=vllm/vllm-openai:v0.31.0 ...
+# Default base: the upstream vLLM image, v0.31.0 (multi-arch, arm64 included). It carries the
+# newest batch-invariance code, including Triton matmul tiles tuned for compute capability 12.x
+# (GB10 class). Built on CUDA 13.0 - the CUDA version of the DGX OS 7 driver (R580) - for
+# compute capability 12.0, which runs on GB10's 12.1. Python 3.12.
+# Alternative: NVIDIA's NGC build, validated by NVIDIA for DGX Spark / GB10:
+#   docker build --build-arg BASE_IMAGE=nvcr.io/nvidia/vllm:26.09-py3 ...   (vLLM 0.29.0, CUDA 13.4.1)
 #
 # Nothing from the GPU stack is reinstalled. The repository is bind-mounted at /workspace/detllm at
 # run time (scripts/gb10/run.sh), so code changes never need an image rebuild.
-ARG BASE_IMAGE=nvcr.io/nvidia/vllm:26.09-py3
+ARG BASE_IMAGE=vllm/vllm-openai:v0.31.0
 FROM ${BASE_IMAGE}
 ARG BASE_IMAGE
 
