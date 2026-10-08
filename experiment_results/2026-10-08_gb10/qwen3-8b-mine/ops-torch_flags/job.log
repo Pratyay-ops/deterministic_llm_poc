@@ -1,0 +1,18 @@
+
+===== attempt 1 at 2026-10-08T13:04:08+0000 =====
+13:04:08 INFO detllm.job.ops-torch_flags: job ops-torch_flags: experiment=op_invariance model=None mode=torch_flags
+13:04:16 INFO detllm.job.ops-torch_flags: blog mm demo: {'max_abs_diff': 1641.0, 'blog_value': 1669.25, 'batch_invariant': False}
+13:04:16 INFO detllm.job.ops-torch_flags: mm                         bfloat16  invariant=False run_to_run=True max|diff|=0.0078125 
+13:04:16 INFO detllm.job.ops-torch_flags: mm                         float32   invariant=False run_to_run=True max|diff|=5.7220458984375e-06 
+13:04:17 INFO detllm.job.ops-torch_flags: mm                         float16   invariant=False run_to_run=True max|diff|=0.001953125 
+13:04:17 INFO detllm.job.ops-torch_flags: linear_bias                bfloat16  invariant=False run_to_run=True max|diff|=0.03125 
+13:04:17 INFO detllm.job.ops-torch_flags: rmsnorm                    bfloat16  invariant=True run_to_run=True max|diff|=0.0 
+13:04:17 INFO detllm.job.ops-torch_flags: log_softmax_vocab          float32   invariant=True run_to_run=True max|diff|=0.0 
+13:04:17 INFO detllm.job.ops-torch_flags: softmax                    float32   invariant=True run_to_run=True max|diff|=0.0 
+13:04:17 INFO detllm.job.ops-torch_flags: softmax                    bfloat16  invariant=True run_to_run=True max|diff|=0.0 
+13:04:17 INFO detllm.job.ops-torch_flags: bmm_attention_scores       bfloat16  invariant=True run_to_run=True max|diff|=0.0 
+13:04:18 INFO detllm.job.ops-torch_flags: attention_eager_decode     bfloat16  invariant=True run_to_run=True max|diff|=0.0 
+13:04:18 INFO detllm.job.ops-torch_flags: attention_eager_prefill    bfloat16  invariant=True run_to_run=True max|diff|=0.0 
+13:04:19 INFO detllm.job.ops-torch_flags: attention_sdpa_decode      bfloat16  invariant=False run_to_run=True max|diff|=0.0009765625 
+13:04:19 INFO detllm.job.ops-torch_flags: attention_sdpa_prefill     bfloat16  invariant=True run_to_run=True max|diff|=0.0 
+13:04:19 INFO detllm.job.ops-torch_flags: job ops-torch_flags finished: ok in 11s

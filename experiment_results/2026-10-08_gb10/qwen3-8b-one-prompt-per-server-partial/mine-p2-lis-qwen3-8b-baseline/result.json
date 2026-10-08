@@ -1,0 +1,179 @@
+{
+  "job_id": "mine-p2-lis-qwen3-8b-baseline",
+  "experiment": "vllm_completions",
+  "model": "qwen3-8b",
+  "hf_id": "Qwen/Qwen3-8B",
+  "mode": "baseline",
+  "started": "2026-10-08T12:47:33+0000",
+  "status": "ok",
+  "summary": {
+    "model": "qwen3-8b",
+    "hf_id": "Qwen/Qwen3-8B",
+    "mode": "baseline",
+    "engine": "server",
+    "prompt": "Analyze this complex algorithmic problem in detail: Given an array of integers, find the longest increasing subsequence. Provide four complete solutions: 1) Brute force with detailed time and space complexity analysis including recurrence relation, 2) Dynamic programming solution with clear explanation of state definition, transitions, and base cases, 3) Optimized solution using binary search with full complexity proof and invariant maintenance, 4) Space-optimized variant. For each solution, include working code with comprehensive comments, analysis of when each is preferable, and comparison table showing practical runtime for arrays of size 10, 100, 1000, 10000.",
+    "prompt_tokens": 151,
+    "n": 200,
+    "max_tokens": 1000,
+    "compared_on": "token_ids+logprobs",
+    "n_valid": 200,
+    "n_failed": 0,
+    "n_unique": 9,
+    "modal_count": 27,
+    "counts": [
+      27,
+      27,
+      26,
+      26,
+      26,
+      26,
+      26,
+      8,
+      8
+    ],
+    "earliest_divergence": 49,
+    "divergence_positions": [
+      49,
+      49,
+      49,
+      49,
+      49,
+      149,
+      175,
+      435
+    ],
+    "unique": [
+      {
+        "rank": 0,
+        "count": 27,
+        "length": 1000,
+        "first_divergence_vs_modal": null,
+        "example_index": 24
+      },
+      {
+        "rank": 1,
+        "count": 27,
+        "length": 1000,
+        "first_divergence_vs_modal": 175,
+        "example_index": 73
+      },
+      {
+        "rank": 2,
+        "count": 26,
+        "length": 1000,
+        "first_divergence_vs_modal": 49,
+        "example_index": 0
+      },
+      {
+        "rank": 3,
+        "count": 26,
+        "length": 1000,
+        "first_divergence_vs_modal": 435,
+        "example_index": 11
+      },
+      {
+        "rank": 4,
+        "count": 26,
+        "length": 1000,
+        "first_divergence_vs_modal": 149,
+        "example_index": 37
+      },
+      {
+        "rank": 5,
+        "count": 26,
+        "length": 1000,
+        "first_divergence_vs_modal": 49,
+        "example_index": 63
+      },
+      {
+        "rank": 6,
+        "count": 26,
+        "length": 1000,
+        "first_divergence_vs_modal": 49,
+        "example_index": 87
+      },
+      {
+        "rank": 7,
+        "count": 8,
+        "length": 1000,
+        "first_divergence_vs_modal": 49,
+        "example_index": 50
+      },
+      {
+        "rank": 8,
+        "count": 8,
+        "length": 1000,
+        "first_divergence_vs_modal": 49,
+        "example_index": 55
+      }
+    ],
+    "modal_index": 24,
+    "unit": "tokens",
+    "modal_length": 1000,
+    "modal_logprob_variants": 2,
+    "modal_logprob_counts": [
+      14,
+      13
+    ],
+    "divergence_example": {
+      "position": 175,
+      "token_number": 176,
+      "shared_prefix_tail": "Space Complexity**: $ O(n) $\n  - Recursion stack depth.\n\n### **Recurrence Relation**\n- Let `",
+      "modal_continuation": "f(i)` be the length of the LIS ending at index",
+      "other_continuation": "LIS(i)` be the length of the longest increasing sub"
+    },
+    "modal_text_head": "# Longest Increasing Subsequence (LIS) Problem\n\nThe **Longest Increasing Subsequence (LIS)** problem is a classic dynamic programming problem. Given an array of integers, the goal is to find the length of the longest subsequence that is strictly increasing. A **subsequence** is a sequence that can be derived from the array by deleting some or no elements without changing the order of the remaining elements.\n\n---\n\n## 1. **Brute Force Solution**\n\n### **Approach**\nThe brute force approach generates all possible subsequences and checks which one is the longest and strictly increasing.\n\n### **Time ",
+    "mean_output_tokens": 1000.0,
+    "engine_info": {
+      "vllm_version": "0.31.0",
+      "engine_kwargs": {
+        "model": "Qwen/Qwen3-8B",
+        "dtype": "bfloat16",
+        "seed": 0,
+        "max_model_len": 4096,
+        "gpu_memory_utilization": 0.3247,
+        "max_num_seqs": 96,
+        "enable_prefix_caching": false,
+        "enforce_eager": false,
+        "kv_cache_memory_bytes": 20000000000
+      },
+      "command": [
+        "/usr/local/bin/vllm",
+        "serve",
+        "Qwen/Qwen3-8B",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "37925",
+        "--dtype",
+        "bfloat16",
+        "--seed",
+        "0",
+        "--max-model-len",
+        "4096",
+        "--gpu-memory-utilization",
+        "0.3247",
+        "--max-num-seqs",
+        "96",
+        "--no-enable-prefix-caching",
+        "--kv-cache-memory-bytes",
+        "20000000000"
+      ],
+      "startup_s": 147.7,
+      "api": "completions",
+      "wall_time_s": 791.5,
+      "attention_backend_log": "FLASH_ATTN"
+    },
+    "blog_reference": {
+      "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+      "n": 1000,
+      "max_tokens": 1000,
+      "n_unique_default": 80,
+      "modal_count_default": 78,
+      "first_divergence_token_number": 103,
+      "n_unique_batch_invariant": 1
+    }
+  },
+  "duration_s": 956.17,
+  "finished": "2026-10-08T13:03:29+0000"
+}

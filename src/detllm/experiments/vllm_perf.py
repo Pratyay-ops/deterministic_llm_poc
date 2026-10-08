@@ -54,6 +54,9 @@ def run(ctx) -> dict[str, Any]:  # noqa: ANN001
         info = {**server.info(), "attention_backend_log": backend_in_logs(ctx, server)}
 
     ok = [r for r in results if r.get("ok")]
+    if len(ok) < n:
+        first_error = next((r.get("error") for r in results if not r.get("ok")), None)
+        raise RuntimeError(f"{n - len(ok)}/{n} requests failed, timing would be meaningless; first error: {first_error}")
     out_tokens = 0
     for r, length in zip(results, lengths):
         if r.get("ok"):

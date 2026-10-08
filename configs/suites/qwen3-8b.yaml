@@ -1,0 +1,78 @@
+name: qwen3-8b
+description: >
+  The reproduction on Qwen3-8B with the user's own prompts (configs/prompts/my_prompts.txt): every
+  prompt is sent 200 times at temperature 0 to a default vLLM server first, then to a batch-invariant
+  one (VLLM_BATCH_INVARIANT=1), and the completions are compared by token ids and bitwise logprobs.
+  Around that: floating-point demos, op-level run-to-run vs batch invariance in all six kernel modes,
+  model-level invariance with HF transformers, an engine-level needle sweep, prefix caching, and
+  throughput (alone at the end). All prompts come from my_prompts.txt. Roughly 2 h on a GB10.
+memory_budget_gb: 100
+max_parallel: 4
+defaults:
+  seed: 0
+
+# Shared settings for the my_prompts.txt jobs: 200 requests x up to 1000 tokens, temperature 0.
+x-mine: &mine
+  n: 200
+  max_tokens: 1000
+  max_num_seqs: 96
+  kv_cache_gb: 20
+
+jobs:
+  - experiment: preflight
+    id: preflight
+
+  - experiment: fp_nonassoc
+    id: fp-nonassoc
+
+  # Every op, six ways (model independent).
+  - experiment: op_invariance
+    id: ops-{mode}
+    matrix: {mode: [baseline, torch_flags, cublaslt_ws1, official, official_full, custom]}
+
+  # ---- my_prompts.txt on the DEFAULT vLLM server first ...
+  - {experiment: vllm_completions, id: "mine-p0-rate-limiter-{model}-{mode}", matrix: {model: [qwen3-8b], mode: [baseline]}, params: {<<: *mine, prompt: {file: configs/prompts/my_prompts.txt, index: 0}}}
+  - {experiment: vllm_completions, id: "mine-p1-lru-cache-{model}-{mode}", matrix: {model: [qwen3-8b], mode: [baseline]}, params: {<<: *mine, prompt: {file: configs/prompts/my_prompts.txt, index: 1}}}
+  - {experiment: vllm_completions, id: "mine-p2-lis-{model}-{mode}", matrix: {model: [qwen3-8b], mode: [baseline]}, params: {<<: *mine, prompt: {file: configs/prompts/my_prompts.txt, index: 2}}}
+  - {experiment: vllm_completions, id: "mine-p3-microservices-{model}-{mode}", matrix: {model: [qwen3-8b], mode: [baseline]}, params: {<<: *mine, prompt: {file: configs/prompts/my_prompts.txt, index: 3}}}
+  - {experiment: vllm_completions, id: "mine-p4-databases-{model}-{mode}", matrix: {model: [qwen3-8b], mode: [baseline]}, params: {<<: *mine, prompt: {file: configs/prompts/my_prompts.txt, index: 4}}}
+  - {experiment: vllm_completions, id: "mine-p5-haiku-{model}-{mode}", matrix: {model: [qwen3-8b], mode: [baseline]}, params: {<<: *mine, prompt: {file: configs/prompts/my_prompts.txt, index: 5}}}
+  - {experiment: vllm_completions, id: "mine-p6-feynman-{model}-{mode}", matrix: {model: [qwen3-8b], mode: [baseline]}, params: {<<: *mine, prompt: {file: configs/prompts/my_prompts.txt, index: 6}}}
+  - {experiment: vllm_completions, id: "mine-p7-sql-parser-{model}-{mode}", matrix: {model: [qwen3-8b], mode: [baseline]}, params: {<<: *mine, prompt: {file: configs/prompts/my_prompts.txt, index: 7}}}
+
+  # ---- ... then the same prompts on the BATCH-INVARIANT server.
+  - {experiment: vllm_completions, id: "mine-p0-rate-limiter-{model}-{mode}", matrix: {model: [qwen3-8b], mode: [batch_invariant]}, params: {<<: *mine, prompt: {file: configs/prompts/my_prompts.txt, index: 0}}}
+  - {experiment: vllm_completions, id: "mine-p1-lru-cache-{model}-{mode}", matrix: {model: [qwen3-8b], mode: [batch_invariant]}, params: {<<: *mine, prompt: {file: configs/prompts/my_prompts.txt, index: 1}}}
+  - {experiment: vllm_completions, id: "mine-p2-lis-{model}-{mode}", matrix: {model: [qwen3-8b], mode: [batch_invariant]}, params: {<<: *mine, prompt: {file: configs/prompts/my_prompts.txt, index: 2}}}
+  - {experiment: vllm_completions, id: "mine-p3-microservices-{model}-{mode}", matrix: {model: [qwen3-8b], mode: [batch_invariant]}, params: {<<: *mine, prompt: {file: configs/prompts/my_prompts.txt, index: 3}}}
+  - {experiment: vllm_completions, id: "mine-p4-databases-{model}-{mode}", matrix: {model: [qwen3-8b], mode: [batch_invariant]}, params: {<<: *mine, prompt: {file: configs/prompts/my_prompts.txt, index: 4}}}
+  - {experiment: vllm_completions, id: "mine-p5-haiku-{model}-{mode}", matrix: {model: [qwen3-8b], mode: [batch_invariant]}, params: {<<: *mine, prompt: {file: configs/prompts/my_prompts.txt, index: 5}}}
+  - {experiment: vllm_completions, id: "mine-p6-feynman-{model}-{mode}", matrix: {model: [qwen3-8b], mode: [batch_invariant]}, params: {<<: *mine, prompt: {file: configs/prompts/my_prompts.txt, index: 6}}}
+  - {experiment: vllm_completions, id: "mine-p7-sql-parser-{model}-{mode}", matrix: {model: [qwen3-8b], mode: [batch_invariant]}, params: {<<: *mine, prompt: {file: configs/prompts/my_prompts.txt, index: 7}}}
+
+  # Model level, fully controlled batches (HF transformers), on the LRU-cache prompt.
+  - experiment: hf_invariance
+    id: hf-{model}-{mode}
+    matrix:
+      model: [qwen3-8b]
+      mode: [baseline, baseline_eager, official, official_full, custom]
+    params: {batch_sizes: [1, 2, 4, 8, 16], max_new_tokens: 128, prompt: {file: configs/prompts/my_prompts.txt, index: 1}}
+
+  # Engine level: the rate-limiter prompt alone vs. inside batches of 2..128 (vLLM's own test method).
+  - experiment: vllm_batch_sweep
+    id: sweep-{model}-{mode}
+    matrix: {model: [qwen3-8b], mode: [baseline, batch_invariant]}
+    params: {batch_sizes: [1, 2, 4, 8, 16, 32, 64, 128], trials: 2, max_tokens: 256, max_num_seqs: 128, kv_cache_gb: 14, prompt: {file: configs/prompts/my_prompts.txt, index: 0}}
+
+  # Prefix caching on (what a production server uses): identical prompts hit the cache.
+  - experiment: vllm_completions
+    id: ablate-prefix-cache-{model}-{mode}
+    matrix: {model: [qwen3-8b], mode: [baseline, batch_invariant]}
+    params: {n: 200, max_tokens: 500, enable_prefix_caching: true, kv_cache_gb: 12, prompt: {file: configs/prompts/my_prompts.txt, index: 3}}
+
+  # Throughput: 1000 requests of 90-110 tokens, alone on the GPU (blog's "Performance" setup).
+  - experiment: vllm_perf
+    id: perf-{model}-{mode}
+    matrix: {model: [qwen3-8b], mode: [baseline, batch_invariant]}
+    exclusive: true
+    params: {n: 1000, output_len_range: [90, 110], max_num_seqs: 256, kv_cache_gb: 10}

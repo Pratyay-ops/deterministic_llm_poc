@@ -1,11 +1,11 @@
 """Blog section "The original sin: floating-point non-associativity" - the blog's demos (CPU).
 
-Note on Python versions: the blog's snippet uses the built-in ``sum()``. Up to Python 3.11 that
-was a plain left-to-right double accumulation; since Python 3.12 ``sum()`` of floats uses
-compensated (Neumaier) summation, which hides most of the effect. The containers ship Python 3.12,
-so the blog's number is reproduced with an explicit left-to-right loop (what ``sum()`` used to do),
-and the 3.12 built-in result is reported next to it - itself a nice illustration that changing the
-reduction algorithm changes the answer.
+Note on Python versions: the blog's snippet uses the built-in ``sum()``. Since Python 3.12 that is
+compensated (Neumaier) summation for floats, but the blog's list holds the *int* ``1`` (and ``-1``),
+which CPython adds without compensation - and that exact mix gives the blog's 102 unique results
+(with ``1.0`` instead of ``1`` it gives 1). The containers ship Python 3.12, so the blog's snippet is
+reproduced as written; a plain left-to-right loop (what ``sum()`` did up to 3.11) is reported next to
+it and gives 258 - itself a nice illustration that changing the reduction algorithm changes the answer.
 """
 
 from __future__ import annotations
@@ -47,15 +47,19 @@ def run(ctx) -> dict[str, Any]:  # noqa: ANN001
     }
     naive, builtin = unique_sums(seed=int(ctx.param("seed_sum", 42)))
     ctx.save_json("unique_sums.json", {"left_to_right": naive, "builtin_sum": builtin})
-    ctx.log.info("left-to-right: %d unique results (blog: %d); built-in sum(): %d", len(naive), BLOG_UNIQUE_SUMS, len(builtin))
+    ctx.log.info("built-in sum(): %d unique results (blog: %d); left-to-right loop: %d", len(builtin), BLOG_UNIQUE_SUMS, len(naive))
     return {
         "associativity": associativity,
-        "n_unique_sums": len(naive),
+        "n_unique_sums": len(builtin),
         "blog_n_unique_sums": BLOG_UNIQUE_SUMS,
-        "matches_blog": len(naive) == BLOG_UNIQUE_SUMS,
-        "min_sum": naive[0],
-        "max_sum": naive[-1],
+        "matches_blog": len(builtin) == BLOG_UNIQUE_SUMS,
+        "min_sum": builtin[0],
+        "max_sum": builtin[-1],
         "python": sys.version.split()[0],
-        "n_unique_builtin_sum": len(builtin),
-        "builtin_sum_note": "Python >= 3.12 sum() uses compensated summation" if sys.version_info >= (3, 12) else "plain summation",
+        "n_unique_left_to_right": len(naive),
+        "builtin_sum_note": (
+            "Python >= 3.12 sum(): compensated for floats, the int 1 is added uncompensated"
+            if sys.version_info >= (3, 12)
+            else "plain left-to-right summation"
+        ),
     }

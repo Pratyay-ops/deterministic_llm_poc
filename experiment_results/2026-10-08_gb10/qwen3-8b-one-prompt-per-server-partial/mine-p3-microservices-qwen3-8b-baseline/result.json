@@ -1,0 +1,191 @@
+{
+  "job_id": "mine-p3-microservices-qwen3-8b-baseline",
+  "experiment": "vllm_completions",
+  "model": "qwen3-8b",
+  "hf_id": "Qwen/Qwen3-8B",
+  "mode": "baseline",
+  "started": "2026-10-08T12:47:35+0000",
+  "status": "ok",
+  "summary": {
+    "model": "qwen3-8b",
+    "hf_id": "Qwen/Qwen3-8B",
+    "mode": "baseline",
+    "engine": "server",
+    "prompt": "Debug and completely analyze this distributed system failure: A microservices architecture experiences cascading failures under load. Symptoms: intermittent HTTP 500 errors starting at 1000 req/s, errors escalate to 50% failure rate at 1200 req/s, API gateway logs show connection pool exhausted messages, backend service CPU usage only 30% during failures, database connections are below limits, latency spikes from 50ms to 5000ms, recovery takes 10 minutes after load returns to normal. Provide: root cause analysis with specific failure mode, why it's load-dependent with mathematical explanation, detailed cascade failure scenario with timeline, three immediate mitigations with implementation code, long-term architectural fixes with system design diagrams, and comprehensive monitoring strategy with specific metrics to track and alert thresholds.",
+    "prompt_tokens": 179,
+    "n": 200,
+    "max_tokens": 1000,
+    "compared_on": "token_ids+logprobs",
+    "n_valid": 200,
+    "n_failed": 0,
+    "n_unique": 12,
+    "modal_count": 23,
+    "counts": [
+      23,
+      22,
+      22,
+      22,
+      22,
+      22,
+      22,
+      22,
+      13,
+      7,
+      2,
+      1
+    ],
+    "earliest_divergence": 40,
+    "divergence_positions": [
+      40,
+      40,
+      84,
+      84,
+      84,
+      115,
+      115,
+      129,
+      151,
+      188,
+      188
+    ],
+    "unique": [
+      {
+        "rank": 0,
+        "count": 23,
+        "length": 1000,
+        "first_divergence_vs_modal": null,
+        "example_index": 58
+      },
+      {
+        "rank": 1,
+        "count": 22,
+        "length": 1000,
+        "first_divergence_vs_modal": 84,
+        "example_index": 0
+      },
+      {
+        "rank": 2,
+        "count": 22,
+        "length": 1000,
+        "first_divergence_vs_modal": 40,
+        "example_index": 1
+      },
+      {
+        "rank": 3,
+        "count": 22,
+        "length": 1000,
+        "first_divergence_vs_modal": 129,
+        "example_index": 12
+      },
+      {
+        "rank": 4,
+        "count": 22,
+        "length": 1000,
+        "first_divergence_vs_modal": 84,
+        "example_index": 38
+      },
+      {
+        "rank": 5,
+        "count": 22,
+        "length": 1000,
+        "first_divergence_vs_modal": 84,
+        "example_index": 47
+      },
+      {
+        "rank": 6,
+        "count": 22,
+        "length": 1000,
+        "first_divergence_vs_modal": 188,
+        "example_index": 70
+      },
+      {
+        "rank": 7,
+        "count": 22,
+        "length": 1000,
+        "first_divergence_vs_modal": 188,
+        "example_index": 81
+      },
+      {
+        "rank": 8,
+        "count": 13,
+        "length": 1000,
+        "first_divergence_vs_modal": 115,
+        "example_index": 23
+      },
+      {
+        "rank": 9,
+        "count": 7,
+        "length": 1000,
+        "first_divergence_vs_modal": 115,
+        "example_index": 31
+      }
+    ],
+    "modal_index": 58,
+    "unit": "tokens",
+    "modal_length": 1000,
+    "modal_logprob_variants": 1,
+    "modal_logprob_counts": [
+      23
+    ],
+    "divergence_example": {
+      "position": 84,
+      "token_number": 85,
+      "shared_prefix_tail": " failures** under load due to a **load-dependent connection pool exhaustion** in the **API Gateway**, which leads to **",
+      "modal_continuation": "HTTP 500 errors**, **latency spikes**,",
+      "other_continuation": "unrecoverable state** in the **backend services** and"
+    },
+    "modal_text_head": "# **Debug and Analyze Distributed System Failure: Cascading Failures Under Load**\n\n---\n\n## **1. Root Cause Analysis**\n\n### **Root Cause: Connection Pool Exhaustion in API Gateway Due to Load-Dependent Throttling and Resource Contention**\n\nThe system is experiencing **cascading failures** under load due to a **load-dependent connection pool exhaustion** in the **API Gateway**, which leads to **HTTP 500 errors**, **latency spikes**, and **recovery delays**.\n\n---\n\n## **2. Why It's Load-Dependent (Mathematical Explanation)**\n\nLet\u2019s model the system behavior using a **queueing theory** approach to ",
+    "mean_output_tokens": 1000.0,
+    "engine_info": {
+      "vllm_version": "0.31.0",
+      "engine_kwargs": {
+        "model": "Qwen/Qwen3-8B",
+        "dtype": "bfloat16",
+        "seed": 0,
+        "max_model_len": 4096,
+        "gpu_memory_utilization": 0.3247,
+        "max_num_seqs": 96,
+        "enable_prefix_caching": false,
+        "enforce_eager": false,
+        "kv_cache_memory_bytes": 20000000000
+      },
+      "command": [
+        "/usr/local/bin/vllm",
+        "serve",
+        "Qwen/Qwen3-8B",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "39373",
+        "--dtype",
+        "bfloat16",
+        "--seed",
+        "0",
+        "--max-model-len",
+        "4096",
+        "--gpu-memory-utilization",
+        "0.3247",
+        "--max-num-seqs",
+        "96",
+        "--no-enable-prefix-caching",
+        "--kv-cache-memory-bytes",
+        "20000000000"
+      ],
+      "startup_s": 147.7,
+      "api": "completions",
+      "wall_time_s": 794.38,
+      "attention_backend_log": "FLASH_ATTN"
+    },
+    "blog_reference": {
+      "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+      "n": 1000,
+      "max_tokens": 1000,
+      "n_unique_default": 80,
+      "modal_count_default": 78,
+      "first_divergence_token_number": 103,
+      "n_unique_batch_invariant": 1
+    }
+  },
+  "duration_s": 958.37,
+  "finished": "2026-10-08T13:03:33+0000"
+}

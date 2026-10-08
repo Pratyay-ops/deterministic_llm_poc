@@ -1,0 +1,15 @@
+{
+  "id": "ops-cublaslt_ws1",
+  "experiment": "op_invariance",
+  "model": null,
+  "mode": "cublaslt_ws1",
+  "params": {
+    "seed": 0
+  },
+  "mem_gb": 6.0,
+  "exclusive": false,
+  "depends_on": [],
+  "timeout_min": 240.0,
+  "max_retries": 3,
+  "env": {}
+}

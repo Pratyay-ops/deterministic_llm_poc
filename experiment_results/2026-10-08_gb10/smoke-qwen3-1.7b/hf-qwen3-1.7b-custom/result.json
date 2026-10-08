@@ -1,0 +1,143 @@
+{
+  "job_id": "hf-qwen3-1.7b-custom",
+  "experiment": "hf_invariance",
+  "model": "qwen3-1.7b",
+  "hf_id": "Qwen/Qwen3-1.7B",
+  "mode": "custom",
+  "started": "2026-10-08T12:05:00+0000",
+  "status": "ok",
+  "summary": {
+    "model": "qwen3-1.7b",
+    "hf_id": "Qwen/Qwen3-1.7B",
+    "mode": "custom",
+    "attn_implementation": "eager",
+    "prompt_tokens": 19,
+    "max_new_tokens": 24,
+    "forward": [
+      {
+        "batch_size": 1,
+        "position": "first",
+        "bitwise_equal": true,
+        "max_abs_diff": 0.0,
+        "argmax_agreement": 1.0
+      },
+      {
+        "batch_size": 2,
+        "position": "first",
+        "bitwise_equal": false,
+        "max_abs_diff": 0.830078125,
+        "argmax_agreement": 1.0
+      },
+      {
+        "batch_size": 2,
+        "position": "last",
+        "bitwise_equal": false,
+        "max_abs_diff": 0.830078125,
+        "argmax_agreement": 1.0
+      },
+      {
+        "batch_size": 4,
+        "position": "first",
+        "bitwise_equal": false,
+        "max_abs_diff": 0.75,
+        "argmax_agreement": 1.0
+      },
+      {
+        "batch_size": 4,
+        "position": "last",
+        "bitwise_equal": false,
+        "max_abs_diff": 0.75,
+        "argmax_agreement": 1.0
+      }
+    ],
+    "forward_invariant": false,
+    "decode": [
+      {
+        "batch_size": 1,
+        "position": "first",
+        "tokens_equal": true,
+        "first_token_divergence": null,
+        "logprobs_bitwise_equal": true,
+        "first_logprob_mismatch": null,
+        "max_abs_logprob_diff": 0.0,
+        "identical": true
+      },
+      {
+        "batch_size": 2,
+        "position": "first",
+        "tokens_equal": true,
+        "first_token_divergence": null,
+        "logprobs_bitwise_equal": false,
+        "first_logprob_mismatch": 0,
+        "max_abs_logprob_diff": 0.04704248905181885,
+        "identical": false
+      },
+      {
+        "batch_size": 2,
+        "position": "last",
+        "tokens_equal": true,
+        "first_token_divergence": null,
+        "logprobs_bitwise_equal": false,
+        "first_logprob_mismatch": 0,
+        "max_abs_logprob_diff": 0.04704248905181885,
+        "identical": false
+      },
+      {
+        "batch_size": 4,
+        "position": "first",
+        "tokens_equal": true,
+        "first_token_divergence": null,
+        "logprobs_bitwise_equal": false,
+        "first_logprob_mismatch": 0,
+        "max_abs_logprob_diff": 0.06787928938865662,
+        "identical": false
+      },
+      {
+        "batch_size": 4,
+        "position": "last",
+        "tokens_equal": true,
+        "first_token_divergence": null,
+        "logprobs_bitwise_equal": false,
+        "first_logprob_mismatch": 0,
+        "max_abs_logprob_diff": 0.035538554191589355,
+        "identical": false
+      }
+    ],
+    "decode_invariant": false,
+    "decode_token_invariant": true,
+    "first_token_divergence": null,
+    "run_to_run": {
+      "tokens_equal": true,
+      "first_token_divergence": null,
+      "logprobs_bitwise_equal": true,
+      "first_logprob_mismatch": null,
+      "max_abs_logprob_diff": 0.0,
+      "identical": true
+    },
+    "examples": [],
+    "kernels": {
+      "mode": "custom",
+      "custom": {
+        "rows": 64,
+        "mats": 64,
+        "reduce_rows": 256,
+        "ops": [
+          "aten._log_softmax.default",
+          "aten._softmax.default",
+          "aten.addmm.default",
+          "aten.bmm.default",
+          "aten.mean.dim",
+          "aten.mm.default"
+        ]
+      },
+      "custom_stats": {
+        "chunked_calls": {
+          "aten.mean.dim": 19662
+        },
+        "unchunked_calls": {}
+      }
+    }
+  },
+  "duration_s": 34.9,
+  "finished": "2026-10-08T12:05:35+0000"
+}

@@ -32,14 +32,15 @@ log = logging.getLogger(__name__)
 # sm_121 in every image. Baseline jobs keep vLLM's own default unless told otherwise.
 DEFAULT_BI_ATTENTION_BACKEND = "TRITON_ATTN"
 
+# Transient start-up shortages only. "kv cache memory" is not here: vLLM prints an INFO line with it on
+# every start when kv_cache_memory_bytes is set, and "...larger than the available KV cache memory" /
+# "no available memory for the cache blocks" are configuration errors that a retry cannot fix.
 _MEMORY_ERRORS = (
     "less than desired gpu memory utilization",
-    "no available memory for the cache blocks",
     "not enough memory",
     "insufficient memory",
     "out of memory",
     "free memory on device",
-    "kv cache memory",
 )
 # Boolean engine args whose default is True, so False must be passed explicitly on the CLI.
 _DEFAULT_TRUE_BOOLS = {"enable_prefix_caching", "enable_chunked_prefill"}

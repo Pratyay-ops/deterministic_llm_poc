@@ -1,0 +1,174 @@
+{
+  "job_id": "hf-qwen3-1.7b-official_full",
+  "experiment": "hf_invariance",
+  "model": "qwen3-1.7b",
+  "hf_id": "Qwen/Qwen3-1.7B",
+  "mode": "official_full",
+  "started": "2026-10-08T12:04:58+0000",
+  "status": "ok",
+  "summary": {
+    "model": "qwen3-1.7b",
+    "hf_id": "Qwen/Qwen3-1.7B",
+    "mode": "official_full",
+    "attn_implementation": "eager",
+    "prompt_tokens": 19,
+    "max_new_tokens": 24,
+    "forward": [
+      {
+        "batch_size": 1,
+        "position": "first",
+        "bitwise_equal": true,
+        "max_abs_diff": 0.0,
+        "argmax_agreement": 1.0
+      },
+      {
+        "batch_size": 2,
+        "position": "first",
+        "bitwise_equal": true,
+        "max_abs_diff": 0.0,
+        "argmax_agreement": 1.0
+      },
+      {
+        "batch_size": 2,
+        "position": "last",
+        "bitwise_equal": true,
+        "max_abs_diff": 0.0,
+        "argmax_agreement": 1.0
+      },
+      {
+        "batch_size": 4,
+        "position": "first",
+        "bitwise_equal": true,
+        "max_abs_diff": 0.0,
+        "argmax_agreement": 1.0
+      },
+      {
+        "batch_size": 4,
+        "position": "last",
+        "bitwise_equal": true,
+        "max_abs_diff": 0.0,
+        "argmax_agreement": 1.0
+      }
+    ],
+    "forward_invariant": true,
+    "decode": [
+      {
+        "batch_size": 1,
+        "position": "first",
+        "tokens_equal": true,
+        "first_token_divergence": null,
+        "logprobs_bitwise_equal": true,
+        "first_logprob_mismatch": null,
+        "max_abs_logprob_diff": 0.0,
+        "identical": true
+      },
+      {
+        "batch_size": 2,
+        "position": "first",
+        "tokens_equal": true,
+        "first_token_divergence": null,
+        "logprobs_bitwise_equal": true,
+        "first_logprob_mismatch": null,
+        "max_abs_logprob_diff": 0.0,
+        "identical": true
+      },
+      {
+        "batch_size": 2,
+        "position": "last",
+        "tokens_equal": true,
+        "first_token_divergence": null,
+        "logprobs_bitwise_equal": true,
+        "first_logprob_mismatch": null,
+        "max_abs_logprob_diff": 0.0,
+        "identical": true
+      },
+      {
+        "batch_size": 4,
+        "position": "first",
+        "tokens_equal": true,
+        "first_token_divergence": null,
+        "logprobs_bitwise_equal": true,
+        "first_logprob_mismatch": null,
+        "max_abs_logprob_diff": 0.0,
+        "identical": true
+      },
+      {
+        "batch_size": 4,
+        "position": "last",
+        "tokens_equal": true,
+        "first_token_divergence": null,
+        "logprobs_bitwise_equal": true,
+        "first_logprob_mismatch": null,
+        "max_abs_logprob_diff": 0.0,
+        "identical": true
+      }
+    ],
+    "decode_invariant": true,
+    "decode_token_invariant": true,
+    "first_token_divergence": null,
+    "run_to_run": {
+      "tokens_equal": true,
+      "first_token_divergence": null,
+      "logprobs_bitwise_equal": true,
+      "first_logprob_mismatch": null,
+      "max_abs_logprob_diff": 0.0,
+      "identical": true
+    },
+    "examples": [],
+    "kernels": {
+      "mode": "official_full",
+      "official": {
+        "enabled": true,
+        "module_path": "/workspace/detllm/batch_invariant_ops/batch_invariant_ops/__init__.py",
+        "version": "0.1.0",
+        "submodule_commit": "f22b1fbe534b1fe045080f44a970a441caaf3c4f",
+        "device_smem_optin_bytes": 101376,
+        "tile_smem_bytes": {
+          "bfloat16": {
+            "needed": 98304,
+            "fits": true
+          },
+          "float16": {
+            "needed": 147456,
+            "fits": false
+          },
+          "float32": {
+            "needed": 98304,
+            "fits": true
+          }
+        },
+        "probes": {
+          "bfloat16": {
+            "ok": true,
+            "max_rel_err": 0.0035481639206409454
+          },
+          "float32": {
+            "ok": true,
+            "max_rel_err": 0.0007667768513783813
+          }
+        }
+      },
+      "extra_ops": {
+        "enabled": true,
+        "ops": [
+          "aten::bmm",
+          "aten::_softmax"
+        ],
+        "bmm_config": {
+          "BLOCK_M": 32,
+          "BLOCK_N": 64,
+          "BLOCK_K": 32,
+          "num_warps": 4,
+          "num_stages": 2
+        },
+        "softmax_block": 1024,
+        "dispatch_check": {
+          "matmul_routed": true,
+          "softmax_routed": true
+        }
+      }
+    }
+  },
+  "duration_s": 41.82,
+  "finished": "2026-10-08T12:05:40+0000"
+}

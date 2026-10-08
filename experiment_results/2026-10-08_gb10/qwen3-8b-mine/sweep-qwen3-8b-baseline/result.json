@@ -1,0 +1,12 @@
+{
+  "job_id": "sweep-qwen3-8b-baseline",
+  "experiment": "vllm_batch_sweep",
+  "model": "qwen3-8b",
+  "hf_id": "Qwen/Qwen3-8B",
+  "mode": "baseline",
+  "started": "2026-10-08T13:04:24+0000",
+  "status": "cancelled",
+  "error": "received signal 15",
+  "duration_s": 1147.63,
+  "finished": "2026-10-08T13:23:32+0000"
+}

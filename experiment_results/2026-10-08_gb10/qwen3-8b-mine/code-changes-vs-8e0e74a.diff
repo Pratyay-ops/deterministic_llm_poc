@@ -1,0 +1,696 @@
+diff --git a/docs/EXPERIMENTS.md b/docs/EXPERIMENTS.md
+index ee15c08..b1669ec 100644
+--- a/docs/EXPERIMENTS.md
++++ b/docs/EXPERIMENTS.md
+@@ -30,10 +30,11 @@ page-cache numbers.
+ 
+ The blog's two demos: `(0.1 + 1e20) - 1e20 = 0` vs `0.1 + (1e20 - 1e20) = 0.1`, and summing
+ `[1e-10, 1e-5, 1e-2, 1]` and their negatives in 10,000 random orders, which gives **102 distinct
+-results**. Python 3.12 (the containers' Python) changed the built-in `sum()` to compensated
+-summation, so the demo uses an explicit left-to-right loop (what `sum()` did when the blog was
+-written). The 3.12 `sum()` count is reported next to it: a different reduction algorithm, a
+-different answer.
++results**. The snippet is run as written: Python 3.12's built-in `sum()` (the containers' Python)
++compensates float additions, but the list holds the *int* `1`, which is added uncompensated - and
++that mix gives exactly the blog's 102 (with `1.0` it would give 1). A plain left-to-right loop over
++the same orders (what `sum()` did up to 3.11) is reported next to it and gives 258: a different
++reduction algorithm, a different answer.
+ 
+ ## `op_invariance` - kernels are deterministic, but not batch-invariant
+ 
+diff --git a/src/detllm/analysis/report.py b/src/detllm/analysis/report.py
+index d18f3a0..60faf1a 100644
+--- a/src/detllm/analysis/report.py
++++ b/src/detllm/analysis/report.py
+@@ -57,6 +57,77 @@ def _summary(job: dict[str, Any]) -> dict[str, Any]:
+     return job["result"].get("summary") or {}
+ 
+ 
++def _is_bitwise_identical(s: dict[str, Any]) -> bool:
++    """1 unique token sequence, 1 logprob variant, and no failed or missing requests."""
++    return (
++        s.get("n_unique") == 1
++        and s.get("modal_logprob_variants") == 1
++        and bool(s.get("n_valid"))
++        and s.get("n_valid") == s.get("n")
++    )
++
++
++def _bi_verdict(s: dict[str, Any]) -> str:
++    lp = s.get("modal_logprob_variants")
++    if not s.get("n_valid"):
++        return "no valid completions - inconclusive"
++    if s.get("n_unique") != 1:
++        verdict = "NOT all identical - batch invariance violated"
++    elif lp and lp > 1:
++        verdict = f"same tokens but {lp} logprob variants - NOT bitwise identical"
++    elif lp == 1:
++        verdict = "all bitwise identical, tokens and logprobs"
++    else:
++        verdict = "same tokens, logprobs not compared"
++    if s.get("n") and s.get("n_valid") != s.get("n"):
++        verdict += f"; INCOMPLETE: only {s.get('n_valid')}/{s.get('n')} requests succeeded"
++    return verdict
++
++
++def _modal_variants(s: dict[str, Any]) -> str:
++    """Logprob variants among the modal completions - meaningless when the modal one occurs once."""
++    lp, count = s.get("modal_logprob_variants"), s.get("modal_count") or 0
++    return f"{lp} of {count}" if count > 1 else "n/a (modal x1)"
++
++
++def _is_prompt_comparison(job: dict[str, Any]) -> bool:
++    p = job["spec"].get("params") or {}
++    return (
++        p.get("api", "completions") == "completions"
++        and p.get("engine", "server") == "server"
++        and not p.get("enable_prefix_caching")
++        and not p.get("attention_backend")
++    )
++
++
++def _completion_summaries(run: dict[str, Any]) -> list[tuple[dict[str, Any], str, dict[str, Any]]]:
++    """(job, label, summary) per prompt: multi-prompt jobs (``prompts:``) give one entry per prompt."""
++    out = []
++    for job in _by_experiment(run, "vllm_completions"):
++        s = _summary(job)
++        if s.get("multi_prompt"):
++            for entry in s.get("per_prompt") or []:
++                entry = {**entry, "engine_info": s.get("engine_info", {})}
++                out.append((job, f"{job['spec']['id']} #{entry.get('prompt_index', 0) + 1}", entry))
++        else:
++            out.append((job, job["spec"]["id"], s))
++    return out
++
++
++def _prompt_pairs(run: dict[str, Any]) -> dict[str, dict[str, list[Any]]]:
++    """{model: {prompt text: [baseline summary, batch-invariant summary]}} for plain completion jobs."""
++    out: dict[str, dict[str, list[Any]]] = {}
++    for job, _label, s in _completion_summaries(run):
++        if not _is_prompt_comparison(job):
++            continue
++        slot = {"baseline": 0, "batch_invariant": 1}.get(s.get("mode"))
++        if slot is None or not s.get("prompt"):
++            continue
++        pair = out.setdefault(s.get("model", "?"), {}).setdefault(s["prompt"], [None, None])
++        pair[slot] = s
++    return out
++
++
+ # --------------------------------------------------------------------------- sections
+ 
+ 
+@@ -99,15 +170,19 @@ def _headline(run: dict[str, Any]) -> str:
+                 + (f" (first divergence at token {div + 1})" if div is not None else "")
+             )
+         if bi:
+-            verdict = "all identical" if bi["n_unique"] == 1 else "NOT all identical - batch invariance violated"
+-            lp = bi.get("modal_logprob_variants")
+-            parts.append(
+-                f"batch-invariant vLLM produced **{bi['n_unique']} unique** ({verdict}"
+-                + (", logprobs bitwise identical" if lp == 1 else (f", {lp} logprob variants" if lp else ""))
+-                + ")"
+-            )
++            parts.append(f"batch-invariant vLLM produced **{bi['n_unique']} unique** ({_bi_verdict(bi)})")
+         if parts:
+             lines.append(f"- **{model}**: " + "; ".join(parts) + ".")
++    for model, pairs in _prompt_pairs(run).items():
++        complete = [(b, i) for b, i in pairs.values() if b and i]
++        if complete:
++            varied = sum(1 for b, _ in complete if b["n_unique"] > 1 or (b.get("modal_logprob_variants") or 0) > 1)
++            fixed = sum(1 for _, i in complete if _is_bitwise_identical(i))
++            lines.append(
++                f"- **{model}, per prompt**: default vLLM was nondeterministic (tokens or logprobs) for "
++                f"**{varied}/{len(complete)}** prompts; batch-invariant vLLM was bitwise identical for "
++                f"**{fixed}/{len(complete)}** prompts (details below)."
++            )
+     for job in _by_experiment(run, "vllm_batch_sweep"):
+         s = _summary(job)
+         lines.append(
+@@ -134,7 +209,8 @@ def _fp(run: dict[str, Any]) -> str:
+     return (
+         "## Floating-point non-associativity (CPU)\n\n"
+         f"- {assoc}\n- Summing the same 8 numbers in 10,000 random orders gives **{s.get('n_unique_sums')}** "
+-        f"distinct results (blog: {s.get('blog_n_unique_sums')})."
++        f"distinct results with the blog's snippet (blog: {s.get('blog_n_unique_sums')}); a plain left-to-right "
++        f"loop over the same orders gives {s.get('n_unique_left_to_right', '-')}."
+     )
+ 
+ 
+@@ -227,34 +303,98 @@ def _hf(run: dict[str, Any]) -> str:
+     )
+ 
+ 
++def _prompts(run: dict[str, Any]) -> str:
++    """Default vs batch-invariant vLLM, side by side for every prompt that was run in both modes."""
++    sections = []
++    for model, pairs in _prompt_pairs(run).items():
++        rows, examples = [], []
++        for i, (prompt, (base, bi)) in enumerate(pairs.items()):
++            label = " ".join(prompt.split())
++            label = label[:60] + ("..." if len(label) > 60 else "")
++            row = [i + 1, label]
++            for s in (base, bi):
++                if s is None:
++                    row += ["not run", "-", "-", "-"]
++                    continue
++                div = s.get("earliest_divergence")
++                row += [
++                    f"{s.get('n_valid')}/{s.get('n')}",
++                    f"{s.get('n_unique')} (modal x{s.get('modal_count')})",
++                    "-" if div is None else div + 1,
++                    _modal_variants(s),
++                ]
++            if base and bi:
++                row.append("**deterministic**" if _is_bitwise_identical(bi) else "**NOT deterministic**")
++            else:
++                row.append("incomplete")
++            rows.append(row)
++            ex = (base or {}).get("divergence_example")
++            if ex:
++                examples.append(
++                    f"- prompt {i + 1}, token {ex['token_number']}: ...{ex['shared_prefix_tail']!r} -> "
++                    f"{ex['modal_continuation']!r} vs {ex['other_continuation']!r}"
++                )
++        sections.append(
++            f"## Per-prompt comparison on {model}: default vs batch-invariant vLLM\n\n"
++            "Each prompt was sent N times at temperature 0 as concurrent requests to a `vllm serve` instance, first "
++            "with default kernels, then with `VLLM_BATCH_INVARIANT=1`. *unique* counts distinct token sequences; "
++            "*first divergence* is the earliest token (1-based) where any two completions differ; *logprob variants* "
++            "counts distinct bitwise logprob vectors among the copies of the most common completion. "
++            "**deterministic** = batch-invariant run gave 1 unique completion with bitwise identical logprobs and no "
++            "failed requests.\n\n"
++            + _table(
++                [
++                    "#",
++                    "prompt",
++                    "default: ok",
++                    "default: unique",
++                    "default: first divergence",
++                    "default: logprob variants",
++                    "batch-inv: ok",
++                    "batch-inv: unique",
++                    "batch-inv: first divergence",
++                    "batch-inv: logprob variants",
++                    "verdict",
++                ],
++                rows,
++            )
++            + (
++                "\n\nExamples of where default-vLLM completions split (the most common completion vs the second most "
++                "common):\n\n" + "\n".join(examples)
++                if examples
++                else ""
++            )
++        )
++    return "\n\n".join(sections)
++
++
+ def _completions(run: dict[str, Any]) -> str:
+-    jobs = _by_experiment(run, "vllm_completions")
+-    if not jobs:
++    entries = _completion_summaries(run)
++    if not entries:
+         return ""
+     rows = []
+     examples = []
+-    for job in jobs:
+-        s = _summary(job)
++    for _job, label, s in entries:
+         info = s.get("engine_info", {})
+         div = s.get("earliest_divergence")
+         rows.append(
+             [
+-                job["spec"]["id"],
++                label,
+                 s.get("model"),
+                 s.get("mode"),
+                 f"{s.get('engine')}/{info.get('api', 'offline')}",
+-                f"{s.get('n_valid')}x{s.get('max_tokens')}",
++                f"{s.get('n_valid')}/{s.get('n')}x{s.get('max_tokens')}",
+                 s.get("n_unique"),
+                 s.get("modal_count"),
+                 None if div is None else div + 1,
+-                s.get("modal_logprob_variants"),
++                _modal_variants(s),
+                 info.get("attention_backend_log") or (info.get("engine_kwargs") or {}).get("attention_backend"),
+             ]
+         )
+         ex = s.get("divergence_example")
+         if ex:
+             examples.append(
+-                f"- `{job['spec']['id']}` token {ex['token_number']}: ...{ex['shared_prefix_tail']!r} -> "
++                f"- `{label}` token {ex['token_number']}: ...{ex['shared_prefix_tail']!r} -> "
+                 f"{ex['modal_continuation']!r} vs {ex['other_continuation']!r}"
+             )
+     blog = (
+@@ -270,7 +410,7 @@ def _completions(run: dict[str, Any]) -> str:
+                 "model",
+                 "mode",
+                 "engine/api",
+-                "n x max_tokens",
++                "ok/n x max_tokens",
+                 "unique",
+                 "modal count",
+                 "first divergence (token #)",
+@@ -342,7 +482,11 @@ def _preflight(run: dict[str, Any]) -> str:
+     if not jobs:
+         return ""
+     s = _summary(jobs[0])
+-    rows = [[c["name"], "info" if c["ok"] is None else _ok(c["ok"]), str(c["detail"])[:220]] for c in s.get("checks", [])]
++    # The vllm and memory rows carry the facts the runbook asks to check (tuned tiles, page cache): keep them whole.
++    rows = [
++        [c["name"], "info" if c["ok"] is None else _ok(c["ok"]), str(c["detail"]) if c["name"] in ("vllm", "memory") else str(c["detail"])[:220]]
++        for c in s.get("checks", [])
++    ]
+     return "## Preflight\n\n" + _table(["check", "ok", "detail"], rows)
+ 
+ 
+@@ -367,6 +511,7 @@ def render(run: dict[str, Any]) -> str:
+     sections = [
+         header,
+         _headline(run),
++        _prompts(run),
+         _environment(run),
+         _preflight(run),
+         _fp(run),
+diff --git a/src/detllm/engines/vllm_engine.py b/src/detllm/engines/vllm_engine.py
+index 5860f4e..634032d 100644
+--- a/src/detllm/engines/vllm_engine.py
++++ b/src/detllm/engines/vllm_engine.py
+@@ -32,14 +32,15 @@ log = logging.getLogger(__name__)
+ # sm_121 in every image. Baseline jobs keep vLLM's own default unless told otherwise.
+ DEFAULT_BI_ATTENTION_BACKEND = "TRITON_ATTN"
+ 
++# Transient start-up shortages only. "kv cache memory" is not here: vLLM prints an INFO line with it on
++# every start when kv_cache_memory_bytes is set, and "...larger than the available KV cache memory" /
++# "no available memory for the cache blocks" are configuration errors that a retry cannot fix.
+ _MEMORY_ERRORS = (
+     "less than desired gpu memory utilization",
+-    "no available memory for the cache blocks",
+     "not enough memory",
+     "insufficient memory",
+     "out of memory",
+     "free memory on device",
+-    "kv cache memory",
+ )
+ # Boolean engine args whose default is True, so False must be passed explicitly on the CLI.
+ _DEFAULT_TRUE_BOOLS = {"enable_prefix_caching", "enable_chunked_prefill"}
+diff --git a/src/detllm/engines/vllm_server.py b/src/detllm/engines/vllm_server.py
+index 2a02de6..3d58aad 100644
+--- a/src/detllm/engines/vllm_server.py
++++ b/src/detllm/engines/vllm_server.py
+@@ -244,8 +244,17 @@ async def _send_all(
+     seed: int,
+     timeout_s: float,
+ ) -> list[dict[str, Any]]:
++    import resource
++
+     import httpx
+ 
++    # One socket per in-flight request: 1000 concurrent requests exceed the usual soft limit of
++    # 1024 open files once CUDA and the logs hold a few dozen, and the excess fail with ConnectError.
++    soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
++    want = 65536 if hard == resource.RLIM_INFINITY else min(hard, 65536)
++    if soft != resource.RLIM_INFINITY and soft < want:
++        resource.setrlimit(resource.RLIMIT_NOFILE, (want, hard))
++
+     rng = random.Random(seed)
+     delays = [rng.uniform(0.0, jitter_s) if jitter_s > 0 else 0.0 for _ in payloads]
+     limit = max(1, min(concurrency, len(payloads)))
+diff --git a/src/detllm/experiments/fp_nonassoc.py b/src/detllm/experiments/fp_nonassoc.py
+index 595d90b..04d8fbe 100644
+--- a/src/detllm/experiments/fp_nonassoc.py
++++ b/src/detllm/experiments/fp_nonassoc.py
+@@ -1,11 +1,11 @@
+ """Blog section "The original sin: floating-point non-associativity" - the blog's demos (CPU).
+ 
+-Note on Python versions: the blog's snippet uses the built-in ``sum()``. Up to Python 3.11 that
+-was a plain left-to-right double accumulation; since Python 3.12 ``sum()`` of floats uses
+-compensated (Neumaier) summation, which hides most of the effect. The containers ship Python 3.12,
+-so the blog's number is reproduced with an explicit left-to-right loop (what ``sum()`` used to do),
+-and the 3.12 built-in result is reported next to it - itself a nice illustration that changing the
+-reduction algorithm changes the answer.
++Note on Python versions: the blog's snippet uses the built-in ``sum()``. Since Python 3.12 that is
++compensated (Neumaier) summation for floats, but the blog's list holds the *int* ``1`` (and ``-1``),
++which CPython adds without compensation - and that exact mix gives the blog's 102 unique results
++(with ``1.0`` instead of ``1`` it gives 1). The containers ship Python 3.12, so the blog's snippet is
++reproduced as written; a plain left-to-right loop (what ``sum()`` did up to 3.11) is reported next to
++it and gives 258 - itself a nice illustration that changing the reduction algorithm changes the answer.
+ """
+ 
+ from __future__ import annotations
+@@ -47,15 +47,19 @@ def run(ctx) -> dict[str, Any]:  # noqa: ANN001
+     }
+     naive, builtin = unique_sums(seed=int(ctx.param("seed_sum", 42)))
+     ctx.save_json("unique_sums.json", {"left_to_right": naive, "builtin_sum": builtin})
+-    ctx.log.info("left-to-right: %d unique results (blog: %d); built-in sum(): %d", len(naive), BLOG_UNIQUE_SUMS, len(builtin))
++    ctx.log.info("built-in sum(): %d unique results (blog: %d); left-to-right loop: %d", len(builtin), BLOG_UNIQUE_SUMS, len(naive))
+     return {
+         "associativity": associativity,
+-        "n_unique_sums": len(naive),
++        "n_unique_sums": len(builtin),
+         "blog_n_unique_sums": BLOG_UNIQUE_SUMS,
+-        "matches_blog": len(naive) == BLOG_UNIQUE_SUMS,
+-        "min_sum": naive[0],
+-        "max_sum": naive[-1],
++        "matches_blog": len(builtin) == BLOG_UNIQUE_SUMS,
++        "min_sum": builtin[0],
++        "max_sum": builtin[-1],
+         "python": sys.version.split()[0],
+-        "n_unique_builtin_sum": len(builtin),
+-        "builtin_sum_note": "Python >= 3.12 sum() uses compensated summation" if sys.version_info >= (3, 12) else "plain summation",
++        "n_unique_left_to_right": len(naive),
++        "builtin_sum_note": (
++            "Python >= 3.12 sum(): compensated for floats, the int 1 is added uncompensated"
++            if sys.version_info >= (3, 12)
++            else "plain left-to-right summation"
++        ),
+     }
+diff --git a/src/detllm/experiments/vllm_completions.py b/src/detllm/experiments/vllm_completions.py
+index 7842271..fdf3730 100644
+--- a/src/detllm/experiments/vllm_completions.py
++++ b/src/detllm/experiments/vllm_completions.py
+@@ -22,7 +22,13 @@ from detllm.analysis.divergence import divergence_example, summarize_sequences
+ from detllm.engines.base import Completion
+ from detllm.engines.vllm_server import chat_payload, completion_payload, parse_choice, send_requests
+ from detllm.experiments._vllm_common import backend_in_logs, offline_engine, running_server
+-from detllm.prompts import filler_prompt_ids, load_tokenizer, render_chat_ids, resolve_prompt
++from detllm.prompts import (
++    filler_prompt_ids,
++    load_prompt_file,
++    load_tokenizer,
++    render_chat_ids,
++    resolve_prompt,
++)
+ from detllm.utils import JsonlWriter
+ 
+ BLOG = {
+@@ -79,6 +85,146 @@ def _server_run(ctx, prompt_text: str, prompt_ids: list[int], n: int, max_tokens
+     return completions, info
+ 
+ 
++def _prompt_list(p: dict[str, Any]) -> list[str] | None:
++    """``prompts``: several prompts in one job - a file (every prompt, or ``indices``) or a list of prompt specs."""
++    spec = p.get("prompts")
++    if spec is None:
++        return None
++    if isinstance(spec, dict) and "file" in spec:
++        texts = load_prompt_file(spec["file"])
++        indices = spec.get("indices")
++        return [texts[int(i)] for i in indices] if indices is not None else texts
++    if isinstance(spec, list):
++        return [resolve_prompt(s) for s in spec]
++    raise ValueError(f"cannot interpret prompts spec {spec!r}")
++
++
++def _server_run_multi(ctx, prompt_ids: list[list[int]], n: int, max_tokens: int) -> tuple[list[Completion], dict]:  # noqa: ANN001
++    """n copies of every prompt, interleaved in a seeded random order, all sent to one server - like many users
++    sharing it. One engine start for all prompts, and its batches mix prompts of different lengths."""
++    p = ctx.job.params
++    order = [(k, j) for k in range(len(prompt_ids)) for j in range(n)]
++    random.Random(ctx.seed).shuffle(order)
++    with running_server(ctx, warmup_prompt=prompt_ids[0]) as server:
++        payloads = [
++            completion_payload(
++                server.served_model_name,
++                prompt_ids[k],
++                max_tokens=max_tokens,
++                seed=ctx.seed,
++                logprobs=bool(p.get("logprobs", True)),
++                ignore_eos=bool(p.get("ignore_eos", False)),
++            )
++            for k, _ in order
++        ]
++        ctx.log.info(
++            "sending %d concurrent completions requests: %d prompts x %d (max_tokens=%d)",
++            len(payloads), len(prompt_ids), n, max_tokens,
++        )
++        results, wall = send_requests(
++            server.base_url,
++            "completions",
++            payloads,
++            concurrency=int(p.get("concurrency") or len(payloads)),
++            jitter_s=float(p.get("arrival_jitter_s", 0.0)),
++            seed=ctx.seed,
++        )
++        info = {**server.info(), "api": "completions", "wall_time_s": round(wall, 2), "attention_backend_log": backend_in_logs(ctx, server)}
++    completions = []
++    for (k, j), r in zip(order, results, strict=True):
++        if r.get("ok"):
++            parsed = parse_choice(r["json"], "completions")
++            completions.append(Completion(index=j, prompt_id=f"p{k}", latency_s=r["latency_s"], **parsed))
++        else:
++            completions.append(Completion(index=j, prompt_id=f"p{k}", token_ids=None, text=None, error=r.get("error")))
++    return completions, info
++
++
++def _summarize(completions: list[Completion], tok) -> dict[str, Any]:  # noqa: ANN001
++    """Uniqueness, divergence and logprob variants of the completions of one prompt."""
++    use_tokens = all(c.token_ids is not None for c in completions if c.error is None)
++    seqs = [(c.token_ids if use_tokens else c.text) if c.error is None else None for c in completions]
++    logprobs = [c.logprobs for c in completions] if use_tokens else None
++    summary = summarize_sequences(seqs, logprobs=logprobs)
++
++    example = None
++    if summary["n_unique"] > 1 and summary["unique"][1]["first_divergence_vs_modal"] is not None:
++        modal = seqs[summary["modal_index"]]
++        other = seqs[summary["unique"][1]["example_index"]]
++        decode = (lambda ids: tok.decode(ids)) if use_tokens else None
++        example = divergence_example(decode, modal, other, summary["unique"][1]["first_divergence_vs_modal"])
++
++    modal_text = completions[summary["modal_index"]].text if summary["modal_index"] is not None else None
++    return {
++        "compared_on": "token_ids+logprobs" if use_tokens else "text",
++        **summary,
++        "divergence_example": example,
++        "modal_text_head": (modal_text or "")[:600],
++        "mean_output_tokens": (
++            sum(len(c.token_ids) for c in completions if c.token_ids) / max(1, sum(1 for c in completions if c.token_ids))
++        ),
++    }
++
++
++def _check_failures(completions: list[Completion], p: dict[str, Any]) -> None:
++    """A verdict over the surviving requests only would be wrong, so failed requests fail the job
++    (completions.jsonl keeps them for inspection)."""
++    failed = [c for c in completions if c.error is not None]
++    if len(failed) > float(p.get("max_failed_fraction", 0.0)) * len(completions):
++        raise RuntimeError(f"{len(failed)}/{len(completions)} requests failed; first error: {failed[0].error}")
++
++
++def _run_multi(ctx, preset, prompts: list[str], n: int, max_tokens: int) -> dict[str, Any]:  # noqa: ANN001
++    p = ctx.job.params
++    if p.get("engine", "server") != "server" or p.get("api", "completions") != "completions":
++        raise ValueError("'prompts' (several prompts per job) needs engine: server and api: completions")
++    tok = load_tokenizer(preset.hf_id)
++    chat_kwargs = p.get("chat_template_kwargs", preset.chat_template_kwargs)
++    prompt_ids = [render_chat_ids(tok, text, chat_kwargs) for text in prompts]
++    completions, info = _server_run_multi(ctx, prompt_ids, n, max_tokens)
++
++    with JsonlWriter(ctx.path("completions.jsonl")) as out:
++        for c in completions:
++            out.write(c.to_dict())
++    _check_failures(completions, p)
++
++    per_prompt = []
++    for k, (text, ids) in enumerate(zip(prompts, prompt_ids, strict=True)):
++        mine = sorted((c for c in completions if c.prompt_id == f"p{k}"), key=lambda c: c.index)
++        s = {
++            "model": preset.key,
++            "mode": ctx.job.mode,
++            "engine": "server",
++            "prompt_index": k,
++            "prompt": text,
++            "prompt_tokens": len(ids),
++            "n": n,
++            "max_tokens": max_tokens,
++            **_summarize(mine, tok),
++        }
++        per_prompt.append(s)
++        ctx.log.info(
++            "%s/%s prompt %d: %d unique of %d (modal x%d), earliest divergence at %s %s (1-based)",
++            preset.key, ctx.job.mode, k + 1, s["n_unique"], s["n_valid"], s["modal_count"], s["unit"][:-1],
++            None if s["earliest_divergence"] is None else s["earliest_divergence"] + 1,
++        )
++    return {
++        "model": preset.key,
++        "hf_id": preset.hf_id,
++        "mode": ctx.job.mode,
++        "engine": "server",
++        "multi_prompt": True,
++        "n_prompts": len(prompts),
++        "n": n,
++        "max_tokens": max_tokens,
++        "n_requests": len(completions),
++        "n_failed": sum(1 for c in completions if c.error is not None),
++        "per_prompt": per_prompt,
++        "engine_info": info,
++        "blog_reference": BLOG,
++    }
++
++
+ def _offline_run(ctx, prompt_ids: list[int], n: int, max_tokens: int) -> tuple[list[Completion], dict]:  # noqa: ANN001
+     p = ctx.job.params
+     n_fill = int(p.get("filler_requests", n // 2))
+@@ -112,6 +258,10 @@ def run(ctx) -> dict[str, Any]:  # noqa: ANN001
+     n = int(p.get("n", 1000))
+     max_tokens = int(p.get("max_tokens", 1000))
+     engine = p.get("engine", "server")
++    prompts = _prompt_list(p)
++    if prompts is not None:
++        return _run_multi(ctx, preset, prompts, n, max_tokens)
++
+     tok = load_tokenizer(preset.hf_id)
+     prompt_text = resolve_prompt(p.get("prompt"))
+     prompt_ids = render_chat_ids(tok, prompt_text, p.get("chat_template_kwargs", preset.chat_template_kwargs))
+@@ -126,29 +276,18 @@ def run(ctx) -> dict[str, Any]:  # noqa: ANN001
+     with JsonlWriter(ctx.path("completions.jsonl")) as out:
+         for c in completions:
+             out.write(c.to_dict())
++    _check_failures(completions, p)
+ 
+-    use_tokens = all(c.token_ids is not None for c in completions if c.error is None)
+-    seqs = [(c.token_ids if use_tokens else c.text) if c.error is None else None for c in completions]
+-    logprobs = [c.logprobs for c in completions] if use_tokens else None
+-    summary = summarize_sequences(seqs, logprobs=logprobs)
+-
+-    example = None
+-    if summary["n_unique"] > 1 and summary["unique"][1]["first_divergence_vs_modal"] is not None:
+-        modal = seqs[summary["modal_index"]]
+-        other = seqs[summary["unique"][1]["example_index"]]
+-        decode = (lambda ids: tok.decode(ids)) if use_tokens else None
+-        example = divergence_example(decode, modal, other, summary["unique"][1]["first_divergence_vs_modal"])
+-
+-    modal_text = completions[summary["modal_index"]].text if summary["modal_index"] is not None else None
++    summary = _summarize(completions, tok)
+     ctx.log.info(
+-        "%s/%s: %d unique of %d (modal x%d), earliest divergence at %s %s",
++        "%s/%s: %d unique of %d (modal x%d), earliest divergence at %s %s (1-based)",
+         preset.key,
+         ctx.job.mode,
+         summary["n_unique"],
+         summary["n_valid"],
+         summary["modal_count"],
+         summary["unit"][:-1],
+-        summary["earliest_divergence"],
++        None if summary["earliest_divergence"] is None else summary["earliest_divergence"] + 1,
+     )
+     return {
+         "model": preset.key,
+@@ -159,13 +298,7 @@ def run(ctx) -> dict[str, Any]:  # noqa: ANN001
+         "prompt_tokens": len(prompt_ids),
+         "n": n,
+         "max_tokens": max_tokens,
+-        "compared_on": "token_ids+logprobs" if use_tokens else "text",
+         **summary,
+-        "divergence_example": example,
+-        "modal_text_head": (modal_text or "")[:600],
+-        "mean_output_tokens": (
+-            sum(len(c.token_ids) for c in completions if c.token_ids) / max(1, sum(1 for c in completions if c.token_ids))
+-        ),
+         "engine_info": info,
+         "blog_reference": BLOG,
+     }
+diff --git a/src/detllm/experiments/vllm_perf.py b/src/detllm/experiments/vllm_perf.py
+index d57e4c7..a1c911c 100644
+--- a/src/detllm/experiments/vllm_perf.py
++++ b/src/detllm/experiments/vllm_perf.py
+@@ -54,6 +54,9 @@ def run(ctx) -> dict[str, Any]:  # noqa: ANN001
+         info = {**server.info(), "attention_backend_log": backend_in_logs(ctx, server)}
+ 
+     ok = [r for r in results if r.get("ok")]
++    if len(ok) < n:
++        first_error = next((r.get("error") for r in results if not r.get("ok")), None)
++        raise RuntimeError(f"{n - len(ok)}/{n} requests failed, timing would be meaningless; first error: {first_error}")
+     out_tokens = 0
+     for r, length in zip(results, lengths):
+         if r.get("ok"):
+diff --git a/src/detllm/kernels/custom.py b/src/detllm/kernels/custom.py
+index f179ac6..61895fa 100644
+--- a/src/detllm/kernels/custom.py
++++ b/src/detllm/kernels/custom.py
+@@ -14,7 +14,9 @@ zero-padded chunks - always exactly ``rows`` rows for mm/addmm, ``mats`` matrice
+ every time). The vendor kernel therefore always sees identical shapes and computes every row in
+ the same way, no matter how many other rows the batch contains. Interception happens at the
+ dispatcher with a ``TorchDispatchMode``, i.e. *below* F.linear / torch.matmul / softmax, and calling
+-the original kernel from inside the mode cannot recurse.
++the original kernel from inside the mode cannot recurse. Under ``torch.inference_mode()`` those
++composite ops reach the mode undecomposed (``aten.linear``, ``aten.matmul``, ``aten.softmax.int``),
++so the mode decomposes them itself before chunking.
+ 
+ It is slower (Python dispatch, padding, copies) - the point is a correct, independent second
+ implementation to compare with the Triton kernels of batch_invariant_ops.
+@@ -39,6 +41,8 @@ class FixedChunkMode(TorchDispatchMode):
+         self.reduce_rows = reduce_rows
+         self.calls: Counter[str] = Counter()
+         self.passthrough: Counter[str] = Counter()
++        self.decomposed: Counter[str] = Counter()
++        self._has_composite: dict[Any, bool] = {}
+         self._handlers = {
+             aten.mm.default: self._mm,
+             aten.addmm.default: self._addmm,
+@@ -57,7 +61,11 @@ class FixedChunkMode(TorchDispatchMode):
+         }
+ 
+     def stats(self) -> dict[str, Any]:
+-        return {"chunked_calls": dict(self.calls), "unchunked_calls": dict(self.passthrough)}
++        return {
++            "chunked_calls": dict(self.calls),
++            "unchunked_calls": dict(self.passthrough),
++            "decomposed_calls": dict(self.decomposed),
++        }
+ 
+     def __torch_dispatch__(self, func, types, args=(), kwargs=None):  # noqa: ANN001
+         kwargs = kwargs or {}
+@@ -68,8 +76,26 @@ class FixedChunkMode(TorchDispatchMode):
+                 self.calls[str(func)] += 1
+                 return out
+             self.passthrough[str(func)] += 1
++            return func(*args, **kwargs)
++        # Under torch.inference_mode() CompositeImplicitAutograd ops (aten.linear, aten.matmul,
++        # aten.softmax.int, ...) reach the mode undecomposed, so their mm/addmm/bmm/_softmax would
++        # never be chunked. Decompose them with the mode re-entered (it is popped while
++        # __torch_dispatch__ runs), which is what the dispatcher does by itself under no_grad.
++        if self._is_composite(func):
++            with self:
++                out = func.decompose(*args, **kwargs)
++            if out is not NotImplemented:
++                self.decomposed[str(func)] += 1
++                return out
+         return func(*args, **kwargs)
+ 
++    def _is_composite(self, func) -> bool:  # noqa: ANN001
++        known = self._has_composite.get(func)
++        if known is None:
++            known = torch._C._dispatch_has_kernel_for_dispatch_key(func.name(), "CompositeImplicitAutograd")
++            self._has_composite[func] = known
++        return known
++
+     # ---------------------------------------------------------------- helpers
+ 
+     @staticmethod
+diff --git a/tests/unit/test_fp_nonassoc.py b/tests/unit/test_fp_nonassoc.py
+index 442dd8c..9622e84 100644
+--- a/tests/unit/test_fp_nonassoc.py
++++ b/tests/unit/test_fp_nonassoc.py
+@@ -1,3 +1,7 @@
++import sys
++
++import pytest
++
+ from detllm.experiments.fp_nonassoc import BLOG_UNIQUE_SUMS, naive_sum, unique_sums
+ 
+ 
+@@ -11,7 +15,8 @@ def test_naive_sum_is_left_to_right():
+     assert naive_sum([1e20, -1e20, 0.1]) == 0.1
+ 
+ 
+-def test_blog_reports_102_unique_left_to_right_sums():
++@pytest.mark.skipif(sys.version_info < (3, 12), reason="the blog's count comes from Python >= 3.12 sum()")
++def test_blog_snippet_gives_102_unique_sums():
+     naive, builtin = unique_sums()
+-    assert len(naive) == BLOG_UNIQUE_SUMS
+-    assert builtin  # Python >= 3.12 sum() is compensated; its count is reported, not asserted
++    assert len(builtin) == BLOG_UNIQUE_SUMS
++    assert len(naive) == 258  # plain left-to-right accumulation of the same orders

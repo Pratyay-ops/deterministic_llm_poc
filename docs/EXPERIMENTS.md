@@ -30,10 +30,11 @@ page-cache numbers.
 
 The blog's two demos: `(0.1 + 1e20) - 1e20 = 0` vs `0.1 + (1e20 - 1e20) = 0.1`, and summing
 `[1e-10, 1e-5, 1e-2, 1]` and their negatives in 10,000 random orders, which gives **102 distinct
-results**. Python 3.12 (the containers' Python) changed the built-in `sum()` to compensated
-summation, so the demo uses an explicit left-to-right loop (what `sum()` did when the blog was
-written). The 3.12 `sum()` count is reported next to it: a different reduction algorithm, a
-different answer.
+results**. The snippet is run as written: Python 3.12's built-in `sum()` (the containers' Python)
+compensates float additions, but the list holds the *int* `1`, which is added uncompensated - and
+that mix gives exactly the blog's 102 (with `1.0` it would give 1). A plain left-to-right loop over
+the same orders (what `sum()` did up to 3.11) is reported next to it and gives 258: a different
+reduction algorithm, a different answer.
 
 ## `op_invariance` - kernels are deterministic, but not batch-invariant
 

@@ -1,0 +1,12 @@
+{
+  "job_id": "sweep-qwen3-8b-batch_invariant",
+  "experiment": "vllm_batch_sweep",
+  "model": "qwen3-8b",
+  "hf_id": "Qwen/Qwen3-8B",
+  "mode": "batch_invariant",
+  "started": "2026-10-08T13:04:26+0000",
+  "status": "cancelled",
+  "error": "received signal 15",
+  "duration_s": 1144.96,
+  "finished": "2026-10-08T13:23:31+0000"
+}

@@ -1,0 +1,48 @@
+# collected 2026-10-08T14:14:57+00:00
+## uname
+Linux promaxgb10-a0f4 7.0.0-1019-nvidia #19~24.04.2-Ubuntu SMP PREEMPT_DYNAMIC Sun Sep  6 18:35:11 UTC 2 aarch64 aarch64 aarch64 GNU/Linux
+## dgx-release
+DGX_NAME="DGX Spark"
+DGX_PRETTY_NAME="NVIDIA DGX Spark"
+DGX_SWBUILD_DATE="2025-10-04-06-28-28"
+DGX_SWBUILD_VERSION="7.2.3"
+DGX_COMMIT_ID="03dc741"
+DGX_PLATFORM="Dell Pro Max with GB10 FCM1253"
+DGX_SERIAL_NUMBER=" "
+## os-release
+NAME="Ubuntu"
+VERSION="24.04.5 LTS (Noble Numbat)"
+## nvidia-smi
+Thu Oct  8 14:14:58 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 595.91.07              Driver Version: 595.91.07      CUDA Version: 13.2     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GB10                    On  |   0000000F:01:00.0 Off |                  N/A |
+| N/A   54C    P8              6W /  N/A  | Not Supported          |      1%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A            3197      G   /usr/lib/xorg/Xorg                      426MiB |
+|    0   N/A  N/A            3358      G   /usr/bin/gnome-shell                    369MiB |
+|    0   N/A  N/A            6129      G   /usr/lib/firefox/firefox                 63MiB |
+|    0   N/A  N/A           18887      G   /usr/lib/xorg/Xorg                     1323MiB |
+|    0   N/A  N/A           19075      G   /usr/bin/gnome-shell                    401MiB |
+|    0   N/A  N/A           19238      G   /usr/bin/gnome-software                  51MiB |
+|    0   N/A  N/A           19522      G   ...exec/xdg-desktop-portal-gnome        137MiB |
+## memory
+               total        used        free      shared  buff/cache   available
+Mem:             121          11         110           0           0         110
+Swap:             15           7           8
+## docker
+29.6.2
+## base image
+vllm/vllm-openai:v0.31.0

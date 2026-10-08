@@ -1,0 +1,254 @@
+{
+  "name": "smoke",
+  "description": "Quick end-to-end check (roughly 10-20 min on a GB10, plus first-time downloads/compiles): every experiment once with small workloads on Qwen3-1.7B. Run this first; if it is green, run `parallel`.",
+  "memory_budget_gb": 100.0,
+  "max_parallel": 8,
+  "jobs": [
+    {
+      "id": "preflight",
+      "experiment": "preflight",
+      "model": null,
+      "mode": "default",
+      "params": {
+        "seed": 0
+      },
+      "mem_gb": 6.0,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "fp-nonassoc",
+      "experiment": "fp_nonassoc",
+      "model": null,
+      "mode": "default",
+      "params": {
+        "seed": 0
+      },
+      "mem_gb": 0.5,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "ops-baseline",
+      "experiment": "op_invariance",
+      "model": null,
+      "mode": "baseline",
+      "params": {
+        "seed": 0,
+        "quick": true
+      },
+      "mem_gb": 6.0,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "ops-cublaslt_ws1",
+      "experiment": "op_invariance",
+      "model": null,
+      "mode": "cublaslt_ws1",
+      "params": {
+        "seed": 0,
+        "quick": true
+      },
+      "mem_gb": 6.0,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "ops-official_full",
+      "experiment": "op_invariance",
+      "model": null,
+      "mode": "official_full",
+      "params": {
+        "seed": 0,
+        "quick": true
+      },
+      "mem_gb": 6.0,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "ops-custom",
+      "experiment": "op_invariance",
+      "model": null,
+      "mode": "custom",
+      "params": {
+        "seed": 0,
+        "quick": true
+      },
+      "mem_gb": 6.0,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "hf-qwen3-1.7b-baseline",
+      "experiment": "hf_invariance",
+      "model": "qwen3-1.7b",
+      "mode": "baseline",
+      "params": {
+        "seed": 0,
+        "batch_sizes": [
+          1,
+          2,
+          4
+        ],
+        "max_new_tokens": 24
+      },
+      "mem_gb": 10.0,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "hf-qwen3-1.7b-official_full",
+      "experiment": "hf_invariance",
+      "model": "qwen3-1.7b",
+      "mode": "official_full",
+      "params": {
+        "seed": 0,
+        "batch_sizes": [
+          1,
+          2,
+          4
+        ],
+        "max_new_tokens": 24
+      },
+      "mem_gb": 10.0,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "hf-qwen3-1.7b-custom",
+      "experiment": "hf_invariance",
+      "model": "qwen3-1.7b",
+      "mode": "custom",
+      "params": {
+        "seed": 0,
+        "batch_sizes": [
+          1,
+          2,
+          4
+        ],
+        "max_new_tokens": 24
+      },
+      "mem_gb": 10.0,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "sweep-qwen3-1.7b-baseline",
+      "experiment": "vllm_batch_sweep",
+      "model": "qwen3-1.7b",
+      "mode": "baseline",
+      "params": {
+        "seed": 0,
+        "batch_sizes": [
+          1,
+          8,
+          32
+        ],
+        "trials": 1,
+        "max_tokens": 64,
+        "max_num_seqs": 64,
+        "kv_cache_gb": 6,
+        "filler_max_prompt_tokens": 256
+      },
+      "mem_gb": 15.1,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "sweep-qwen3-1.7b-batch_invariant",
+      "experiment": "vllm_batch_sweep",
+      "model": "qwen3-1.7b",
+      "mode": "batch_invariant",
+      "params": {
+        "seed": 0,
+        "batch_sizes": [
+          1,
+          8,
+          32
+        ],
+        "trials": 1,
+        "max_tokens": 64,
+        "max_num_seqs": 64,
+        "kv_cache_gb": 6,
+        "filler_max_prompt_tokens": 256
+      },
+      "mem_gb": 15.1,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "completions-qwen3-1.7b-baseline",
+      "experiment": "vllm_completions",
+      "model": "qwen3-1.7b",
+      "mode": "baseline",
+      "params": {
+        "seed": 0,
+        "n": 100,
+        "max_tokens": 256,
+        "kv_cache_gb": 6
+      },
+      "mem_gb": 15.1,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "completions-qwen3-1.7b-batch_invariant",
+      "experiment": "vllm_completions",
+      "model": "qwen3-1.7b",
+      "mode": "batch_invariant",
+      "params": {
+        "seed": 0,
+        "n": 100,
+        "max_tokens": 256,
+        "kv_cache_gb": 6
+      },
+      "mem_gb": 15.1,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    }
+  ],
+  "source": "/workspace/detllm/configs/suites/smoke.yaml",
+  "run_dir": "/workspace/detllm/results/smoke-20261008-120458",
+  "started": "2026-10-08T12:04:58+0000"
+}

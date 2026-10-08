@@ -1,0 +1,20 @@
+
+===== attempt 1 at 2026-10-08T12:04:58+0000 =====
+12:04:58 INFO detllm.job.hf-qwen3-1.7b-official_full: job hf-qwen3-1.7b-official_full: experiment=hf_invariance model=qwen3-1.7b mode=official_full
+12:05:11 INFO httpx: HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3-1.7B/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+12:05:11 WARNING huggingface_hub.utils._http: Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+12:05:11 INFO httpx: HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-1.7B/70d244cc86ccca08cf5af4e1e306ecf908b1ad5e/config.json?%2FQwen%2FQwen3-1.7B%2Fresolve%2Fmain%2Fconfig.json=&etag=%22044a86ecf7cb32238f3fae4184e55d354787edec%22 "HTTP/1.1 200 OK"
+12:05:11 INFO httpx: HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3-1.7B/resolve/main/tokenizer_config.json "HTTP/1.1 307 Temporary Redirect"
+12:05:11 INFO httpx: HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-1.7B/70d244cc86ccca08cf5af4e1e306ecf908b1ad5e/tokenizer_config.json?%2FQwen%2FQwen3-1.7B%2Fresolve%2Fmain%2Ftokenizer_config.json=&etag=%22417d038a63fa3de29cfde265caedae14d1a58d92%22 "HTTP/1.1 200 OK"
+12:05:11 INFO httpx: HTTP Request: GET https://huggingface.co/api/models/Qwen/Qwen3-1.7B/tree/main/additional_chat_templates?recursive=false&expand=false "HTTP/1.1 404 Not Found"
+12:05:11 INFO httpx: HTTP Request: GET https://huggingface.co/api/models/Qwen/Qwen3-1.7B/tree/main?recursive=true&expand=false "HTTP/1.1 200 OK"
+12:05:12 INFO httpx: HTTP Request: GET https://huggingface.co/api/models/Qwen/Qwen3-1.7B "HTTP/1.1 200 OK"
+12:05:12 INFO detllm.engines.hf_engine: loading Qwen/Qwen3-1.7B (bfloat16, attn=eager)
+12:05:12 INFO httpx: HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3-1.7B/resolve/main/config.json "HTTP/1.1 307 Temporary Redirect"
+12:05:12 INFO httpx: HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-1.7B/70d244cc86ccca08cf5af4e1e306ecf908b1ad5e/config.json?%2FQwen%2FQwen3-1.7B%2Fresolve%2Fmain%2Fconfig.json=&etag=%22044a86ecf7cb32238f3fae4184e55d354787edec%22 "HTTP/1.1 200 OK"
+Loading weights:   0%|          | 0/311 [00:00<?, ?it/s]Loading weights: 100%|██████████| 311/311 [00:00<00:00, 55706.72it/s]
+12:05:13 INFO httpx: HTTP Request: HEAD https://huggingface.co/Qwen/Qwen3-1.7B/resolve/main/generation_config.json "HTTP/1.1 307 Temporary Redirect"
+12:05:13 INFO httpx: HTTP Request: HEAD https://huggingface.co/api/resolve-cache/models/Qwen/Qwen3-1.7B/70d244cc86ccca08cf5af4e1e306ecf908b1ad5e/generation_config.json?%2FQwen%2FQwen3-1.7B%2Fresolve%2Fmain%2Fgeneration_config.json=&etag=%2220a8a9156fc8c3f25295ca067f61fdf120d517c5%22 "HTTP/1.1 200 OK"
+12:05:33 INFO detllm.job.hf-qwen3-1.7b-official_full: model loaded ({'hf_id': 'Qwen/Qwen3-1.7B', 'dtype': 'bfloat16', 'attn_implementation': 'eager', 'kernels': {'mode': 'official_full', 'official': {'enabled': True, 'module_path': '/workspace/detllm/batch_invariant_ops/batch_invariant_ops/__init__.py', 'version': '0.1.0', 'submodule_commit': 'f22b1fbe534b1fe045080f44a970a441caaf3c4f', 'device_smem_optin_bytes': 101376, 'tile_smem_bytes': {'bfloat16': {'needed': 98304, 'fits': True}, 'float16': {'needed': 147456, 'fits': False}, 'float32': {'needed': 98304, 'fits': True}}, 'probes': {'bfloat16': {'ok': True, 'max_rel_err': 0.0035481639206409454}, 'float32': {'ok': True, 'max_rel_err': 0.0007667768513783813}}}, 'extra_ops': {'enabled': True, 'ops': ['aten::bmm', 'aten::_softmax'], 'bmm_config': {'BLOCK_M': 32, 'BLOCK_N': 64, 'BLOCK_K': 32, 'num_warps': 4, 'num_stages': 2}, 'softmax_block': 1024, 'dispatch_check': {'matmul_routed': True, 'softmax_routed': True}}}}); dropped 0.0 GB of page cache
+12:05:40 INFO detllm.job.hf-qwen3-1.7b-official_full: job hf-qwen3-1.7b-official_full finished: ok in 42s

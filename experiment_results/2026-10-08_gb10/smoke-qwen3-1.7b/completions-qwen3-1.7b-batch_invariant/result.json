@@ -1,0 +1,102 @@
+{
+  "job_id": "completions-qwen3-1.7b-batch_invariant",
+  "experiment": "vllm_completions",
+  "model": "qwen3-1.7b",
+  "hf_id": "Qwen/Qwen3-1.7B",
+  "mode": "batch_invariant",
+  "started": "2026-10-08T12:05:06+0000",
+  "status": "ok",
+  "summary": {
+    "model": "qwen3-1.7b",
+    "hf_id": "Qwen/Qwen3-1.7B",
+    "mode": "batch_invariant",
+    "engine": "server",
+    "prompt": "Tell me about Richard Feynman",
+    "prompt_tokens": 19,
+    "n": 100,
+    "max_tokens": 256,
+    "compared_on": "token_ids+logprobs",
+    "n_valid": 100,
+    "n_failed": 0,
+    "n_unique": 1,
+    "modal_count": 100,
+    "counts": [
+      100
+    ],
+    "earliest_divergence": null,
+    "divergence_positions": [],
+    "unique": [
+      {
+        "rank": 0,
+        "count": 100,
+        "length": 256,
+        "first_divergence_vs_modal": null,
+        "example_index": 0
+      }
+    ],
+    "modal_index": 0,
+    "unit": "tokens",
+    "modal_length": 256,
+    "modal_logprob_variants": 1,
+    "modal_logprob_counts": [
+      100
+    ],
+    "divergence_example": null,
+    "modal_text_head": "Richard Feynman (1918\u20131988) was an American physicist, mathematician, and author, best known for his work in quantum mechanics and particle physics. He was a leading figure in the development of the quantum theory and played a crucial role in the Manhattan Project during World War II, which led to the creation of the atomic bomb.\n\nFeynman was renowned for his ability to explain complex scientific concepts in a clear and accessible manner. He was a professor at the University of California, Berkeley, and later at the University of Chicago, where he was a leading figure in the development of the",
+    "mean_output_tokens": 256.0,
+    "engine_info": {
+      "vllm_version": "0.31.0",
+      "engine_kwargs": {
+        "model": "Qwen/Qwen3-1.7B",
+        "dtype": "bfloat16",
+        "seed": 0,
+        "max_model_len": 4096,
+        "gpu_memory_utilization": 0.1156,
+        "max_num_seqs": 64,
+        "enable_prefix_caching": false,
+        "enforce_eager": false,
+        "kv_cache_memory_bytes": 6000000000,
+        "attention_backend": "TRITON_ATTN"
+      },
+      "command": [
+        "/usr/local/bin/vllm",
+        "serve",
+        "Qwen/Qwen3-1.7B",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "58413",
+        "--dtype",
+        "bfloat16",
+        "--seed",
+        "0",
+        "--max-model-len",
+        "4096",
+        "--gpu-memory-utilization",
+        "0.1156",
+        "--max-num-seqs",
+        "64",
+        "--no-enable-prefix-caching",
+        "--kv-cache-memory-bytes",
+        "6000000000",
+        "--attention-backend",
+        "TRITON_ATTN"
+      ],
+      "startup_s": 99.7,
+      "api": "completions",
+      "wall_time_s": 19.63,
+      "attention_backend_log": null
+    },
+    "blog_reference": {
+      "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+      "n": 1000,
+      "max_tokens": 1000,
+      "n_unique_default": 80,
+      "modal_count_default": 78,
+      "first_divergence_token_number": 103,
+      "n_unique_batch_invariant": 1
+    }
+  },
+  "duration_s": 127.4,
+  "finished": "2026-10-08T12:07:13+0000"
+}

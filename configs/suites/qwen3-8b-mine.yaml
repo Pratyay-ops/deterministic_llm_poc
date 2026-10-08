@@ -1,0 +1,50 @@
+name: qwen3-8b-mine
+description: >
+  The user's prompts (configs/prompts/my_prompts.txt) on Qwen3-8B the way a shared server sees them:
+  all 8 prompts x 200 requests (temperature 0, up to 1000 tokens) mixed in ONE vLLM server - first with
+  default kernels, then with VLLM_BATCH_INVARIANT=1 - and per prompt, the completions are compared by
+  token ids and bitwise logprobs. Plus the engine-level needle sweep and the CPU / op-level demos.
+  One engine start per mode and up to 256 sequences per decode step, so the GB10's memory bandwidth goes
+  into tokens instead of two servers re-reading the same weights. Roughly 1.3 h on a GB10.
+memory_budget_gb: 100
+max_parallel: 4
+defaults:
+  seed: 0
+
+# 8 prompts x 200 requests in one server; 256 sequences x up to ~1500 tokens of context fit in 60 GB of
+# KV cache (Qwen3-8B: 144 KiB/token). Each run needs ~82 GB, so the two modes run one after the other.
+x-all: &all
+  prompts: {file: configs/prompts/my_prompts.txt}
+  n: 200
+  max_tokens: 1000
+  max_num_seqs: 256
+  kv_cache_gb: 60
+
+jobs:
+  - experiment: preflight
+    id: preflight
+
+  - experiment: fp_nonassoc
+    id: fp-nonassoc
+
+  - experiment: op_invariance
+    id: ops-{mode}
+    matrix: {mode: [baseline, torch_flags, cublaslt_ws1, official, official_full, custom]}
+
+  # All of my_prompts.txt on the DEFAULT server first ...
+  - experiment: vllm_completions
+    id: mine-all-{model}-{mode}
+    matrix: {model: [qwen3-8b], mode: [baseline]}
+    params: *all
+
+  # ... then on the BATCH-INVARIANT server (memory keeps the two runs apart; listed second, so it runs second).
+  - experiment: vllm_completions
+    id: mine-all-{model}-{mode}
+    matrix: {model: [qwen3-8b], mode: [batch_invariant]}
+    params: *all
+
+  # Engine level: the rate-limiter prompt alone vs. inside batches of 2..128 (vLLM's own test method).
+  - experiment: vllm_batch_sweep
+    id: sweep-{model}-{mode}
+    matrix: {model: [qwen3-8b], mode: [baseline, batch_invariant]}
+    params: {batch_sizes: [1, 2, 4, 8, 16, 32, 64, 128], trials: 2, max_tokens: 256, max_num_seqs: 128, kv_cache_gb: 14, prompt: {file: configs/prompts/my_prompts.txt, index: 0}}

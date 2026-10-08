@@ -244,7 +244,16 @@ async def _send_all(
     seed: int,
     timeout_s: float,
 ) -> list[dict[str, Any]]:
+    import resource
+
     import httpx
+
+    # One socket per in-flight request: 1000 concurrent requests exceed the usual soft limit of
+    # 1024 open files once CUDA and the logs hold a few dozen, and the excess fail with ConnectError.
+    soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
+    want = 65536 if hard == resource.RLIM_INFINITY else min(hard, 65536)
+    if soft != resource.RLIM_INFINITY and soft < want:
+        resource.setrlimit(resource.RLIMIT_NOFILE, (want, hard))
 
     rng = random.Random(seed)
     delays = [rng.uniform(0.0, jitter_s) if jitter_s > 0 else 0.0 for _ in payloads]

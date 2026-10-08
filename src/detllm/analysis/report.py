@@ -57,6 +57,77 @@ def _summary(job: dict[str, Any]) -> dict[str, Any]:
     return job["result"].get("summary") or {}
 
 
+def _is_bitwise_identical(s: dict[str, Any]) -> bool:
+    """1 unique token sequence, 1 logprob variant, and no failed or missing requests."""
+    return (
+        s.get("n_unique") == 1
+        and s.get("modal_logprob_variants") == 1
+        and bool(s.get("n_valid"))
+        and s.get("n_valid") == s.get("n")
+    )
+
+
+def _bi_verdict(s: dict[str, Any]) -> str:
+    lp = s.get("modal_logprob_variants")
+    if not s.get("n_valid"):
+        return "no valid completions - inconclusive"
+    if s.get("n_unique") != 1:
+        verdict = "NOT all identical - batch invariance violated"
+    elif lp and lp > 1:
+        verdict = f"same tokens but {lp} logprob variants - NOT bitwise identical"
+    elif lp == 1:
+        verdict = "all bitwise identical, tokens and logprobs"
+    else:
+        verdict = "same tokens, logprobs not compared"
+    if s.get("n") and s.get("n_valid") != s.get("n"):
+        verdict += f"; INCOMPLETE: only {s.get('n_valid')}/{s.get('n')} requests succeeded"
+    return verdict
+
+
+def _modal_variants(s: dict[str, Any]) -> str:
+    """Logprob variants among the modal completions - meaningless when the modal one occurs once."""
+    lp, count = s.get("modal_logprob_variants"), s.get("modal_count") or 0
+    return f"{lp} of {count}" if count > 1 else "n/a (modal x1)"
+
+
+def _is_prompt_comparison(job: dict[str, Any]) -> bool:
+    p = job["spec"].get("params") or {}
+    return (
+        p.get("api", "completions") == "completions"
+        and p.get("engine", "server") == "server"
+        and not p.get("enable_prefix_caching")
+        and not p.get("attention_backend")
+    )
+
+
+def _completion_summaries(run: dict[str, Any]) -> list[tuple[dict[str, Any], str, dict[str, Any]]]:
+    """(job, label, summary) per prompt: multi-prompt jobs (``prompts:``) give one entry per prompt."""
+    out = []
+    for job in _by_experiment(run, "vllm_completions"):
+        s = _summary(job)
+        if s.get("multi_prompt"):
+            for entry in s.get("per_prompt") or []:
+                entry = {**entry, "engine_info": s.get("engine_info", {})}
+                out.append((job, f"{job['spec']['id']} #{entry.get('prompt_index', 0) + 1}", entry))
+        else:
+            out.append((job, job["spec"]["id"], s))
+    return out
+
+
+def _prompt_pairs(run: dict[str, Any]) -> dict[str, dict[str, list[Any]]]:
+    """{model: {prompt text: [baseline summary, batch-invariant summary]}} for plain completion jobs."""
+    out: dict[str, dict[str, list[Any]]] = {}
+    for job, _label, s in _completion_summaries(run):
+        if not _is_prompt_comparison(job):
+            continue
+        slot = {"baseline": 0, "batch_invariant": 1}.get(s.get("mode"))
+        if slot is None or not s.get("prompt"):
+            continue
+        pair = out.setdefault(s.get("model", "?"), {}).setdefault(s["prompt"], [None, None])
+        pair[slot] = s
+    return out
+
+
 # --------------------------------------------------------------------------- sections
 
 
@@ -99,15 +170,19 @@ def _headline(run: dict[str, Any]) -> str:
                 + (f" (first divergence at token {div + 1})" if div is not None else "")
             )
         if bi:
-            verdict = "all identical" if bi["n_unique"] == 1 else "NOT all identical - batch invariance violated"
-            lp = bi.get("modal_logprob_variants")
-            parts.append(
-                f"batch-invariant vLLM produced **{bi['n_unique']} unique** ({verdict}"
-                + (", logprobs bitwise identical" if lp == 1 else (f", {lp} logprob variants" if lp else ""))
-                + ")"
-            )
+            parts.append(f"batch-invariant vLLM produced **{bi['n_unique']} unique** ({_bi_verdict(bi)})")
         if parts:
             lines.append(f"- **{model}**: " + "; ".join(parts) + ".")
+    for model, pairs in _prompt_pairs(run).items():
+        complete = [(b, i) for b, i in pairs.values() if b and i]
+        if complete:
+            varied = sum(1 for b, _ in complete if b["n_unique"] > 1 or (b.get("modal_logprob_variants") or 0) > 1)
+            fixed = sum(1 for _, i in complete if _is_bitwise_identical(i))
+            lines.append(
+                f"- **{model}, per prompt**: default vLLM was nondeterministic (tokens or logprobs) for "
+                f"**{varied}/{len(complete)}** prompts; batch-invariant vLLM was bitwise identical for "
+                f"**{fixed}/{len(complete)}** prompts (details below)."
+            )
     for job in _by_experiment(run, "vllm_batch_sweep"):
         s = _summary(job)
         lines.append(
@@ -134,7 +209,8 @@ def _fp(run: dict[str, Any]) -> str:
     return (
         "## Floating-point non-associativity (CPU)\n\n"
         f"- {assoc}\n- Summing the same 8 numbers in 10,000 random orders gives **{s.get('n_unique_sums')}** "
-        f"distinct results (blog: {s.get('blog_n_unique_sums')})."
+        f"distinct results with the blog's snippet (blog: {s.get('blog_n_unique_sums')}); a plain left-to-right "
+        f"loop over the same orders gives {s.get('n_unique_left_to_right', '-')}."
     )
 
 
@@ -227,34 +303,98 @@ def _hf(run: dict[str, Any]) -> str:
     )
 
 
+def _prompts(run: dict[str, Any]) -> str:
+    """Default vs batch-invariant vLLM, side by side for every prompt that was run in both modes."""
+    sections = []
+    for model, pairs in _prompt_pairs(run).items():
+        rows, examples = [], []
+        for i, (prompt, (base, bi)) in enumerate(pairs.items()):
+            label = " ".join(prompt.split())
+            label = label[:60] + ("..." if len(label) > 60 else "")
+            row = [i + 1, label]
+            for s in (base, bi):
+                if s is None:
+                    row += ["not run", "-", "-", "-"]
+                    continue
+                div = s.get("earliest_divergence")
+                row += [
+                    f"{s.get('n_valid')}/{s.get('n')}",
+                    f"{s.get('n_unique')} (modal x{s.get('modal_count')})",
+                    "-" if div is None else div + 1,
+                    _modal_variants(s),
+                ]
+            if base and bi:
+                row.append("**deterministic**" if _is_bitwise_identical(bi) else "**NOT deterministic**")
+            else:
+                row.append("incomplete")
+            rows.append(row)
+            ex = (base or {}).get("divergence_example")
+            if ex:
+                examples.append(
+                    f"- prompt {i + 1}, token {ex['token_number']}: ...{ex['shared_prefix_tail']!r} -> "
+                    f"{ex['modal_continuation']!r} vs {ex['other_continuation']!r}"
+                )
+        sections.append(
+            f"## Per-prompt comparison on {model}: default vs batch-invariant vLLM\n\n"
+            "Each prompt was sent N times at temperature 0 as concurrent requests to a `vllm serve` instance, first "
+            "with default kernels, then with `VLLM_BATCH_INVARIANT=1`. *unique* counts distinct token sequences; "
+            "*first divergence* is the earliest token (1-based) where any two completions differ; *logprob variants* "
+            "counts distinct bitwise logprob vectors among the copies of the most common completion. "
+            "**deterministic** = batch-invariant run gave 1 unique completion with bitwise identical logprobs and no "
+            "failed requests.\n\n"
+            + _table(
+                [
+                    "#",
+                    "prompt",
+                    "default: ok",
+                    "default: unique",
+                    "default: first divergence",
+                    "default: logprob variants",
+                    "batch-inv: ok",
+                    "batch-inv: unique",
+                    "batch-inv: first divergence",
+                    "batch-inv: logprob variants",
+                    "verdict",
+                ],
+                rows,
+            )
+            + (
+                "\n\nExamples of where default-vLLM completions split (the most common completion vs the second most "
+                "common):\n\n" + "\n".join(examples)
+                if examples
+                else ""
+            )
+        )
+    return "\n\n".join(sections)
+
+
 def _completions(run: dict[str, Any]) -> str:
-    jobs = _by_experiment(run, "vllm_completions")
-    if not jobs:
+    entries = _completion_summaries(run)
+    if not entries:
         return ""
     rows = []
     examples = []
-    for job in jobs:
-        s = _summary(job)
+    for _job, label, s in entries:
         info = s.get("engine_info", {})
         div = s.get("earliest_divergence")
         rows.append(
             [
-                job["spec"]["id"],
+                label,
                 s.get("model"),
                 s.get("mode"),
                 f"{s.get('engine')}/{info.get('api', 'offline')}",
-                f"{s.get('n_valid')}x{s.get('max_tokens')}",
+                f"{s.get('n_valid')}/{s.get('n')}x{s.get('max_tokens')}",
                 s.get("n_unique"),
                 s.get("modal_count"),
                 None if div is None else div + 1,
-                s.get("modal_logprob_variants"),
+                _modal_variants(s),
                 info.get("attention_backend_log") or (info.get("engine_kwargs") or {}).get("attention_backend"),
             ]
         )
         ex = s.get("divergence_example")
         if ex:
             examples.append(
-                f"- `{job['spec']['id']}` token {ex['token_number']}: ...{ex['shared_prefix_tail']!r} -> "
+                f"- `{label}` token {ex['token_number']}: ...{ex['shared_prefix_tail']!r} -> "
                 f"{ex['modal_continuation']!r} vs {ex['other_continuation']!r}"
             )
     blog = (
@@ -270,7 +410,7 @@ def _completions(run: dict[str, Any]) -> str:
                 "model",
                 "mode",
                 "engine/api",
-                "n x max_tokens",
+                "ok/n x max_tokens",
                 "unique",
                 "modal count",
                 "first divergence (token #)",
@@ -342,7 +482,11 @@ def _preflight(run: dict[str, Any]) -> str:
     if not jobs:
         return ""
     s = _summary(jobs[0])
-    rows = [[c["name"], "info" if c["ok"] is None else _ok(c["ok"]), str(c["detail"])[:220]] for c in s.get("checks", [])]
+    # The vllm and memory rows carry the facts the runbook asks to check (tuned tiles, page cache): keep them whole.
+    rows = [
+        [c["name"], "info" if c["ok"] is None else _ok(c["ok"]), str(c["detail"]) if c["name"] in ("vllm", "memory") else str(c["detail"])[:220]]
+        for c in s.get("checks", [])
+    ]
     return "## Preflight\n\n" + _table(["check", "ok", "detail"], rows)
 
 
@@ -367,6 +511,7 @@ def render(run: dict[str, Any]) -> str:
     sections = [
         header,
         _headline(run),
+        _prompts(run),
         _environment(run),
         _preflight(run),
         _fp(run),

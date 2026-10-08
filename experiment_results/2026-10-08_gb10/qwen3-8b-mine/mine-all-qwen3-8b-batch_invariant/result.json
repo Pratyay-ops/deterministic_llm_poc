@@ -1,0 +1,389 @@
+{
+  "job_id": "mine-all-qwen3-8b-batch_invariant",
+  "experiment": "vllm_completions",
+  "model": "qwen3-8b",
+  "hf_id": "Qwen/Qwen3-8B",
+  "mode": "batch_invariant",
+  "started": "2026-10-08T13:51:58+0000",
+  "status": "ok",
+  "summary": {
+    "model": "qwen3-8b",
+    "hf_id": "Qwen/Qwen3-8B",
+    "mode": "batch_invariant",
+    "engine": "server",
+    "multi_prompt": true,
+    "n_prompts": 8,
+    "n": 200,
+    "max_tokens": 1000,
+    "n_requests": 1600,
+    "n_failed": 0,
+    "per_prompt": [
+      {
+        "model": "qwen3-8b",
+        "mode": "batch_invariant",
+        "engine": "server",
+        "prompt_index": 0,
+        "prompt": "Design a distributed rate limiter for an API handling 1 million requests per second across 100 servers. Explain: architecture with specific data structures, consensus mechanism for distributed counting, failure handling and automatic recovery, how to ensure fairness across users while preventing abuse, and optimization strategies to maintain latency below 10ms. Include discussion of CAP theorem trade-offs and provide pseudocode for the core rate limiting algorithm with exact implementation details.",
+        "prompt_tokens": 99,
+        "n": 200,
+        "max_tokens": 1000,
+        "compared_on": "token_ids+logprobs",
+        "n_valid": 200,
+        "n_failed": 0,
+        "n_unique": 1,
+        "modal_count": 200,
+        "counts": [
+          200
+        ],
+        "earliest_divergence": null,
+        "divergence_positions": [],
+        "unique": [
+          {
+            "rank": 0,
+            "count": 200,
+            "length": 1000,
+            "first_divergence_vs_modal": null,
+            "example_index": 0
+          }
+        ],
+        "modal_index": 0,
+        "unit": "tokens",
+        "modal_length": 1000,
+        "modal_logprob_variants": 1,
+        "modal_logprob_counts": [
+          200
+        ],
+        "divergence_example": null,
+        "modal_text_head": "Designing a **distributed rate limiter** for an API that handles **1 million requests per second** across **100 servers** requires a robust, scalable, and fault-tolerant architecture. The system must ensure **fairness**, **prevent abuse**, and **maintain low latency** (under 10ms). Below is a comprehensive design that includes:\n\n- **Architecture and data structures**\n- **Consensus mechanism**\n- **Failure handling and recovery**\n- **Fairness and abuse prevention**\n- **Optimization strategies**\n- **CAP theorem trade-offs**\n- **Pseudocode for the core algorithm**\n\n---\n\n## \ud83e\udde0 **Architecture Overvie",
+        "mean_output_tokens": 1000.0
+      },
+      {
+        "model": "qwen3-8b",
+        "mode": "batch_invariant",
+        "engine": "server",
+        "prompt_index": 1,
+        "prompt": "Implement a thread-safe LRU cache in Python that supports O(1) get and put operations with the following requirements: configurable maximum capacity with automatic eviction, TTL (time-to-live) expiration for individual entries with background cleanup, thread-safe operations using appropriate synchronization primitives without deadlocks, memory-efficient storage minimizing overhead, comprehensive type hints for all methods and classes, detailed docstrings explaining complexity and invariants, proper error handling for all edge cases including concurrent access, and a complete test suite with at least 10 test cases covering normal operation and race conditions.",
+        "prompt_tokens": 123,
+        "n": 200,
+        "max_tokens": 1000,
+        "compared_on": "token_ids+logprobs",
+        "n_valid": 200,
+        "n_failed": 0,
+        "n_unique": 1,
+        "modal_count": 200,
+        "counts": [
+          200
+        ],
+        "earliest_divergence": null,
+        "divergence_positions": [],
+        "unique": [
+          {
+            "rank": 0,
+            "count": 200,
+            "length": 1000,
+            "first_divergence_vs_modal": null,
+            "example_index": 0
+          }
+        ],
+        "modal_index": 0,
+        "unit": "tokens",
+        "modal_length": 1000,
+        "modal_logprob_variants": 1,
+        "modal_logprob_counts": [
+          200
+        ],
+        "divergence_example": null,
+        "modal_text_head": "Here's a comprehensive implementation of a **thread-safe LRU cache** in Python that meets all your requirements:\n\n---\n\n## \u2705 **Thread-Safe LRU Cache with TTL and Background Cleanup**\n\n### \u2705 Features:\n- **O(1)** `get` and `put` operations\n- **Configurable maximum capacity**\n- **TTL (Time-to-Live)** for individual entries\n- **Background cleanup** of expired entries\n- **Thread-safe** using `threading.Lock` and `threading.Condition`\n- **Memory-efficient** storage\n- **Type hints** and **docstrings**\n- **Comprehensive test suite** with 10+ test cases\n\n---\n\n## \ud83e\udde0 Implementation\n\n```python\nimport thread",
+        "mean_output_tokens": 1000.0
+      },
+      {
+        "model": "qwen3-8b",
+        "mode": "batch_invariant",
+        "engine": "server",
+        "prompt_index": 2,
+        "prompt": "Analyze this complex algorithmic problem in detail: Given an array of integers, find the longest increasing subsequence. Provide four complete solutions: 1) Brute force with detailed time and space complexity analysis including recurrence relation, 2) Dynamic programming solution with clear explanation of state definition, transitions, and base cases, 3) Optimized solution using binary search with full complexity proof and invariant maintenance, 4) Space-optimized variant. For each solution, include working code with comprehensive comments, analysis of when each is preferable, and comparison table showing practical runtime for arrays of size 10, 100, 1000, 10000.",
+        "prompt_tokens": 151,
+        "n": 200,
+        "max_tokens": 1000,
+        "compared_on": "token_ids+logprobs",
+        "n_valid": 200,
+        "n_failed": 0,
+        "n_unique": 1,
+        "modal_count": 200,
+        "counts": [
+          200
+        ],
+        "earliest_divergence": null,
+        "divergence_positions": [],
+        "unique": [
+          {
+            "rank": 0,
+            "count": 200,
+            "length": 1000,
+            "first_divergence_vs_modal": null,
+            "example_index": 0
+          }
+        ],
+        "modal_index": 0,
+        "unit": "tokens",
+        "modal_length": 1000,
+        "modal_logprob_variants": 1,
+        "modal_logprob_counts": [
+          200
+        ],
+        "divergence_example": null,
+        "modal_text_head": "# Longest Increasing Subsequence (LIS) Problem\n\nThe **Longest Increasing Subsequence (LIS)** problem is a classic dynamic programming problem. Given an array of integers, the goal is to find the length of the longest subsequence that is strictly increasing. A **subsequence** is a sequence that can be derived from the array by deleting some or no elements without changing the order of the remaining elements.\n\n---\n\n## 1. **Brute Force Solution**\n\n### **Approach**\nThe brute force approach generates all possible subsequences and checks which one is the longest and strictly increasing.\n\n### **Time ",
+        "mean_output_tokens": 1000.0
+      },
+      {
+        "model": "qwen3-8b",
+        "mode": "batch_invariant",
+        "engine": "server",
+        "prompt_index": 3,
+        "prompt": "Debug and completely analyze this distributed system failure: A microservices architecture experiences cascading failures under load. Symptoms: intermittent HTTP 500 errors starting at 1000 req/s, errors escalate to 50% failure rate at 1200 req/s, API gateway logs show connection pool exhausted messages, backend service CPU usage only 30% during failures, database connections are below limits, latency spikes from 50ms to 5000ms, recovery takes 10 minutes after load returns to normal. Provide: root cause analysis with specific failure mode, why it's load-dependent with mathematical explanation, detailed cascade failure scenario with timeline, three immediate mitigations with implementation code, long-term architectural fixes with system design diagrams, and comprehensive monitoring strategy with specific metrics to track and alert thresholds.",
+        "prompt_tokens": 179,
+        "n": 200,
+        "max_tokens": 1000,
+        "compared_on": "token_ids+logprobs",
+        "n_valid": 200,
+        "n_failed": 0,
+        "n_unique": 1,
+        "modal_count": 200,
+        "counts": [
+          200
+        ],
+        "earliest_divergence": null,
+        "divergence_positions": [],
+        "unique": [
+          {
+            "rank": 0,
+            "count": 200,
+            "length": 1000,
+            "first_divergence_vs_modal": null,
+            "example_index": 0
+          }
+        ],
+        "modal_index": 0,
+        "unit": "tokens",
+        "modal_length": 1000,
+        "modal_logprob_variants": 1,
+        "modal_logprob_counts": [
+          200
+        ],
+        "divergence_example": null,
+        "modal_text_head": "# **Debug and Analyze Distributed System Failure: Cascading Failures Under Load**\n\n---\n\n## **1. Root Cause Analysis**\n\n### **Root Cause: Connection Pool Exhaustion in API Gateway Due to Load-Dependent Throttling and Resource Contention**\n\nThe system is experiencing **cascading failures** under load due to a **load-dependent connection pool exhaustion** in the **API Gateway**, which leads to **HTTP 500 errors**, **latency spikes**, and **recovery delays**.\n\n---\n\n## **2. Why It's Load-Dependent: Mathematical Explanation**\n\nLet\u2019s model the system behavior using a **queueing theory** approach to u",
+        "mean_output_tokens": 1000.0
+      },
+      {
+        "model": "qwen3-8b",
+        "mode": "batch_invariant",
+        "engine": "server",
+        "prompt_index": 4,
+        "prompt": "Compare three database paradigms for a social media platform with 50 million users and 500 million posts: 1) Relational database with PostgreSQL using normalized schema with proper indexing strategy, 2) Document database with MongoDB using denormalized collections, 3) Graph database with Neo4j for relationship-heavy queries. For each approach, analyze in depth: specific query patterns with actual query examples and their performance characteristics, horizontal scalability approach with sharding or replication strategies and limitations, data consistency guarantees and CAP theorem positioning, ACID properties and isolation levels, data modeling complexity with schema evolution challenges, operational overhead including backup, monitoring, and disaster recovery, cost analysis at scale for compute and storage, and three specific use cases where each database excels. Provide a comprehensive decision matrix with at least 8 evaluation criteria weighted by importance, and make a final recommendation with detailed justification based on the platform's requirements for real-time feeds, user relationships, content discovery, and analytics.",
+        "prompt_tokens": 210,
+        "n": 200,
+        "max_tokens": 1000,
+        "compared_on": "token_ids+logprobs",
+        "n_valid": 200,
+        "n_failed": 0,
+        "n_unique": 1,
+        "modal_count": 200,
+        "counts": [
+          200
+        ],
+        "earliest_divergence": null,
+        "divergence_positions": [],
+        "unique": [
+          {
+            "rank": 0,
+            "count": 200,
+            "length": 1000,
+            "first_divergence_vs_modal": null,
+            "example_index": 0
+          }
+        ],
+        "modal_index": 0,
+        "unit": "tokens",
+        "modal_length": 1000,
+        "modal_logprob_variants": 1,
+        "modal_logprob_counts": [
+          200
+        ],
+        "divergence_example": null,
+        "modal_text_head": "# **Database Paradigm Comparison for a Social Media Platform**\n\nThis analysis compares three major database paradigms\u2014**Relational (PostgreSQL)**, **Document (MongoDB)**, and **Graph (Neo4j)**\u2014for a **social media platform** with **50 million users** and **500 million posts**. The platform requires **real-time feeds**, **user relationships**, **content discovery**, and **analytics**. We evaluate each database in terms of **query patterns**, **scalability**, **consistency**, **ACID compliance**, **data modeling**, **operational overhead**, **cost**, and **use cases**. A **decision matrix** is p",
+        "mean_output_tokens": 1000.0
+      },
+      {
+        "model": "qwen3-8b",
+        "mode": "batch_invariant",
+        "engine": "server",
+        "prompt_index": 5,
+        "prompt": "you are a creative poet and you are tasked with Writting a haiku about programming, give a poem",
+        "prompt_tokens": 34,
+        "n": 200,
+        "max_tokens": 1000,
+        "compared_on": "token_ids+logprobs",
+        "n_valid": 200,
+        "n_failed": 0,
+        "n_unique": 1,
+        "modal_count": 200,
+        "counts": [
+          200
+        ],
+        "earliest_divergence": null,
+        "divergence_positions": [],
+        "unique": [
+          {
+            "rank": 0,
+            "count": 200,
+            "length": 25,
+            "first_divergence_vs_modal": null,
+            "example_index": 0
+          }
+        ],
+        "modal_index": 0,
+        "unit": "tokens",
+        "modal_length": 25,
+        "modal_logprob_variants": 1,
+        "modal_logprob_counts": [
+          200
+        ],
+        "divergence_example": null,
+        "modal_text_head": "Beneath glowing screens,  \nCode weaves the silent dance of thought\u2014  \nLogic, life, and light.",
+        "mean_output_tokens": 25.0
+      },
+      {
+        "model": "qwen3-8b",
+        "mode": "batch_invariant",
+        "engine": "server",
+        "prompt_index": 6,
+        "prompt": "Tell me about Richard Feynman",
+        "prompt_tokens": 19,
+        "n": 200,
+        "max_tokens": 1000,
+        "compared_on": "token_ids+logprobs",
+        "n_valid": 200,
+        "n_failed": 0,
+        "n_unique": 1,
+        "modal_count": 200,
+        "counts": [
+          200
+        ],
+        "earliest_divergence": null,
+        "divergence_positions": [],
+        "unique": [
+          {
+            "rank": 0,
+            "count": 200,
+            "length": 788,
+            "first_divergence_vs_modal": null,
+            "example_index": 0
+          }
+        ],
+        "modal_index": 0,
+        "unit": "tokens",
+        "modal_length": 788,
+        "modal_logprob_variants": 1,
+        "modal_logprob_counts": [
+          200
+        ],
+        "divergence_example": null,
+        "modal_text_head": "Richard Feynman (1918\u20131988) was an American theoretical physicist, Nobel laureate, and one of the most influential and celebrated scientists of the 20th century. He is best known for his work in quantum mechanics, particularly for developing the **path integral formulation** of quantum mechanics, which provided a new and powerful way to understand the behavior of subatomic particles.\n\n### Early Life and Education\n- Born on May 11, 1918, in New York City, Feynman showed an early aptitude for science and mathematics.\n- He attended the Massachusetts Institute of Technology (MIT), where he earned ",
+        "mean_output_tokens": 788.0
+      },
+      {
+        "model": "qwen3-8b",
+        "mode": "batch_invariant",
+        "engine": "server",
+        "prompt_index": 7,
+        "prompt": "You are SQL code parser agent that extracts all the source tables used in the SQL query.The SQL query is:%%sql drop table if exists p1_ctu_imm; create table p1_ctu_imm as select distinct A.*, (A.frst_nm||' '||A.last_nm) as pres_name from p1_ctu A where A.cycl_time_id = 202412 and A.bu_cd = '018' and A.sf_team_cd in ('007','171','344') ----------------------------------------------------------------------------------------------------------------------------------------------- -- Inclusions and Exclusions -- Creating Pres_Del_table %%sql drop table if exists pres_del_table; create table pres_del_table as select 202412 as cycl_time_id,pres_id as bp_id from p1_rem_list_imm_plg where cycl_time_id = 202412 and r_type = 'PD' -- Prescriber level Deletion (BP ID) -- Creating Pres_Del_Terr_Table %%sqldrop table if exists pres_del_terr_table; create table pres_del_terr_table as select cycl_time_id,pres_id as bp_id,pod from p1_rem_list_imm_plg where cycl_time_id = 202412 and r_type = 'PDT' -- Prescriber - Terr Deletion (BPID - TERR) -- Creating Pres_Add_Table %%sql drop table if exists pres_add_table; create table pres_add_table as select 202412 as cycl_time_id,pres_id as bp_id,pod,prim_spty_cd_4 as primary_speciality_cd,secdy_dpty_cd as secondary_speciality_cd from p1_rem_list_imm_plg where cycl_time_id = 202412 and a_type = 'PA' -- Prescriber Addition For each provided query you will extract the source table names from it and provide the target table that is created from the source table along with transformation description. Do not pick out any intermediate tables used as source tables. DO NOT provide any table name that are not present in the query. You Should ONLY provide the result as python dictionary with key source_table_name, target_table_name and transformation_description for each source table inside a python list. Return the output in JSON, and no other format. The Source table names and target table names as a dictionary is:",
+        "prompt_tokens": 502,
+        "n": 200,
+        "max_tokens": 1000,
+        "compared_on": "token_ids+logprobs",
+        "n_valid": 200,
+        "n_failed": 0,
+        "n_unique": 1,
+        "modal_count": 200,
+        "counts": [
+          200
+        ],
+        "earliest_divergence": null,
+        "divergence_positions": [],
+        "unique": [
+          {
+            "rank": 0,
+            "count": 200,
+            "length": 332,
+            "first_divergence_vs_modal": null,
+            "example_index": 0
+          }
+        ],
+        "modal_index": 0,
+        "unit": "tokens",
+        "modal_length": 332,
+        "modal_logprob_variants": 1,
+        "modal_logprob_counts": [
+          200
+        ],
+        "divergence_example": null,
+        "modal_text_head": "{\n  \"tables\": [\n    {\n      \"source_table_name\": \"p1_ctu\",\n      \"target_table_name\": \"p1_ctu_imm\",\n      \"transformation_description\": \"Select distinct records with pres_name as concatenation of first and last name, filtered by cycl_time_id = 202412, bu_cd = '018', and sf_team_cd in ('007','171','344')\"\n    },\n    {\n      \"source_table_name\": \"p1_rem_list_imm_plg\",\n      \"target_table_name\": \"pres_del_table\",\n      \"transformation_description\": \"Select cycl_time_id and pres_id as bp_id where cycl_time_id = 202412 and r_type = 'PD'\"\n    },\n    {\n      \"source_table_name\": \"p1_rem_list_imm_plg\"",
+        "mean_output_tokens": 332.0
+      }
+    ],
+    "engine_info": {
+      "vllm_version": "0.31.0",
+      "engine_kwargs": {
+        "model": "Qwen/Qwen3-8B",
+        "dtype": "bfloat16",
+        "seed": 0,
+        "max_model_len": 4096,
+        "gpu_memory_utilization": 0.631,
+        "max_num_seqs": 256,
+        "enable_prefix_caching": false,
+        "enforce_eager": false,
+        "kv_cache_memory_bytes": 60000000000,
+        "attention_backend": "TRITON_ATTN"
+      },
+      "command": [
+        "/usr/local/bin/vllm",
+        "serve",
+        "Qwen/Qwen3-8B",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "41567",
+        "--dtype",
+        "bfloat16",
+        "--seed",
+        "0",
+        "--max-model-len",
+        "4096",
+        "--gpu-memory-utilization",
+        "0.631",
+        "--max-num-seqs",
+        "256",
+        "--no-enable-prefix-caching",
+        "--kv-cache-memory-bytes",
+        "60000000000",
+        "--attention-backend",
+        "TRITON_ATTN"
+      ],
+      "startup_s": 135.6,
+      "api": "completions",
+      "wall_time_s": 1206.51,
+      "attention_backend_log": null
+    },
+    "blog_reference": {
+      "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+      "n": 1000,
+      "max_tokens": 1000,
+      "n_unique_default": 80,
+      "modal_count_default": 78,
+      "first_divergence_token_number": 103,
+      "n_unique_batch_invariant": 1
+    }
+  },
+  "duration_s": 1363.76,
+  "finished": "2026-10-08T14:14:41+0000"
+}

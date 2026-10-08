@@ -14,7 +14,9 @@ zero-padded chunks - always exactly ``rows`` rows for mm/addmm, ``mats`` matrice
 every time). The vendor kernel therefore always sees identical shapes and computes every row in
 the same way, no matter how many other rows the batch contains. Interception happens at the
 dispatcher with a ``TorchDispatchMode``, i.e. *below* F.linear / torch.matmul / softmax, and calling
-the original kernel from inside the mode cannot recurse.
+the original kernel from inside the mode cannot recurse. Under ``torch.inference_mode()`` those
+composite ops reach the mode undecomposed (``aten.linear``, ``aten.matmul``, ``aten.softmax.int``),
+so the mode decomposes them itself before chunking.
 
 It is slower (Python dispatch, padding, copies) - the point is a correct, independent second
 implementation to compare with the Triton kernels of batch_invariant_ops.
@@ -39,6 +41,8 @@ class FixedChunkMode(TorchDispatchMode):
         self.reduce_rows = reduce_rows
         self.calls: Counter[str] = Counter()
         self.passthrough: Counter[str] = Counter()
+        self.decomposed: Counter[str] = Counter()
+        self._has_composite: dict[Any, bool] = {}
         self._handlers = {
             aten.mm.default: self._mm,
             aten.addmm.default: self._addmm,
@@ -57,7 +61,11 @@ class FixedChunkMode(TorchDispatchMode):
         }
 
     def stats(self) -> dict[str, Any]:
-        return {"chunked_calls": dict(self.calls), "unchunked_calls": dict(self.passthrough)}
+        return {
+            "chunked_calls": dict(self.calls),
+            "unchunked_calls": dict(self.passthrough),
+            "decomposed_calls": dict(self.decomposed),
+        }
 
     def __torch_dispatch__(self, func, types, args=(), kwargs=None):  # noqa: ANN001
         kwargs = kwargs or {}
@@ -68,7 +76,25 @@ class FixedChunkMode(TorchDispatchMode):
                 self.calls[str(func)] += 1
                 return out
             self.passthrough[str(func)] += 1
+            return func(*args, **kwargs)
+        # Under torch.inference_mode() CompositeImplicitAutograd ops (aten.linear, aten.matmul,
+        # aten.softmax.int, ...) reach the mode undecomposed, so their mm/addmm/bmm/_softmax would
+        # never be chunked. Decompose them with the mode re-entered (it is popped while
+        # __torch_dispatch__ runs), which is what the dispatcher does by itself under no_grad.
+        if self._is_composite(func):
+            with self:
+                out = func.decompose(*args, **kwargs)
+            if out is not NotImplemented:
+                self.decomposed[str(func)] += 1
+                return out
         return func(*args, **kwargs)
+
+    def _is_composite(self, func) -> bool:  # noqa: ANN001
+        known = self._has_composite.get(func)
+        if known is None:
+            known = torch._C._dispatch_has_kernel_for_dispatch_key(func.name(), "CompositeImplicitAutograd")
+            self._has_composite[func] = known
+        return known
 
     # ---------------------------------------------------------------- helpers
 

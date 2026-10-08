@@ -1,0 +1,23 @@
+{
+  "id": "mine-p1-lru-cache-qwen3-8b-baseline",
+  "experiment": "vllm_completions",
+  "model": "qwen3-8b",
+  "mode": "baseline",
+  "params": {
+    "seed": 0,
+    "n": 200,
+    "max_tokens": 1000,
+    "max_num_seqs": 96,
+    "kv_cache_gb": 20,
+    "prompt": {
+      "file": "configs/prompts/my_prompts.txt",
+      "index": 1
+    }
+  },
+  "mem_gb": 42.4,
+  "exclusive": false,
+  "depends_on": [],
+  "timeout_min": 240.0,
+  "max_retries": 3,
+  "env": {}
+}
