@@ -18,8 +18,13 @@ the original kernel from inside the mode cannot recurse. Under ``torch.inference
 composite ops reach the mode undecomposed (``aten.linear``, ``aten.matmul``, ``aten.softmax.int``),
 so the mode decomposes them itself before chunking.
 
-It is slower (Python dispatch, padding, copies) - the point is a correct, independent second
-implementation to compare with the Triton kernels of batch_invariant_ops.
+It is slower (Python dispatch, padding, copies) - the point is an independent second implementation to
+compare with the Triton kernels of batch_invariant_ops.
+
+Limitation measured on GB10 (2026-10-08, experiment_results/2026-10-08_gb10): identical shapes are
+necessary but not sufficient. cuBLAS can compute a row differently depending on where it sits inside the
+fixed chunk (e.g. a Qwen3 HF forward at batch 4 with the target last, whose rows straddle two 64-row
+chunks), so this mode is not bitwise batch-invariant there; the library's Triton kernels are.
 """
 
 from __future__ import annotations
@@ -92,7 +97,10 @@ class FixedChunkMode(TorchDispatchMode):
     def _is_composite(self, func) -> bool:  # noqa: ANN001
         known = self._has_composite.get(func)
         if known is None:
-            known = torch._C._dispatch_has_kernel_for_dispatch_key(func.name(), "CompositeImplicitAutograd")
+            try:
+                known = torch._C._dispatch_has_kernel_for_dispatch_key(func.name(), "CompositeImplicitAutograd")
+            except (RuntimeError, AttributeError):  # not a dispatcher op (e.g. a higher-order operator)
+                known = False
             self._has_composite[func] = known
         return known
 

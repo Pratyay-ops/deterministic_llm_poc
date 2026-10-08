@@ -1,11 +1,12 @@
 """Blog section "The original sin: floating-point non-associativity" - the blog's demos (CPU).
 
-Note on Python versions: the blog's snippet uses the built-in ``sum()``. Since Python 3.12 that is
-compensated (Neumaier) summation for floats, but the blog's list holds the *int* ``1`` (and ``-1``),
-which CPython adds without compensation - and that exact mix gives the blog's 102 unique results
-(with ``1.0`` instead of ``1`` it gives 1). The containers ship Python 3.12, so the blog's snippet is
-reproduced as written; a plain left-to-right loop (what ``sum()`` did up to 3.11) is reported next to
-it and gives 258 - itself a nice illustration that changing the reduction algorithm changes the answer.
+Note on Python versions: the blog's snippet uses the built-in ``sum()``, whose algorithm changed twice:
+up to 3.11 it is a plain left-to-right accumulation (258 unique results here); Python 3.12 and 3.13
+compensate float additions (Neumaier) but add the blog's *int* ``1`` and ``-1`` without compensation,
+and exactly that mix gives the blog's 102 (with ``1.0`` instead of ``1`` it gives 1); Python 3.14 also
+compensates the ints (9 unique results). The containers ship Python 3.12, so the blog's snippet is
+reproduced as written; the plain left-to-right loop is reported next to it - itself a nice illustration
+that changing the reduction algorithm changes the answer.
 """
 
 from __future__ import annotations
@@ -58,8 +59,10 @@ def run(ctx) -> dict[str, Any]:  # noqa: ANN001
         "python": sys.version.split()[0],
         "n_unique_left_to_right": len(naive),
         "builtin_sum_note": (
-            "Python >= 3.12 sum(): compensated for floats, the int 1 is added uncompensated"
-            if sys.version_info >= (3, 12)
-            else "plain left-to-right summation"
+            "plain left-to-right summation"
+            if sys.version_info < (3, 12)
+            else "compensated for floats, the int 1 added uncompensated (the blog's case)"
+            if sys.version_info < (3, 14)
+            else "compensated for floats and ints"
         ),
     }

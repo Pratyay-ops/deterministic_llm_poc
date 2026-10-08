@@ -36,11 +36,10 @@ DEFAULT_BI_ATTENTION_BACKEND = "TRITON_ATTN"
 # every start when kv_cache_memory_bytes is set, and "...larger than the available KV cache memory" /
 # "no available memory for the cache blocks" are configuration errors that a retry cannot fix.
 _MEMORY_ERRORS = (
-    "less than desired gpu memory utilization",
+    "less than desired gpu memory utilization",  # the real "Free memory on device ... less than desired" error
     "not enough memory",
     "insufficient memory",
     "out of memory",
-    "free memory on device",
 )
 # Boolean engine args whose default is True, so False must be passed explicitly on the CLI.
 _DEFAULT_TRUE_BOOLS = {"enable_prefix_caching", "enable_chunked_prefill"}

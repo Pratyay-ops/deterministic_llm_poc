@@ -87,7 +87,7 @@ positions), as the first and as the last row:
 | `baseline_eager` | eager | same, isolates the attention backend |
 | `official` | eager | linear layers + RMSNorm fixed, attention (bmm/softmax) not, so differences can remain |
 | `official_full` | eager | bitwise invariant |
-| `custom` | eager | bitwise invariant (slower) |
+| `custom` | eager | meant to be invariant, but on GB10 a row can still depend on its position inside the fixed chunk (measured: batch 4 with the target last) - see `experiment_results/2026-10-08_gb10` |
 
 The reference (batch size 1) is also run twice to confirm run-to-run determinism.
 

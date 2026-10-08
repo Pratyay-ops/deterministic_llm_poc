@@ -42,6 +42,12 @@ BLOG = {
 }
 
 
+def _request_timeout_s(ctx) -> float:  # noqa: ANN001
+    """Per-request HTTP timeout. All requests are posted at once, so it includes queueing behind the others;
+    default: the job's own timeout (``request_timeout_s`` overrides)."""
+    return float(ctx.job.params.get("request_timeout_s", ctx.job.timeout_min * 60))
+
+
 def _server_run(ctx, prompt_text: str, prompt_ids: list[int], n: int, max_tokens: int) -> tuple[list[Completion], dict]:  # noqa: ANN001
     p = ctx.job.params
     api = p.get("api", "completions")
@@ -73,6 +79,7 @@ def _server_run(ctx, prompt_text: str, prompt_ids: list[int], n: int, max_tokens
             concurrency=int(p.get("concurrency") or n),
             jitter_s=float(p.get("arrival_jitter_s", 0.0)),
             seed=ctx.seed,
+            timeout_s=_request_timeout_s(ctx),
         )
         info = {**server.info(), "api": api, "wall_time_s": round(wall, 2), "attention_backend_log": backend_in_logs(ctx, server)}
     completions = []
@@ -128,6 +135,7 @@ def _server_run_multi(ctx, prompt_ids: list[list[int]], n: int, max_tokens: int)
             concurrency=int(p.get("concurrency") or len(payloads)),
             jitter_s=float(p.get("arrival_jitter_s", 0.0)),
             seed=ctx.seed,
+            timeout_s=_request_timeout_s(ctx),
         )
         info = {**server.info(), "api": "completions", "wall_time_s": round(wall, 2), "attention_backend_log": backend_in_logs(ctx, server)}
     completions = []
@@ -181,6 +189,8 @@ def _run_multi(ctx, preset, prompts: list[str], n: int, max_tokens: int) -> dict
     tok = load_tokenizer(preset.hf_id)
     chat_kwargs = p.get("chat_template_kwargs", preset.chat_template_kwargs)
     prompt_ids = [render_chat_ids(tok, text, chat_kwargs) for text in prompts]
+    spec = p.get("prompts")
+    indices = spec.get("indices") if isinstance(spec, dict) else None
     completions, info = _server_run_multi(ctx, prompt_ids, n, max_tokens)
 
     with JsonlWriter(ctx.path("completions.jsonl")) as out:
@@ -196,6 +206,7 @@ def _run_multi(ctx, preset, prompts: list[str], n: int, max_tokens: int) -> dict
             "mode": ctx.job.mode,
             "engine": "server",
             "prompt_index": k,
+            **({"prompt_file_index": int(indices[k])} if indices is not None else {}),
             "prompt": text,
             "prompt_tokens": len(ids),
             "n": n,

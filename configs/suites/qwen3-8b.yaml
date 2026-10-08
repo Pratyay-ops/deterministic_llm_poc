@@ -5,7 +5,8 @@ description: >
   one (VLLM_BATCH_INVARIANT=1), and the completions are compared by token ids and bitwise logprobs.
   Around that: floating-point demos, op-level run-to-run vs batch invariance in all six kernel modes,
   model-level invariance with HF transformers, an engine-level needle sweep, prefix caching, and
-  throughput (alone at the end). All prompts come from my_prompts.txt. Roughly 2 h on a GB10.
+  throughput (alone at the end). The prompt comparisons, HF, sweep needle and prefix-cache jobs use
+  my_prompts.txt; the sweep's batch partners and the throughput requests use fillers.txt. Roughly 2 h on a GB10.
 memory_budget_gb: 100
 max_parallel: 4
 defaults:

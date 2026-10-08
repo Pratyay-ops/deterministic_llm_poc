@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 from typing import Any
 
@@ -57,14 +58,19 @@ def _summary(job: dict[str, Any]) -> dict[str, Any]:
     return job["result"].get("summary") or {}
 
 
+def _bi_status(s: dict[str, Any]) -> str:
+    """'deterministic' (1 token sequence, 1 logprob variant, no failed requests), 'nondeterministic' (several
+    token sequences or logprob variants), or 'inconclusive' (failed requests, logprobs not compared, no data)."""
+    lp = s.get("modal_logprob_variants")
+    if (s.get("n_unique") or 0) > 1 or (lp or 0) > 1:
+        return "nondeterministic"
+    if s.get("n_unique") == 1 and lp == 1 and s.get("n_valid") and s.get("n_valid") == s.get("n"):
+        return "deterministic"
+    return "inconclusive"
+
+
 def _is_bitwise_identical(s: dict[str, Any]) -> bool:
-    """1 unique token sequence, 1 logprob variant, and no failed or missing requests."""
-    return (
-        s.get("n_unique") == 1
-        and s.get("modal_logprob_variants") == 1
-        and bool(s.get("n_valid"))
-        and s.get("n_valid") == s.get("n")
-    )
+    return _bi_status(s) == "deterministic"
 
 
 def _bi_verdict(s: dict[str, Any]) -> str:
@@ -87,7 +93,9 @@ def _bi_verdict(s: dict[str, Any]) -> str:
 def _modal_variants(s: dict[str, Any]) -> str:
     """Logprob variants among the modal completions - meaningless when the modal one occurs once."""
     lp, count = s.get("modal_logprob_variants"), s.get("modal_count") or 0
-    return f"{lp} of {count}" if count > 1 else "n/a (modal x1)"
+    if not lp:
+        return "not compared"
+    return f"{lp} of {count}" if count > 1 else f"n/a (modal x{count})"
 
 
 def _is_prompt_comparison(job: dict[str, Any]) -> bool:
@@ -114,16 +122,23 @@ def _completion_summaries(run: dict[str, Any]) -> list[tuple[dict[str, Any], str
     return out
 
 
-def _prompt_pairs(run: dict[str, Any]) -> dict[str, dict[str, list[Any]]]:
-    """{model: {prompt text: [baseline summary, batch-invariant summary]}} for plain completion jobs."""
-    out: dict[str, dict[str, list[Any]]] = {}
+def _comparison_setup(job: dict[str, Any]) -> str:
+    """Jobs compared with each other share every parameter except the mode-specific ones."""
+    p = {k: v for k, v in (job["spec"].get("params") or {}).items() if k not in ("prompt", "bi_attention_backend")}
+    return json.dumps(p, sort_keys=True, default=str)
+
+
+def _prompt_pairs(run: dict[str, Any]) -> dict[str, dict[tuple[str, str], list[Any]]]:
+    """{model: {(setup, prompt text): [baseline summary, batch-invariant summary]}} for plain completion jobs;
+    jobs with different settings (n, max_tokens, one server per prompt vs shared ...) are never paired."""
+    out: dict[str, dict[tuple[str, str], list[Any]]] = {}
     for job, _label, s in _completion_summaries(run):
         if not _is_prompt_comparison(job):
             continue
         slot = {"baseline": 0, "batch_invariant": 1}.get(s.get("mode"))
         if slot is None or not s.get("prompt"):
             continue
-        pair = out.setdefault(s.get("model", "?"), {}).setdefault(s["prompt"], [None, None])
+        pair = out.setdefault(s.get("model", "?"), {}).setdefault((_comparison_setup(job), s["prompt"]), [None, None])
         pair[slot] = s
     return out
 
@@ -158,6 +173,8 @@ def _headline(run: dict[str, Any]) -> str:
     by_model: dict[str, dict[str, dict[str, Any]]] = {}
     for job in _by_experiment(run, "vllm_completions"):
         s = _summary(job)
+        if s.get("multi_prompt"):
+            continue  # per-prompt results; summarised by the per-prompt line below
         if job["spec"]["id"].startswith(("completions-", "moe-completions-", "run-", "vllm_completions-")):
             by_model.setdefault(s.get("model", "?"), {})[s.get("mode", "?")] = s
     for model, modes in by_model.items():
@@ -166,22 +183,25 @@ def _headline(run: dict[str, Any]) -> str:
         if base:
             div = base.get("earliest_divergence")
             parts.append(
-                f"baseline vLLM produced **{base['n_unique']} unique** completions out of {base['n_valid']}"
+                f"baseline vLLM produced **{base.get('n_unique')} unique** completions out of {base.get('n_valid')}"
                 + (f" (first divergence at token {div + 1})" if div is not None else "")
             )
         if bi:
-            parts.append(f"batch-invariant vLLM produced **{bi['n_unique']} unique** ({_bi_verdict(bi)})")
+            parts.append(f"batch-invariant vLLM produced **{bi.get('n_unique')} unique** ({_bi_verdict(bi)})")
         if parts:
             lines.append(f"- **{model}**: " + "; ".join(parts) + ".")
     for model, pairs in _prompt_pairs(run).items():
         complete = [(b, i) for b, i in pairs.values() if b and i]
         if complete:
-            varied = sum(1 for b, _ in complete if b["n_unique"] > 1 or (b.get("modal_logprob_variants") or 0) > 1)
-            fixed = sum(1 for _, i in complete if _is_bitwise_identical(i))
+            varied = sum(1 for b, _ in complete if _bi_status(b) == "nondeterministic")
+            status = [_bi_status(i) for _, i in complete]
+            inconclusive = status.count("inconclusive")
             lines.append(
                 f"- **{model}, per prompt**: default vLLM was nondeterministic (tokens or logprobs) for "
                 f"**{varied}/{len(complete)}** prompts; batch-invariant vLLM was bitwise identical for "
-                f"**{fixed}/{len(complete)}** prompts (details below)."
+                f"**{status.count('deterministic')}/{len(complete)}** prompts"
+                + (f" ({inconclusive} inconclusive: failed requests or logprobs not compared)" if inconclusive else "")
+                + " (details below)."
             )
     for job in _by_experiment(run, "vllm_batch_sweep"):
         s = _summary(job)
@@ -206,11 +226,15 @@ def _fp(run: dict[str, Any]) -> str:
         return ""
     s = _summary(jobs[0])
     assoc = "; ".join(f"`{k}` = {v}" for k, v in (s.get("associativity") or {}).items())
+    snippet, loop = s.get("n_unique_sums"), s.get("n_unique_left_to_right", "-")
+    if "n_unique_left_to_right" not in s and "n_unique_builtin_sum" in s:
+        # results written before 2026-10-08 stored the loop count in n_unique_sums
+        snippet, loop = s.get("n_unique_builtin_sum"), s.get("n_unique_sums")
     return (
         "## Floating-point non-associativity (CPU)\n\n"
-        f"- {assoc}\n- Summing the same 8 numbers in 10,000 random orders gives **{s.get('n_unique_sums')}** "
-        f"distinct results with the blog's snippet (blog: {s.get('blog_n_unique_sums')}); a plain left-to-right "
-        f"loop over the same orders gives {s.get('n_unique_left_to_right', '-')}."
+        f"- {assoc}\n- Summing the same 8 numbers in 10,000 random orders gives **{snippet}** distinct results "
+        f"with the blog's snippet on Python {s.get('python', '?')} (blog: {s.get('blog_n_unique_sums')}); a plain "
+        f"left-to-right loop over the same orders gives {loop}."
     )
 
 
@@ -306,15 +330,19 @@ def _hf(run: dict[str, Any]) -> str:
 def _prompts(run: dict[str, Any]) -> str:
     """Default vs batch-invariant vLLM, side by side for every prompt that was run in both modes."""
     sections = []
+    verdicts = {"deterministic": "**deterministic**", "nondeterministic": "**NOT deterministic**", "inconclusive": "inconclusive"}
     for model, pairs in _prompt_pairs(run).items():
         rows, examples = [], []
-        for i, (prompt, (base, bi)) in enumerate(pairs.items()):
+        setups = list(dict.fromkeys(setup for setup, _ in pairs))
+        for i, ((setup, prompt), (base, bi)) in enumerate(pairs.items()):
             label = " ".join(prompt.split())
             label = label[:60] + ("..." if len(label) > 60 else "")
+            if len(setups) > 1:  # several comparison setups in one run: say which row is which
+                label = f"[setup {setups.index(setup) + 1}] {label}"
             row = [i + 1, label]
             for s in (base, bi):
                 if s is None:
-                    row += ["not run", "-", "-", "-"]
+                    row += ["not run (or not ok)", "-", "-", "-"]
                     continue
                 div = s.get("earliest_divergence")
                 row += [
@@ -323,10 +351,7 @@ def _prompts(run: dict[str, Any]) -> str:
                     "-" if div is None else div + 1,
                     _modal_variants(s),
                 ]
-            if base and bi:
-                row.append("**deterministic**" if _is_bitwise_identical(bi) else "**NOT deterministic**")
-            else:
-                row.append("incomplete")
+            row.append(verdicts[_bi_status(bi)] if base and bi else "incomplete")
             rows.append(row)
             ex = (base or {}).get("divergence_example")
             if ex:

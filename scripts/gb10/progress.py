@@ -12,7 +12,8 @@ import os
 import sys
 
 RESULTS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "results")
-MARKS = {"ok": "[ok]  ", "running": "[run] ", "pending": "[wait]", "failed": "[FAIL]", "error": "[FAIL]", "cancelled": "[stop]"}
+MARKS = {"ok": "[ok]  ", "running": "[run] ", "pending": "[wait]", "failed": "[FAIL]", "error": "[FAIL]",
+         "timeout": "[FAIL]", "cancelled": "[stop]", "skipped": "[skip]", "unsatisfiable": "[skip]"}
 
 
 def newest_run(pattern: str) -> str | None:
@@ -65,8 +66,8 @@ def main() -> None:
     vfs = os.statvfs(RESULTS)
     print()
     print(
-        f"memory: {mem['MemAvailable'] / 1e6:.0f} GB available of {mem['MemTotal'] / 1e6:.0f} GB "
-        f"(page cache {mem['Cached'] / 1e6:.0f} GB)   disk free: {vfs.f_bavail * vfs.f_frsize / 1e9:.0f} GB"
+        f"memory: {mem['MemAvailable'] * 1024 / 1e9:.0f} GB available of {mem['MemTotal'] * 1024 / 1e9:.0f} GB "
+        f"(page cache {mem['Cached'] * 1024 / 1e9:.0f} GB)   disk free: {vfs.f_bavail * vfs.f_frsize / 1e9:.0f} GB"
     )
 
 

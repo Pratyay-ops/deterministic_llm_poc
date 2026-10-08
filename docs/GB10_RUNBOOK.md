@@ -155,12 +155,14 @@ What a successful reproduction looks like in `report.md`:
   all 1000 completions are bitwise identical ("logprob variants of modal = 1").
 * **Op table.** `baseline` and `torch_flags` show "varies" for matmul-like ops while every op is
   run-to-run deterministic: this is the blog's central point. `official_full` and `custom` show
-  "invariant". `official` covers mm/linear/RMSNorm/log_softmax but not bmm/softmax.
-  `cublaslt_ws1` tests, on your GB10, the assumption vLLM makes for GEMMs on this architecture.
+  "invariant" (the op test checks row 0, which always sits at the start of `custom`'s chunks).
+  `official` covers mm/linear/RMSNorm/log_softmax but not bmm/softmax. `cublaslt_ws1` is vLLM's
+  fallback for GEMMs that reach aten on this architecture (its own linear layers use Triton kernels).
   SDPA attention is not overridden by any mode, so it shows whether the stock attention kernels on
   sm_121 are batch-invariant.
 * **HF model table.** `baseline` / `baseline_eager` may differ across batch sizes; `official_full`
-  and `custom` should be bitwise invariant for both the logits and greedy decoding.
+  should be bitwise invariant for both the logits and greedy decoding. `custom` can still differ on
+  GB10 when the target's rows straddle a chunk boundary (measured 2026-10-08: batch 4, target last).
 * **Needle sweep.** Baseline mismatches (at least in logprobs) at some batch sizes;
   batch-invariant mode is bitwise identical everywhere.
 * **Throughput.** The slowdown of batch-invariant mode. The blog measured 26 s → 55 s → 42 s on
