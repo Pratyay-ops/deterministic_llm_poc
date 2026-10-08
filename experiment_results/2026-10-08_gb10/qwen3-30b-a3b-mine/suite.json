@@ -1,0 +1,55 @@
+{
+  "name": "qwen3-30b-mine",
+  "description": "The user's prompts (configs/prompts/my_prompts.txt) on Qwen3-30B-A3B-Instruct-2507 (MoE, ~3B of 30B parameters active per token): all 8 prompts x 100 requests (temperature 0, up to 1000 tokens) mixed in ONE vLLM server - first with default kernels, then with VLLM_BATCH_INVARIANT=1 - compared per prompt by token ids and bitwise logprobs. ~92 GB per run, so the two modes run one after the other (roughly 75 min).",
+  "memory_budget_gb": 100.0,
+  "max_parallel": 2,
+  "jobs": [
+    {
+      "id": "mine-all-qwen3-30b-a3b-instruct-2507-baseline",
+      "experiment": "vllm_completions",
+      "model": "qwen3-30b-a3b-instruct-2507",
+      "mode": "baseline",
+      "params": {
+        "seed": 0,
+        "prompts": {
+          "file": "configs/prompts/my_prompts.txt"
+        },
+        "n": 100,
+        "max_tokens": 1000,
+        "max_num_seqs": 160,
+        "kv_cache_gb": 24
+      },
+      "mem_gb": 92.1,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "mine-all-qwen3-30b-a3b-instruct-2507-batch_invariant",
+      "experiment": "vllm_completions",
+      "model": "qwen3-30b-a3b-instruct-2507",
+      "mode": "batch_invariant",
+      "params": {
+        "seed": 0,
+        "prompts": {
+          "file": "configs/prompts/my_prompts.txt"
+        },
+        "n": 100,
+        "max_tokens": 1000,
+        "max_num_seqs": 160,
+        "kv_cache_gb": 24
+      },
+      "mem_gb": 92.1,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    }
+  ],
+  "source": "/workspace/detllm/configs/suites/qwen3-30b-mine.yaml",
+  "run_dir": "/workspace/detllm/results/qwen3-30b-mine-20261008-141458",
+  "started": "2026-10-08T14:14:58+0000"
+}

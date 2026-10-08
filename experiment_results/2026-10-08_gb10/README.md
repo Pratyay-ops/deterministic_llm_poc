@@ -32,6 +32,26 @@ kernels, then with `VLLM_BATCH_INVARIANT=1`. Completions compared by token ids a
   (vLLM 0.31 ships GB10-tuned batch-invariant matmul tiles for Qwen3-8B and auto-enables breakable CUDA
   graphs). One measurement each, under this mixed load - not the dedicated `vllm_perf` test.
 
+## Qwen3-30B-A3B-Instruct-2507 (mixture of experts, run `qwen3-30b-a3b-mine/`)
+
+Same method, 8 prompts x 100 requests per mode (800 requests per mode, 0 failed):
+
+| # | prompt | default: distinct completions | default: first divergence (token) | batch-invariant: distinct completions | batch-invariant: logprob variants |
+|---|---|---|---|---|---|
+| 1 | distributed rate limiter | 80 / 100 | 33 | **1 / 100** | **1** |
+| 2 | thread-safe LRU cache (code) | 88 / 100 | 17 | **1 / 100** | **1** |
+| 3 | longest increasing subsequence | 89 / 100 | 76 | **1 / 100** | **1** |
+| 4 | microservices failure analysis | 81 / 100 | 38 | **1 / 100** | **1** |
+| 5 | database paradigms | 84 / 100 | 11 | **1 / 100** | **1** |
+| 6 | haiku | 20 / 100 | 52 | **1 / 100** | **1** |
+| 7 | Richard Feynman | 85 / 100 | 23 | **1 / 100** | **1** |
+| 8 | SQL source/target-table extraction | 7 / 100 (48 logprob variants among the 59 copies of the most common answer) | 32 | **1 / 100** | **1** |
+
+Default vLLM was nondeterministic for 8 of 8 prompts - more than the dense Qwen3-8B, plausibly because a
+small numeric difference can change which experts a token is routed to. Batch-invariant vLLM (fixed-config
+fused MoE kernels) was bitwise identical for 8 of 8. Speed for the same work (~645 k tokens): default 467,
+batch-invariant 464 output tok/s. Server start: 588 s (default) and 431 s (batch-invariant) for 61 GB of weights.
+
 ## Other evidence
 
 - **One prompt per server** (`qwen3-8b-one-prompt-per-server-partial/`, default vLLM only, 200 x 1000
