@@ -10,7 +10,7 @@
   server returned **up to 172 different answers out of 200 identical requests** (Qwen3-8B) and **up to 89 out of
   100** (Qwen3-30B-A3B) once other requests shared the server. Default vLLM was nondeterministic for **7 of 8**
   prompts on Qwen3-8B and **8 of 8** on Qwen3-30B-A3B.
-- **The differences are substantive:** different code, a different root-cause diagnosis, different JSON
+- **The differences in answer are substantive:** different code for implementation, a different root-cause diagnosis to same problem, different JSON answer for same questions given to the normal llm.
   content - not only wording.
 - **The fix works on both models.** With vLLM's batch-invariant mode (`VLLM_BATCH_INVARIANT=1`) every one of the
   16 prompt-model combinations returned **exactly one answer, bitwise identical down to every logprob**, across

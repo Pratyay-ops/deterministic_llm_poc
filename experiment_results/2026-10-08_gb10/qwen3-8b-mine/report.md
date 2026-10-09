@@ -43,7 +43,7 @@ Examples of where default-vLLM completions split (the most common completion vs 
 | Shared memory / block (opt-in) | 101376 |
 | Unified memory (cudaMemGetInfo total) | 130.59 GB |
 | Driver | 595.91.07 |
-| CUDA (torch build) | 13.0 |
+| CUDA (torch build) | 13.2 |
 | Container base image | vllm/vllm-openai:v0.31.0 |
 | torch / triton | 2.13.0+cu130 / 3.7.1 |
 | vLLM / transformers | 0.31.0 / 5.17.0 |
