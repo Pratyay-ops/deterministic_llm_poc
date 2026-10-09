@@ -41,19 +41,31 @@ case "$ACTION" in
   *) echo "unknown command: $ACTION" >&2; usage 2 ;;
 esac
 
-docker info >/dev/null 2>&1 || die "cannot talk to Docker - run 'newgrp docker' in this terminal (or log in again) after 'sudo usermod -aG docker \$USER'"
+if ! docker info >/dev/null 2>&1; then
+  # Added to the docker group after this login session started? Re-run under that group - no re-login needed.
+  if [ -z "${DETLLM_VIA_SG:-}" ] && command -v sg >/dev/null 2>&1 \
+     && getent group docker | cut -d: -f4 | tr ',' '\n' | grep -qx "$(id -un)"; then
+    export DETLLM_VIA_SG=1
+    exec sg docker -c "$(printf '%q ' bash "$0" "$@")"
+  fi
+  die "cannot talk to Docker - join the docker group ('sudo usermod -aG docker \$USER') and log in again, or run: sg docker -c \"bash $0 ${*:-start}\""
+fi
 
 PORT="${PORT:-8000}"
 BIND="${BIND:-127.0.0.1}"
 host="$BIND"; [ "$host" = "0.0.0.0" ] && host=127.0.0.1
 
 if [ "$ACTION" = "stop" ]; then
-  docker rm -f "$NAME" >/dev/null 2>&1 && log "stopped $NAME" || log "$NAME is not running"
+  if docker inspect "$NAME" >/dev/null 2>&1; then
+    docker rm -f "$NAME" >/dev/null && log "stopped $NAME"
+  else
+    log "$NAME is not running"
+  fi
   exit 0
 fi
 if [ "$ACTION" = "status" ]; then
-  state="$(docker inspect -f '{{.State.Status}}' "$NAME" 2>/dev/null || echo "not created")"
-  log "$NAME: $state"
+  state="$(docker inspect -f '{{.State.Status}}' "$NAME" 2>/dev/null)" || state="not created"
+  log "$NAME: ${state:-not created}"
   if curl -fs "http://$host:$PORT/health" >/dev/null 2>&1; then log "healthy on http://$host:$PORT/v1"; else log "not answering on http://$host:$PORT"; fi
   exit 0
 fi
