@@ -31,6 +31,9 @@ docker_run_args() {
     -e HF_HUB_OFFLINE
     -e TRITON_PTXAS_PATH
     -e "DETLLM_BASE_IMAGE=$BASE_IMAGE"
+    # The container runs as root: without this, every run leaves root-owned __pycache__ directories in the
+    # bind-mounted checkout (and in the batch_invariant_ops submodule) that the host user cannot delete.
+    -e PYTHONDONTWRITEBYTECODE=1
   )
 }
 
