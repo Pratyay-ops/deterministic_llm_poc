@@ -1,5 +1,8 @@
 # GB10 runs of 2026-10-08: default vs batch-invariant vLLM on our own prompts
 
+**Full write-up of both models: [COMBINED_REPORT.md](COMBINED_REPORT.md).** Short version for stakeholders:
+`docs/FINDINGS_2026-10-08.md`.
+
 Dell Pro Max GB10 (DGX OS 7.2.3, GB10 cc 12.1, 121 GiB unified memory, driver 595.91.07) - container
 `vllm/vllm-openai:v0.31.0` (vLLM 0.31.0, torch 2.13.0+cu130, Triton 3.7.1, transformers 5.17.0) -
 repo `8e0e74a` plus the changes in each run's `code-changes-vs-8e0e74a.diff`.
@@ -60,8 +63,9 @@ batch-invariant 464 output tok/s. Server start: 588 s (default) and 431 s (batch
   still nondeterministic. Stopped after 4 prompts when the suite was restructured into `qwen3-8b-mine`.
 - **Engine-level needle sweep** (in `qwen3-8b-mine/`, cancelled after batch size 32/64 to free the GPU):
   the rate-limiter prompt alone vs. hidden among 2..N other requests - default vLLM differed from the
-  bs=1 answer at batch sizes 8, 16 and 32 (first differing token 140 or 209); batch-invariant was bitwise
-  identical at every size it reached (1-64). Per-trial lines are in `sweep-*/job.log`.
+  bs=1 answer in all 10 batched trials, at every batch size from 2 to 32 (first differing token 141, 133 or
+  210; one trial in the logprobs only); batch-invariant was bitwise identical at every size it reached (1-64).
+  Per-trial lines are in `sweep-*/job.log`.
 - **Smoke suite** (`smoke-qwen3-1.7b/`): 100 x 256 tokens - default 3 distinct completions (divergence at
   token 127), batch-invariant 1; needle sweep 1/3 vs 3/3 identical.
 - **Op level** (`qwen3-8b-mine/report.md`): stock and `torch_flags` matmul/linear vary with batch size while
