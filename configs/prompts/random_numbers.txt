@@ -1,0 +1,3 @@
+# Prompt of thinking-machines-lab/batch_invariant_ops/deterministic_vllm_inference.py
+# (sent with chat_template_kwargs {"thinking": false}, temperature 0, max_tokens 100, 1000 times).
+Generate 1000 random numbers. Go directly into it, don't say Sure and don't say here are numbers. Just start with a number. /no_think

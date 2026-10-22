@@ -1,0 +1,18 @@
+
+===== attempt 1 at 2026-10-08T13:04:18+0000 =====
+13:04:18 INFO detllm.job.ops-official_full: job ops-official_full: experiment=op_invariance model=None mode=official_full
+13:04:21 INFO detllm.job.ops-official_full: blog mm demo: {'max_abs_diff': 0.0, 'blog_value': 1669.25, 'batch_invariant': True}
+13:04:21 INFO detllm.job.ops-official_full: mm                         bfloat16  invariant=True run_to_run=True max|diff|=0.0 
+13:04:21 INFO detllm.job.ops-official_full: mm                         float32   invariant=True run_to_run=True max|diff|=0.0 
+13:04:21 INFO detllm.job.ops-official_full: mm                         float16   invariant=True run_to_run=True max|diff|=0.0 
+13:04:22 INFO detllm.job.ops-official_full: linear_bias                bfloat16  invariant=True run_to_run=True max|diff|=0.0 
+13:04:22 INFO detllm.job.ops-official_full: rmsnorm                    bfloat16  invariant=True run_to_run=True max|diff|=0.0 
+13:04:22 INFO detllm.job.ops-official_full: log_softmax_vocab          float32   invariant=True run_to_run=True max|diff|=0.0 
+13:04:22 INFO detllm.job.ops-official_full: softmax                    float32   invariant=True run_to_run=True max|diff|=0.0 
+13:04:22 INFO detllm.job.ops-official_full: softmax                    bfloat16  invariant=True run_to_run=True max|diff|=0.0 
+13:04:22 INFO detllm.job.ops-official_full: bmm_attention_scores       bfloat16  invariant=True run_to_run=True max|diff|=0.0 
+13:04:23 INFO detllm.job.ops-official_full: attention_eager_decode     bfloat16  invariant=True run_to_run=True max|diff|=0.0 
+13:04:24 INFO detllm.job.ops-official_full: attention_eager_prefill    bfloat16  invariant=True run_to_run=True max|diff|=0.0 
+13:04:25 INFO detllm.job.ops-official_full: attention_sdpa_decode      bfloat16  invariant=False run_to_run=True max|diff|=0.0009765625 
+13:04:25 INFO detllm.job.ops-official_full: attention_sdpa_prefill     bfloat16  invariant=True run_to_run=True max|diff|=0.0 
+13:04:25 INFO detllm.job.ops-official_full: job ops-official_full finished: ok in 7s

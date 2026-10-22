@@ -1,0 +1,85 @@
+{
+  "job_id": "sweep-qwen3-1.7b-batch_invariant",
+  "experiment": "vllm_batch_sweep",
+  "model": "qwen3-1.7b",
+  "hf_id": "Qwen/Qwen3-1.7B",
+  "mode": "batch_invariant",
+  "started": "2026-10-08T12:05:04+0000",
+  "status": "ok",
+  "summary": {
+    "model": "qwen3-1.7b",
+    "hf_id": "Qwen/Qwen3-1.7B",
+    "mode": "batch_invariant",
+    "max_tokens": 64,
+    "reference_tokens": 64,
+    "reference_text_head": "Richard Feynman (1918\u20131988) was an American physicist, mathematician, and author, best known for his work in quantum mechanics and particle physics. He was a leading figure in the development of the quantum theory and played a crucial role in the Manhattan Project during World War II,",
+    "run_to_run": {
+      "tokens_equal": true,
+      "first_token_divergence": null,
+      "logprobs_bitwise_equal": true,
+      "first_logprob_mismatch": null,
+      "max_abs_logprob_diff": 0.0,
+      "identical": true
+    },
+    "results": [
+      {
+        "batch_size": 1,
+        "trial": 0,
+        "position": 0,
+        "tokens_equal": true,
+        "first_token_divergence": null,
+        "logprobs_bitwise_equal": true,
+        "first_logprob_mismatch": null,
+        "max_abs_logprob_diff": 0.0,
+        "identical": true
+      },
+      {
+        "batch_size": 8,
+        "trial": 0,
+        "position": 6,
+        "tokens_equal": true,
+        "first_token_divergence": null,
+        "logprobs_bitwise_equal": true,
+        "first_logprob_mismatch": null,
+        "max_abs_logprob_diff": 0.0,
+        "identical": true
+      },
+      {
+        "batch_size": 32,
+        "trial": 0,
+        "position": 18,
+        "tokens_equal": true,
+        "first_token_divergence": null,
+        "logprobs_bitwise_equal": true,
+        "first_logprob_mismatch": null,
+        "max_abs_logprob_diff": 0.0,
+        "identical": true
+      }
+    ],
+    "n_trials": 3,
+    "n_identical": 3,
+    "n_token_mismatch": 0,
+    "n_logprob_only_mismatch": 0,
+    "variant_batch_sizes": [],
+    "earliest_token_divergence": null,
+    "engine_info": {
+      "vllm_version": "0.31.0",
+      "engine_kwargs": {
+        "model": "Qwen/Qwen3-1.7B",
+        "dtype": "bfloat16",
+        "seed": 0,
+        "max_model_len": 4096,
+        "gpu_memory_utilization": 0.1156,
+        "max_num_seqs": 64,
+        "enable_prefix_caching": false,
+        "enforce_eager": false,
+        "kv_cache_memory_bytes": 6000000000,
+        "attention_backend": "TRITON_ATTN"
+      },
+      "startup_s": 100.2,
+      "attention_backend_log": null
+    }
+  },
+  "duration_s": 129.12,
+  "finished": "2026-10-08T12:07:13+0000"
+}

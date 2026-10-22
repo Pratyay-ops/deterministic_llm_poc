@@ -1,0 +1,83 @@
+name: parallel
+description: >
+  Main reproduction with small models, packed side by side on the GB10 (roughly 1-1.5 h; first run
+  longer because of downloads and kernel compilation). Covers every experiment of the blog:
+  floating-point demos, op-level run-to-run vs batch invariance, model-level invariance with HF
+  transformers, 1000 temperature-0 completions with vLLM (default vs batch-invariant), the
+  batch_invariant_ops vLLM example, engine-level needle sweeps, ablations, and throughput
+  (throughput runs alone at the end).
+memory_budget_gb: 100   # of ~122 GB unified memory; leaves room for the OS and page cache
+max_parallel: 8
+defaults:
+  seed: 0
+jobs:
+  - experiment: preflight
+    id: preflight
+
+  - experiment: fp_nonassoc
+    id: fp-nonassoc
+
+  # Blog: "Batch invariance and determinism" - every op, six ways.
+  - experiment: op_invariance
+    id: ops-{mode}
+    matrix: {mode: [baseline, torch_flags, cublaslt_ws1, official, official_full, custom]}
+
+  # Model level, fully controlled batches (HF transformers, no continuous batching).
+  - experiment: hf_invariance
+    id: hf-{model}-{mode}
+    matrix:
+      model: [qwen3-1.7b]
+      mode: [baseline, baseline_eager, official, official_full, custom]
+    params: {batch_sizes: [1, 2, 3, 4, 8, 16, 32], max_new_tokens: 128}
+
+  # Blog: "How nondeterministic are completions?" - 1000 x temperature 0, Feynman prompt.
+  - experiment: vllm_completions
+    id: completions-{model}-{mode}
+    matrix: {model: [qwen3-1.7b], mode: [baseline, batch_invariant]}
+    params: {n: 1000, max_tokens: 1000}
+
+  - experiment: vllm_completions
+    id: completions-{model}-{mode}
+    matrix: {model: [qwen3-4b-instruct-2507], mode: [baseline, batch_invariant]}
+    params: {n: 1000, max_tokens: 512}
+
+  # batch_invariant_ops' own vLLM proof of concept (chat API, "random numbers" prompt, 100 tokens).
+  - experiment: vllm_completions
+    id: tml-poc-{model}-{mode}
+    matrix: {model: [qwen3-1.7b], mode: [baseline, batch_invariant]}
+    params:
+      n: 1000
+      max_tokens: 100
+      api: chat
+      prompt: {file: configs/prompts/random_numbers.txt}
+      chat_template_kwargs: {thinking: false}
+      kv_cache_gb: 4
+
+  # Engine level: needle alone vs. inside batches of 2..128 (mirrors vLLM's own tests).
+  - experiment: vllm_batch_sweep
+    id: sweep-{model}-{mode}
+    matrix: {model: [qwen3-1.7b], mode: [baseline, batch_invariant]}
+    params: {batch_sizes: [1, 2, 4, 8, 16, 32, 64, 128], trials: 2, max_tokens: 256, max_num_seqs: 128, kv_cache_gb: 12}
+
+  # Ablations (shorter runs).
+  - experiment: vllm_completions          # prefix caching on: identical prompts hit the cache
+    id: ablate-prefix-cache-{model}-{mode}
+    matrix: {model: [qwen3-1.7b], mode: [baseline, batch_invariant]}
+    params: {n: 500, max_tokens: 500, enable_prefix_caching: true}
+
+  - experiment: vllm_completions          # does the attention backend alone fix it? (no)
+    id: ablate-triton-attn-{model}-{mode}
+    matrix: {model: [qwen3-1.7b], mode: [baseline]}
+    params: {n: 500, max_tokens: 500, attention_backend: TRITON_ATTN}
+
+  - experiment: vllm_completions          # the blog's original implementation used FlexAttention
+    id: ablate-flex-attn-{model}-{mode}
+    matrix: {model: [qwen3-1.7b], mode: [batch_invariant]}
+    params: {n: 500, max_tokens: 500, attention_backend: FLEX_ATTENTION}
+
+  # Blog: "Performance" - runs alone on the GPU after everything else.
+  - experiment: vllm_perf
+    id: perf-{model}-{mode}
+    matrix: {model: [qwen3-1.7b], mode: [baseline, batch_invariant]}
+    exclusive: true
+    params: {n: 1000, output_len_range: [90, 110], max_num_seqs: 256, kv_cache_gb: 8}

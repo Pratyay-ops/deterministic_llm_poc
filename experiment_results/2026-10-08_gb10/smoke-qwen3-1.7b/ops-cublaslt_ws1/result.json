@@ -1,0 +1,376 @@
+{
+  "job_id": "ops-cublaslt_ws1",
+  "experiment": "op_invariance",
+  "model": null,
+  "hf_id": null,
+  "mode": "cublaslt_ws1",
+  "started": "2026-10-08T12:04:58+0000",
+  "status": "ok",
+  "summary": {
+    "mode": "cublaslt_ws1",
+    "blog_mm_demo": {
+      "max_abs_diff": 606.625,
+      "blog_value": 1669.25,
+      "batch_invariant": false
+    },
+    "blog_run_to_run": {
+      "iterations": 100,
+      "mismatches": 0,
+      "run_to_run_deterministic": true
+    },
+    "results": [
+      {
+        "op": "mm",
+        "dtype": "bfloat16",
+        "shape": "[B,4096] @ [4096,4096]",
+        "batch_sizes": [
+          1,
+          2,
+          4,
+          16,
+          64,
+          256
+        ],
+        "batch_invariant": true,
+        "first_variant_batch": null,
+        "n_variant_batches": 0,
+        "max_abs_diff": 0.0,
+        "max_abs_diff_by_batch": {
+          "1": 0.0,
+          "2": 0.0,
+          "4": 0.0,
+          "16": 0.0,
+          "64": 0.0,
+          "256": 0.0
+        },
+        "run_to_run_identical": true,
+        "ms_at_max_batch": 0.204,
+        "error": null
+      },
+      {
+        "op": "mm",
+        "dtype": "float32",
+        "shape": "[B,4096] @ [4096,4096]",
+        "batch_sizes": [
+          1,
+          2,
+          4,
+          16,
+          64,
+          256
+        ],
+        "batch_invariant": false,
+        "first_variant_batch": 2,
+        "n_variant_batches": 5,
+        "max_abs_diff": 9.5367431640625e-06,
+        "max_abs_diff_by_batch": {
+          "1": 0.0,
+          "2": 3.5762786865234375e-06,
+          "4": 3.5762786865234375e-06,
+          "16": 3.5762786865234375e-06,
+          "64": 9.5367431640625e-06,
+          "256": 9.5367431640625e-06
+        },
+        "run_to_run_identical": true,
+        "ms_at_max_batch": 1.317,
+        "error": null
+      },
+      {
+        "op": "mm",
+        "dtype": "float16",
+        "shape": "[B,4096] @ [4096,4096]",
+        "batch_sizes": [
+          1,
+          2,
+          4,
+          16,
+          64,
+          256
+        ],
+        "batch_invariant": true,
+        "first_variant_batch": null,
+        "n_variant_batches": 0,
+        "max_abs_diff": 0.0,
+        "max_abs_diff_by_batch": {
+          "1": 0.0,
+          "2": 0.0,
+          "4": 0.0,
+          "16": 0.0,
+          "64": 0.0,
+          "256": 0.0
+        },
+        "run_to_run_identical": true,
+        "ms_at_max_batch": 0.447,
+        "error": null
+      },
+      {
+        "op": "linear_bias",
+        "dtype": "bfloat16",
+        "shape": "F.linear([B,2048], W[6144,2048], bias)  (aten::addmm)",
+        "batch_sizes": [
+          1,
+          2,
+          4,
+          16,
+          64,
+          256
+        ],
+        "batch_invariant": false,
+        "first_variant_batch": 2,
+        "n_variant_batches": 5,
+        "max_abs_diff": 0.00390625,
+        "max_abs_diff_by_batch": {
+          "1": 0.0,
+          "2": 0.00390625,
+          "4": 0.00390625,
+          "16": 0.00390625,
+          "64": 0.00390625,
+          "256": 0.00390625
+        },
+        "run_to_run_identical": true,
+        "ms_at_max_batch": 0.191,
+        "error": null
+      },
+      {
+        "op": "rmsnorm",
+        "dtype": "bfloat16",
+        "shape": "HF RMSNorm over hidden=2048 (aten::mean.dim)",
+        "batch_sizes": [
+          1,
+          2,
+          4,
+          16,
+          64,
+          256
+        ],
+        "batch_invariant": true,
+        "first_variant_batch": null,
+        "n_variant_batches": 0,
+        "max_abs_diff": 0.0,
+        "max_abs_diff_by_batch": {
+          "1": 0.0,
+          "2": 0.0,
+          "4": 0.0,
+          "16": 0.0,
+          "64": 0.0,
+          "256": 0.0
+        },
+        "run_to_run_identical": true,
+        "ms_at_max_batch": 0.035,
+        "error": null
+      },
+      {
+        "op": "log_softmax_vocab",
+        "dtype": "float32",
+        "shape": "log_softmax over vocab=151936 (sampler logprobs)",
+        "batch_sizes": [
+          1,
+          2,
+          4,
+          16,
+          64,
+          256
+        ],
+        "batch_invariant": true,
+        "first_variant_batch": null,
+        "n_variant_batches": 0,
+        "max_abs_diff": 0.0,
+        "max_abs_diff_by_batch": {
+          "1": 0.0,
+          "2": 0.0,
+          "4": 0.0,
+          "16": 0.0,
+          "64": 0.0,
+          "256": 0.0
+        },
+        "run_to_run_identical": true,
+        "ms_at_max_batch": 3.524,
+        "error": null
+      },
+      {
+        "op": "softmax",
+        "dtype": "float32",
+        "shape": "softmax over 4096",
+        "batch_sizes": [
+          1,
+          2,
+          4,
+          16,
+          64,
+          256
+        ],
+        "batch_invariant": true,
+        "first_variant_batch": null,
+        "n_variant_batches": 0,
+        "max_abs_diff": 0.0,
+        "max_abs_diff_by_batch": {
+          "1": 0.0,
+          "2": 0.0,
+          "4": 0.0,
+          "16": 0.0,
+          "64": 0.0,
+          "256": 0.0
+        },
+        "run_to_run_identical": true,
+        "ms_at_max_batch": 0.015,
+        "error": null
+      },
+      {
+        "op": "softmax",
+        "dtype": "bfloat16",
+        "shape": "softmax over 4096",
+        "batch_sizes": [
+          1,
+          2,
+          4,
+          16,
+          64,
+          256
+        ],
+        "batch_invariant": true,
+        "first_variant_batch": null,
+        "n_variant_batches": 0,
+        "max_abs_diff": 0.0,
+        "max_abs_diff_by_batch": {
+          "1": 0.0,
+          "2": 0.0,
+          "4": 0.0,
+          "16": 0.0,
+          "64": 0.0,
+          "256": 0.0
+        },
+        "run_to_run_identical": true,
+        "ms_at_max_batch": 0.015,
+        "error": null
+      },
+      {
+        "op": "bmm_attention_scores",
+        "dtype": "bfloat16",
+        "shape": "q[B,16,1,128] @ k^T[B,16,128,1024]  (aten::bmm, batch=B*heads)",
+        "batch_sizes": [
+          1,
+          2,
+          4,
+          16,
+          64,
+          256
+        ],
+        "batch_invariant": null,
+        "run_to_run_identical": null,
+        "error": "RuntimeError: CUDA error: CUBLAS_STATUS_INVALID_VALUE when calling `cublasLtMatmulAlgoGetHeuristic( ltHandle, computeDesc.descriptor(), Adesc.descriptor(), FakeBdesc.descriptor(), FakeCdesc.descriptor(), FakeCdesc.descriptor(), preference.descriptor(), 1, &heuristicResult, &returnedResult)`"
+      },
+      {
+        "op": "attention_eager_decode",
+        "dtype": "bfloat16",
+        "shape": "eager attention, 1 query vs 1024 cached keys, 16 heads",
+        "batch_sizes": [
+          1,
+          2,
+          4,
+          16,
+          64,
+          256
+        ],
+        "batch_invariant": null,
+        "run_to_run_identical": null,
+        "error": "RuntimeError: CUDA error: CUBLAS_STATUS_INVALID_VALUE when calling `cublasLtMatmulAlgoGetHeuristic( ltHandle, computeDesc.descriptor(), Adesc.descriptor(), FakeBdesc.descriptor(), FakeCdesc.descriptor(), FakeCdesc.descriptor(), preference.descriptor(), 1, &heuristicResult, &returnedResult)`"
+      },
+      {
+        "op": "attention_eager_prefill",
+        "dtype": "bfloat16",
+        "shape": "eager causal attention, 128 queries, 16 heads",
+        "batch_sizes": [
+          1,
+          2,
+          4,
+          16,
+          64,
+          256
+        ],
+        "batch_invariant": true,
+        "first_variant_batch": null,
+        "n_variant_batches": 0,
+        "max_abs_diff": 0.0,
+        "max_abs_diff_by_batch": {
+          "1": 0.0,
+          "2": 0.0,
+          "4": 0.0,
+          "16": 0.0,
+          "64": 0.0,
+          "256": 0.0
+        },
+        "run_to_run_identical": true,
+        "ms_at_max_batch": 21.964,
+        "error": null
+      },
+      {
+        "op": "attention_sdpa_decode",
+        "dtype": "bfloat16",
+        "shape": "F.scaled_dot_product_attention, 1 query vs 1024 keys (not overridden by any mode)",
+        "batch_sizes": [
+          1,
+          2,
+          4,
+          16,
+          64,
+          256
+        ],
+        "batch_invariant": false,
+        "first_variant_batch": 2,
+        "n_variant_batches": 5,
+        "max_abs_diff": 0.0009765625,
+        "max_abs_diff_by_batch": {
+          "1": 0.0,
+          "2": 0.0009765625,
+          "4": 0.0009765625,
+          "16": 0.0009765625,
+          "64": 0.0009765625,
+          "256": 0.0009765625
+        },
+        "run_to_run_identical": true,
+        "ms_at_max_batch": 16.976,
+        "error": null
+      },
+      {
+        "op": "attention_sdpa_prefill",
+        "dtype": "bfloat16",
+        "shape": "F.scaled_dot_product_attention causal, 128 queries, 16 heads",
+        "batch_sizes": [
+          1,
+          2,
+          4,
+          16,
+          64,
+          256
+        ],
+        "batch_invariant": true,
+        "first_variant_batch": null,
+        "n_variant_batches": 0,
+        "max_abs_diff": 0.0,
+        "max_abs_diff_by_batch": {
+          "1": 0.0,
+          "2": 0.0,
+          "4": 0.0,
+          "16": 0.0,
+          "64": 0.0,
+          "256": 0.0
+        },
+        "run_to_run_identical": true,
+        "ms_at_max_batch": 4.003,
+        "error": null
+      }
+    ],
+    "kernels": {
+      "mode": "cublaslt_ws1",
+      "preferred_blas_library": "_BlasBackend.Cublaslt",
+      "CUBLASLT_WORKSPACE_SIZE": "1",
+      "CUBLAS_WORKSPACE_CONFIG": ":16:8"
+    },
+    "n_ops": 13,
+    "n_invariant": 8,
+    "n_run_to_run": 11,
+    "n_errors": 2
+  },
+  "duration_s": 4.48,
+  "finished": "2026-10-08T12:05:02+0000"
+}

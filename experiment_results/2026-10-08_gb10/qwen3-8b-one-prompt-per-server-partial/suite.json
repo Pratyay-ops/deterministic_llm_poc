@@ -1,0 +1,790 @@
+{
+  "name": "qwen3-8b",
+  "description": "The reproduction on Qwen3-8B with the user's own prompts (configs/prompts/my_prompts.txt): every prompt is sent 200 times at temperature 0 to a default vLLM server first, then to a batch-invariant one (VLLM_BATCH_INVARIANT=1), and the completions are compared by token ids and bitwise logprobs. Around that: floating-point demos, op-level run-to-run vs batch invariance in all six kernel modes, model-level invariance with HF transformers, an engine-level needle sweep, prefix caching, and throughput (alone at the end). All prompts come from my_prompts.txt. Roughly 2 h on a GB10.",
+  "memory_budget_gb": 100.0,
+  "max_parallel": 4,
+  "jobs": [
+    {
+      "id": "preflight",
+      "experiment": "preflight",
+      "model": null,
+      "mode": "default",
+      "params": {
+        "seed": 0
+      },
+      "mem_gb": 6.0,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "fp-nonassoc",
+      "experiment": "fp_nonassoc",
+      "model": null,
+      "mode": "default",
+      "params": {
+        "seed": 0
+      },
+      "mem_gb": 0.5,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "ops-baseline",
+      "experiment": "op_invariance",
+      "model": null,
+      "mode": "baseline",
+      "params": {
+        "seed": 0
+      },
+      "mem_gb": 6.0,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "ops-torch_flags",
+      "experiment": "op_invariance",
+      "model": null,
+      "mode": "torch_flags",
+      "params": {
+        "seed": 0
+      },
+      "mem_gb": 6.0,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "ops-cublaslt_ws1",
+      "experiment": "op_invariance",
+      "model": null,
+      "mode": "cublaslt_ws1",
+      "params": {
+        "seed": 0
+      },
+      "mem_gb": 6.0,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "ops-official",
+      "experiment": "op_invariance",
+      "model": null,
+      "mode": "official",
+      "params": {
+        "seed": 0
+      },
+      "mem_gb": 6.0,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "ops-official_full",
+      "experiment": "op_invariance",
+      "model": null,
+      "mode": "official_full",
+      "params": {
+        "seed": 0
+      },
+      "mem_gb": 6.0,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "ops-custom",
+      "experiment": "op_invariance",
+      "model": null,
+      "mode": "custom",
+      "params": {
+        "seed": 0
+      },
+      "mem_gb": 6.0,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "mine-p0-rate-limiter-qwen3-8b-baseline",
+      "experiment": "vllm_completions",
+      "model": "qwen3-8b",
+      "mode": "baseline",
+      "params": {
+        "seed": 0,
+        "n": 200,
+        "max_tokens": 1000,
+        "max_num_seqs": 96,
+        "kv_cache_gb": 20,
+        "prompt": {
+          "file": "configs/prompts/my_prompts.txt",
+          "index": 0
+        }
+      },
+      "mem_gb": 42.4,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "mine-p1-lru-cache-qwen3-8b-baseline",
+      "experiment": "vllm_completions",
+      "model": "qwen3-8b",
+      "mode": "baseline",
+      "params": {
+        "seed": 0,
+        "n": 200,
+        "max_tokens": 1000,
+        "max_num_seqs": 96,
+        "kv_cache_gb": 20,
+        "prompt": {
+          "file": "configs/prompts/my_prompts.txt",
+          "index": 1
+        }
+      },
+      "mem_gb": 42.4,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "mine-p2-lis-qwen3-8b-baseline",
+      "experiment": "vllm_completions",
+      "model": "qwen3-8b",
+      "mode": "baseline",
+      "params": {
+        "seed": 0,
+        "n": 200,
+        "max_tokens": 1000,
+        "max_num_seqs": 96,
+        "kv_cache_gb": 20,
+        "prompt": {
+          "file": "configs/prompts/my_prompts.txt",
+          "index": 2
+        }
+      },
+      "mem_gb": 42.4,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "mine-p3-microservices-qwen3-8b-baseline",
+      "experiment": "vllm_completions",
+      "model": "qwen3-8b",
+      "mode": "baseline",
+      "params": {
+        "seed": 0,
+        "n": 200,
+        "max_tokens": 1000,
+        "max_num_seqs": 96,
+        "kv_cache_gb": 20,
+        "prompt": {
+          "file": "configs/prompts/my_prompts.txt",
+          "index": 3
+        }
+      },
+      "mem_gb": 42.4,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "mine-p4-databases-qwen3-8b-baseline",
+      "experiment": "vllm_completions",
+      "model": "qwen3-8b",
+      "mode": "baseline",
+      "params": {
+        "seed": 0,
+        "n": 200,
+        "max_tokens": 1000,
+        "max_num_seqs": 96,
+        "kv_cache_gb": 20,
+        "prompt": {
+          "file": "configs/prompts/my_prompts.txt",
+          "index": 4
+        }
+      },
+      "mem_gb": 42.4,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "mine-p5-haiku-qwen3-8b-baseline",
+      "experiment": "vllm_completions",
+      "model": "qwen3-8b",
+      "mode": "baseline",
+      "params": {
+        "seed": 0,
+        "n": 200,
+        "max_tokens": 1000,
+        "max_num_seqs": 96,
+        "kv_cache_gb": 20,
+        "prompt": {
+          "file": "configs/prompts/my_prompts.txt",
+          "index": 5
+        }
+      },
+      "mem_gb": 42.4,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "mine-p6-feynman-qwen3-8b-baseline",
+      "experiment": "vllm_completions",
+      "model": "qwen3-8b",
+      "mode": "baseline",
+      "params": {
+        "seed": 0,
+        "n": 200,
+        "max_tokens": 1000,
+        "max_num_seqs": 96,
+        "kv_cache_gb": 20,
+        "prompt": {
+          "file": "configs/prompts/my_prompts.txt",
+          "index": 6
+        }
+      },
+      "mem_gb": 42.4,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "mine-p7-sql-parser-qwen3-8b-baseline",
+      "experiment": "vllm_completions",
+      "model": "qwen3-8b",
+      "mode": "baseline",
+      "params": {
+        "seed": 0,
+        "n": 200,
+        "max_tokens": 1000,
+        "max_num_seqs": 96,
+        "kv_cache_gb": 20,
+        "prompt": {
+          "file": "configs/prompts/my_prompts.txt",
+          "index": 7
+        }
+      },
+      "mem_gb": 42.4,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "mine-p0-rate-limiter-qwen3-8b-batch_invariant",
+      "experiment": "vllm_completions",
+      "model": "qwen3-8b",
+      "mode": "batch_invariant",
+      "params": {
+        "seed": 0,
+        "n": 200,
+        "max_tokens": 1000,
+        "max_num_seqs": 96,
+        "kv_cache_gb": 20,
+        "prompt": {
+          "file": "configs/prompts/my_prompts.txt",
+          "index": 0
+        }
+      },
+      "mem_gb": 42.4,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "mine-p1-lru-cache-qwen3-8b-batch_invariant",
+      "experiment": "vllm_completions",
+      "model": "qwen3-8b",
+      "mode": "batch_invariant",
+      "params": {
+        "seed": 0,
+        "n": 200,
+        "max_tokens": 1000,
+        "max_num_seqs": 96,
+        "kv_cache_gb": 20,
+        "prompt": {
+          "file": "configs/prompts/my_prompts.txt",
+          "index": 1
+        }
+      },
+      "mem_gb": 42.4,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "mine-p2-lis-qwen3-8b-batch_invariant",
+      "experiment": "vllm_completions",
+      "model": "qwen3-8b",
+      "mode": "batch_invariant",
+      "params": {
+        "seed": 0,
+        "n": 200,
+        "max_tokens": 1000,
+        "max_num_seqs": 96,
+        "kv_cache_gb": 20,
+        "prompt": {
+          "file": "configs/prompts/my_prompts.txt",
+          "index": 2
+        }
+      },
+      "mem_gb": 42.4,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "mine-p3-microservices-qwen3-8b-batch_invariant",
+      "experiment": "vllm_completions",
+      "model": "qwen3-8b",
+      "mode": "batch_invariant",
+      "params": {
+        "seed": 0,
+        "n": 200,
+        "max_tokens": 1000,
+        "max_num_seqs": 96,
+        "kv_cache_gb": 20,
+        "prompt": {
+          "file": "configs/prompts/my_prompts.txt",
+          "index": 3
+        }
+      },
+      "mem_gb": 42.4,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "mine-p4-databases-qwen3-8b-batch_invariant",
+      "experiment": "vllm_completions",
+      "model": "qwen3-8b",
+      "mode": "batch_invariant",
+      "params": {
+        "seed": 0,
+        "n": 200,
+        "max_tokens": 1000,
+        "max_num_seqs": 96,
+        "kv_cache_gb": 20,
+        "prompt": {
+          "file": "configs/prompts/my_prompts.txt",
+          "index": 4
+        }
+      },
+      "mem_gb": 42.4,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "mine-p5-haiku-qwen3-8b-batch_invariant",
+      "experiment": "vllm_completions",
+      "model": "qwen3-8b",
+      "mode": "batch_invariant",
+      "params": {
+        "seed": 0,
+        "n": 200,
+        "max_tokens": 1000,
+        "max_num_seqs": 96,
+        "kv_cache_gb": 20,
+        "prompt": {
+          "file": "configs/prompts/my_prompts.txt",
+          "index": 5
+        }
+      },
+      "mem_gb": 42.4,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "mine-p6-feynman-qwen3-8b-batch_invariant",
+      "experiment": "vllm_completions",
+      "model": "qwen3-8b",
+      "mode": "batch_invariant",
+      "params": {
+        "seed": 0,
+        "n": 200,
+        "max_tokens": 1000,
+        "max_num_seqs": 96,
+        "kv_cache_gb": 20,
+        "prompt": {
+          "file": "configs/prompts/my_prompts.txt",
+          "index": 6
+        }
+      },
+      "mem_gb": 42.4,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "mine-p7-sql-parser-qwen3-8b-batch_invariant",
+      "experiment": "vllm_completions",
+      "model": "qwen3-8b",
+      "mode": "batch_invariant",
+      "params": {
+        "seed": 0,
+        "n": 200,
+        "max_tokens": 1000,
+        "max_num_seqs": 96,
+        "kv_cache_gb": 20,
+        "prompt": {
+          "file": "configs/prompts/my_prompts.txt",
+          "index": 7
+        }
+      },
+      "mem_gb": 42.4,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "hf-qwen3-8b-baseline",
+      "experiment": "hf_invariance",
+      "model": "qwen3-8b",
+      "mode": "baseline",
+      "params": {
+        "seed": 0,
+        "batch_sizes": [
+          1,
+          2,
+          4,
+          8,
+          16
+        ],
+        "max_new_tokens": 128,
+        "prompt": {
+          "file": "configs/prompts/my_prompts.txt",
+          "index": 1
+        }
+      },
+      "mem_gb": 26.0,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "hf-qwen3-8b-baseline_eager",
+      "experiment": "hf_invariance",
+      "model": "qwen3-8b",
+      "mode": "baseline_eager",
+      "params": {
+        "seed": 0,
+        "batch_sizes": [
+          1,
+          2,
+          4,
+          8,
+          16
+        ],
+        "max_new_tokens": 128,
+        "prompt": {
+          "file": "configs/prompts/my_prompts.txt",
+          "index": 1
+        }
+      },
+      "mem_gb": 26.0,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "hf-qwen3-8b-official",
+      "experiment": "hf_invariance",
+      "model": "qwen3-8b",
+      "mode": "official",
+      "params": {
+        "seed": 0,
+        "batch_sizes": [
+          1,
+          2,
+          4,
+          8,
+          16
+        ],
+        "max_new_tokens": 128,
+        "prompt": {
+          "file": "configs/prompts/my_prompts.txt",
+          "index": 1
+        }
+      },
+      "mem_gb": 26.0,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "hf-qwen3-8b-official_full",
+      "experiment": "hf_invariance",
+      "model": "qwen3-8b",
+      "mode": "official_full",
+      "params": {
+        "seed": 0,
+        "batch_sizes": [
+          1,
+          2,
+          4,
+          8,
+          16
+        ],
+        "max_new_tokens": 128,
+        "prompt": {
+          "file": "configs/prompts/my_prompts.txt",
+          "index": 1
+        }
+      },
+      "mem_gb": 26.0,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "hf-qwen3-8b-custom",
+      "experiment": "hf_invariance",
+      "model": "qwen3-8b",
+      "mode": "custom",
+      "params": {
+        "seed": 0,
+        "batch_sizes": [
+          1,
+          2,
+          4,
+          8,
+          16
+        ],
+        "max_new_tokens": 128,
+        "prompt": {
+          "file": "configs/prompts/my_prompts.txt",
+          "index": 1
+        }
+      },
+      "mem_gb": 26.0,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "sweep-qwen3-8b-baseline",
+      "experiment": "vllm_batch_sweep",
+      "model": "qwen3-8b",
+      "mode": "baseline",
+      "params": {
+        "seed": 0,
+        "batch_sizes": [
+          1,
+          2,
+          4,
+          8,
+          16,
+          32,
+          64,
+          128
+        ],
+        "trials": 2,
+        "max_tokens": 256,
+        "max_num_seqs": 128,
+        "kv_cache_gb": 14,
+        "prompt": {
+          "file": "configs/prompts/my_prompts.txt",
+          "index": 0
+        }
+      },
+      "mem_gb": 36.4,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "sweep-qwen3-8b-batch_invariant",
+      "experiment": "vllm_batch_sweep",
+      "model": "qwen3-8b",
+      "mode": "batch_invariant",
+      "params": {
+        "seed": 0,
+        "batch_sizes": [
+          1,
+          2,
+          4,
+          8,
+          16,
+          32,
+          64,
+          128
+        ],
+        "trials": 2,
+        "max_tokens": 256,
+        "max_num_seqs": 128,
+        "kv_cache_gb": 14,
+        "prompt": {
+          "file": "configs/prompts/my_prompts.txt",
+          "index": 0
+        }
+      },
+      "mem_gb": 36.4,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "ablate-prefix-cache-qwen3-8b-baseline",
+      "experiment": "vllm_completions",
+      "model": "qwen3-8b",
+      "mode": "baseline",
+      "params": {
+        "seed": 0,
+        "n": 200,
+        "max_tokens": 500,
+        "enable_prefix_caching": true,
+        "kv_cache_gb": 12,
+        "prompt": {
+          "file": "configs/prompts/my_prompts.txt",
+          "index": 3
+        }
+      },
+      "mem_gb": 34.4,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "ablate-prefix-cache-qwen3-8b-batch_invariant",
+      "experiment": "vllm_completions",
+      "model": "qwen3-8b",
+      "mode": "batch_invariant",
+      "params": {
+        "seed": 0,
+        "n": 200,
+        "max_tokens": 500,
+        "enable_prefix_caching": true,
+        "kv_cache_gb": 12,
+        "prompt": {
+          "file": "configs/prompts/my_prompts.txt",
+          "index": 3
+        }
+      },
+      "mem_gb": 34.4,
+      "exclusive": false,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "perf-qwen3-8b-baseline",
+      "experiment": "vllm_perf",
+      "model": "qwen3-8b",
+      "mode": "baseline",
+      "params": {
+        "seed": 0,
+        "n": 1000,
+        "output_len_range": [
+          90,
+          110
+        ],
+        "max_num_seqs": 256,
+        "kv_cache_gb": 10
+      },
+      "mem_gb": 32.4,
+      "exclusive": true,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    },
+    {
+      "id": "perf-qwen3-8b-batch_invariant",
+      "experiment": "vllm_perf",
+      "model": "qwen3-8b",
+      "mode": "batch_invariant",
+      "params": {
+        "seed": 0,
+        "n": 1000,
+        "output_len_range": [
+          90,
+          110
+        ],
+        "max_num_seqs": 256,
+        "kv_cache_gb": 10
+      },
+      "mem_gb": 32.4,
+      "exclusive": true,
+      "depends_on": [],
+      "timeout_min": 240.0,
+      "max_retries": 3,
+      "env": {}
+    }
+  ],
+  "source": "/workspace/detllm/configs/suites/qwen3-8b.yaml",
+  "run_dir": "/workspace/detllm/results/qwen3-8b-20261008-123024",
+  "started": "2026-10-08T12:30:24+0000"
+}

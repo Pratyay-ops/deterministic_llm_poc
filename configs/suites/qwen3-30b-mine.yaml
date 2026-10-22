@@ -1,0 +1,31 @@
+name: qwen3-30b-mine
+description: >
+  The user's prompts (configs/prompts/my_prompts.txt) on Qwen3-30B-A3B-Instruct-2507 (MoE, ~3B of 30B
+  parameters active per token): all 8 prompts x 100 requests (temperature 0, up to 1000 tokens) mixed in
+  ONE vLLM server - first with default kernels, then with VLLM_BATCH_INVARIANT=1 - compared per prompt by
+  token ids and bitwise logprobs. ~92 GB per run, so the two modes run one after the other (roughly 75 min).
+memory_budget_gb: 100
+max_parallel: 2
+defaults:
+  seed: 0
+
+# 160 sequences x up to ~1500 tokens of context fit in 24 GB of KV cache (Qwen3-30B-A3B: 96 KiB/token).
+x-all: &all
+  prompts: {file: configs/prompts/my_prompts.txt}
+  n: 100
+  max_tokens: 1000
+  max_num_seqs: 160
+  kv_cache_gb: 24
+
+jobs:
+  # All of my_prompts.txt on the DEFAULT server first ...
+  - experiment: vllm_completions
+    id: mine-all-{model}-{mode}
+    matrix: {model: [qwen3-30b-a3b-instruct-2507], mode: [baseline]}
+    params: *all
+
+  # ... then on the BATCH-INVARIANT server (memory keeps the two runs apart; listed second, so it runs second).
+  - experiment: vllm_completions
+    id: mine-all-{model}-{mode}
+    matrix: {model: [qwen3-30b-a3b-instruct-2507], mode: [batch_invariant]}
+    params: *all

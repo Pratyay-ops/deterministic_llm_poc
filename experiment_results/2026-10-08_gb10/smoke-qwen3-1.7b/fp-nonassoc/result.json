@@ -1,0 +1,25 @@
+{
+  "job_id": "fp-nonassoc",
+  "experiment": "fp_nonassoc",
+  "model": null,
+  "hf_id": null,
+  "mode": "default",
+  "started": "2026-10-08T12:04:58+0000",
+  "status": "ok",
+  "summary": {
+    "associativity": {
+      "(0.1 + 1e20) - 1e20": 0.0,
+      "0.1 + (1e20 - 1e20)": 0.1
+    },
+    "n_unique_sums": 258,
+    "blog_n_unique_sums": 102,
+    "matches_blog": false,
+    "min_sum": -2.220446049250313e-16,
+    "max_sum": 2.220446049250313e-16,
+    "python": "3.12.3",
+    "n_unique_builtin_sum": 102,
+    "builtin_sum_note": "Python >= 3.12 sum() uses compensated summation"
+  },
+  "duration_s": 0.03,
+  "finished": "2026-10-08T12:04:58+0000"
+}

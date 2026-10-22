@@ -1,0 +1,169 @@
+{
+  "job_id": "mine-p0-rate-limiter-qwen3-8b-baseline",
+  "experiment": "vllm_completions",
+  "model": "qwen3-8b",
+  "hf_id": "Qwen/Qwen3-8B",
+  "mode": "baseline",
+  "started": "2026-10-08T12:30:42+0000",
+  "status": "ok",
+  "summary": {
+    "model": "qwen3-8b",
+    "hf_id": "Qwen/Qwen3-8B",
+    "mode": "baseline",
+    "engine": "server",
+    "prompt": "Design a distributed rate limiter for an API handling 1 million requests per second across 100 servers. Explain: architecture with specific data structures, consensus mechanism for distributed counting, failure handling and automatic recovery, how to ensure fairness across users while preventing abuse, and optimization strategies to maintain latency below 10ms. Include discussion of CAP theorem trade-offs and provide pseudocode for the core rate limiting algorithm with exact implementation details.",
+    "prompt_tokens": 99,
+    "n": 200,
+    "max_tokens": 1000,
+    "compared_on": "token_ids+logprobs",
+    "n_valid": 200,
+    "n_failed": 0,
+    "n_unique": 8,
+    "modal_count": 41,
+    "counts": [
+      41,
+      40,
+      40,
+      40,
+      29,
+      7,
+      2,
+      1
+    ],
+    "earliest_divergence": 132,
+    "divergence_positions": [
+      132,
+      140,
+      140,
+      140,
+      197,
+      272,
+      387
+    ],
+    "unique": [
+      {
+        "rank": 0,
+        "count": 41,
+        "length": 1000,
+        "first_divergence_vs_modal": null,
+        "example_index": 13
+      },
+      {
+        "rank": 1,
+        "count": 40,
+        "length": 1000,
+        "first_divergence_vs_modal": 197,
+        "example_index": 0
+      },
+      {
+        "rank": 2,
+        "count": 40,
+        "length": 1000,
+        "first_divergence_vs_modal": 140,
+        "example_index": 70
+      },
+      {
+        "rank": 3,
+        "count": 40,
+        "length": 1000,
+        "first_divergence_vs_modal": 140,
+        "example_index": 90
+      },
+      {
+        "rank": 4,
+        "count": 29,
+        "length": 1000,
+        "first_divergence_vs_modal": 140,
+        "example_index": 110
+      },
+      {
+        "rank": 5,
+        "count": 7,
+        "length": 1000,
+        "first_divergence_vs_modal": 132,
+        "example_index": 193
+      },
+      {
+        "rank": 6,
+        "count": 2,
+        "length": 1000,
+        "first_divergence_vs_modal": 272,
+        "example_index": 119
+      },
+      {
+        "rank": 7,
+        "count": 1,
+        "length": 1000,
+        "first_divergence_vs_modal": 387,
+        "example_index": 192
+      }
+    ],
+    "modal_index": 13,
+    "unit": "tokens",
+    "modal_length": 1000,
+    "modal_logprob_variants": 1,
+    "modal_logprob_counts": [
+      41
+    ],
+    "divergence_example": {
+      "position": 197,
+      "token_number": 198,
+      "shared_prefix_tail": "** (for storing rate limit counters)\n- **Message queue** (for coordination and event propagation)\n- **Monitoring and",
+      "modal_continuation": " analytics** (for real-time metrics)\n\n### 2.",
+      "other_continuation": " logging** (for audit and debugging)\n\n### 2."
+    },
+    "modal_text_head": "Designing a **distributed rate limiter** for an API that handles **1 million requests per second** across **100 servers** requires a robust, scalable, and fault-tolerant architecture. The system must ensure **fairness**, **prevent abuse**, and **maintain low latency** (under 10ms). Below is a comprehensive design that includes:\n\n- **Architecture and data structures**\n- **Consensus mechanism**\n- **Failure handling and recovery**\n- **Fairness and abuse prevention**\n- **Optimization strategies**\n- **CAP theorem trade-offs**\n- **Pseudocode for the core algorithm**\n\n---\n\n## \ud83e\udde0 **Architecture Overvie",
+    "mean_output_tokens": 1000.0,
+    "engine_info": {
+      "vllm_version": "0.31.0",
+      "engine_kwargs": {
+        "model": "Qwen/Qwen3-8B",
+        "dtype": "bfloat16",
+        "seed": 0,
+        "max_model_len": 4096,
+        "gpu_memory_utilization": 0.3247,
+        "max_num_seqs": 96,
+        "enable_prefix_caching": false,
+        "enforce_eager": false,
+        "kv_cache_memory_bytes": 20000000000
+      },
+      "command": [
+        "/usr/local/bin/vllm",
+        "serve",
+        "Qwen/Qwen3-8B",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "47633",
+        "--dtype",
+        "bfloat16",
+        "--seed",
+        "0",
+        "--max-model-len",
+        "4096",
+        "--gpu-memory-utilization",
+        "0.3247",
+        "--max-num-seqs",
+        "96",
+        "--no-enable-prefix-caching",
+        "--kv-cache-memory-bytes",
+        "20000000000"
+      ],
+      "startup_s": 229.8,
+      "api": "completions",
+      "wall_time_s": 765.7,
+      "attention_backend_log": "FLASH_ATTN"
+    },
+    "blog_reference": {
+      "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+      "n": 1000,
+      "max_tokens": 1000,
+      "n_unique_default": 80,
+      "modal_count_default": 78,
+      "first_divergence_token_number": 103,
+      "n_unique_batch_invariant": 1
+    }
+  },
+  "duration_s": 1006.05,
+  "finished": "2026-10-08T12:47:28+0000"
+}

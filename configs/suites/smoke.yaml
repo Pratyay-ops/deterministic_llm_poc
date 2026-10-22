@@ -1,0 +1,40 @@
+name: smoke
+description: >
+  Quick end-to-end check (roughly 10-20 min on a GB10, plus first-time downloads/compiles): every
+  experiment once with small workloads on Qwen3-1.7B. Run this first; if it is green, run `parallel`.
+memory_budget_gb: 100
+max_parallel: 8
+defaults:
+  seed: 0
+jobs:
+  - experiment: preflight
+    id: preflight
+
+  - experiment: fp_nonassoc
+    id: fp-nonassoc
+
+  - experiment: op_invariance
+    id: ops-{mode}
+    matrix: {mode: [baseline, cublaslt_ws1, official_full, custom]}
+    params: {quick: true}
+
+  - experiment: hf_invariance
+    id: hf-{model}-{mode}
+    matrix: {model: [qwen3-1.7b], mode: [baseline, official_full, custom]}
+    params: {batch_sizes: [1, 2, 4], max_new_tokens: 24}
+
+  - experiment: vllm_batch_sweep
+    id: sweep-{model}-{mode}
+    matrix: {model: [qwen3-1.7b], mode: [baseline, batch_invariant]}
+    params:
+      batch_sizes: [1, 8, 32]
+      trials: 1
+      max_tokens: 64
+      max_num_seqs: 64
+      kv_cache_gb: 6
+      filler_max_prompt_tokens: 256
+
+  - experiment: vllm_completions
+    id: completions-{model}-{mode}
+    matrix: {model: [qwen3-1.7b], mode: [baseline, batch_invariant]}
+    params: {n: 100, max_tokens: 256, kv_cache_gb: 6}

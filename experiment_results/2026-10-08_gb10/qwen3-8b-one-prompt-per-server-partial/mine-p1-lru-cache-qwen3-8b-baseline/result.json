@@ -1,0 +1,160 @@
+{
+  "job_id": "mine-p1-lru-cache-qwen3-8b-baseline",
+  "experiment": "vllm_completions",
+  "model": "qwen3-8b",
+  "hf_id": "Qwen/Qwen3-8B",
+  "mode": "baseline",
+  "started": "2026-10-08T12:30:42+0000",
+  "status": "ok",
+  "summary": {
+    "model": "qwen3-8b",
+    "hf_id": "Qwen/Qwen3-8B",
+    "mode": "baseline",
+    "engine": "server",
+    "prompt": "Implement a thread-safe LRU cache in Python that supports O(1) get and put operations with the following requirements: configurable maximum capacity with automatic eviction, TTL (time-to-live) expiration for individual entries with background cleanup, thread-safe operations using appropriate synchronization primitives without deadlocks, memory-efficient storage minimizing overhead, comprehensive type hints for all methods and classes, detailed docstrings explaining complexity and invariants, proper error handling for all edge cases including concurrent access, and a complete test suite with at least 10 test cases covering normal operation and race conditions.",
+    "prompt_tokens": 123,
+    "n": 200,
+    "max_tokens": 1000,
+    "compared_on": "token_ids+logprobs",
+    "n_valid": 200,
+    "n_failed": 0,
+    "n_unique": 7,
+    "modal_count": 33,
+    "counts": [
+      33,
+      32,
+      32,
+      32,
+      32,
+      31,
+      8
+    ],
+    "earliest_divergence": 183,
+    "divergence_positions": [
+      183,
+      183,
+      183,
+      265,
+      860,
+      863
+    ],
+    "unique": [
+      {
+        "rank": 0,
+        "count": 33,
+        "length": 1000,
+        "first_divergence_vs_modal": null,
+        "example_index": 35
+      },
+      {
+        "rank": 1,
+        "count": 32,
+        "length": 1000,
+        "first_divergence_vs_modal": 183,
+        "example_index": 4
+      },
+      {
+        "rank": 2,
+        "count": 32,
+        "length": 1000,
+        "first_divergence_vs_modal": 860,
+        "example_index": 52
+      },
+      {
+        "rank": 3,
+        "count": 32,
+        "length": 1000,
+        "first_divergence_vs_modal": 183,
+        "example_index": 68
+      },
+      {
+        "rank": 4,
+        "count": 32,
+        "length": 1000,
+        "first_divergence_vs_modal": 265,
+        "example_index": 92
+      },
+      {
+        "rank": 5,
+        "count": 31,
+        "length": 1000,
+        "first_divergence_vs_modal": 183,
+        "example_index": 0
+      },
+      {
+        "rank": 6,
+        "count": 8,
+        "length": 1000,
+        "first_divergence_vs_modal": 863,
+        "example_index": 85
+      }
+    ],
+    "modal_index": 35,
+    "unit": "tokens",
+    "modal_length": 1000,
+    "modal_logprob_variants": 1,
+    "modal_logprob_counts": [
+      33
+    ],
+    "divergence_example": {
+      "position": 183,
+      "token_number": 184,
+      "shared_prefix_tail": "\n\n```python\nimport threading\nimport time\nimport heapq\nfrom typing import Any, Dict, Optional, Tuple,",
+      "modal_continuation": " List, Union\nfrom collections import OrderedDict\n\nclass LRUC",
+      "other_continuation": " Union\nfrom collections import OrderedDict\n\nclass LRUCache:\n"
+    },
+    "modal_text_head": "Here's a comprehensive implementation of a **thread-safe LRU cache** in Python that meets all your requirements:\n\n---\n\n## \u2705 **Thread-Safe LRU Cache with TTL and Background Cleanup**\n\n### \u2705 Features:\n- **O(1)** `get` and `put` operations\n- **LRU eviction** with configurable capacity\n- **TTL (Time-to-Live)** for individual entries\n- **Background cleanup** of expired entries\n- **Thread-safe** using `threading.Lock` and `threading.Condition`\n- **Memory-efficient** storage using `OrderedDict` and `heapq` for TTL\n- **Type hints** and **docstrings**\n- **Comprehensive test suite** with 10+ test cases\n",
+    "mean_output_tokens": 1000.0,
+    "engine_info": {
+      "vllm_version": "0.31.0",
+      "engine_kwargs": {
+        "model": "Qwen/Qwen3-8B",
+        "dtype": "bfloat16",
+        "seed": 0,
+        "max_model_len": 4096,
+        "gpu_memory_utilization": 0.3247,
+        "max_num_seqs": 96,
+        "enable_prefix_caching": false,
+        "enforce_eager": false,
+        "kv_cache_memory_bytes": 20000000000
+      },
+      "command": [
+        "/usr/local/bin/vllm",
+        "serve",
+        "Qwen/Qwen3-8B",
+        "--host",
+        "127.0.0.1",
+        "--port",
+        "49149",
+        "--dtype",
+        "bfloat16",
+        "--seed",
+        "0",
+        "--max-model-len",
+        "4096",
+        "--gpu-memory-utilization",
+        "0.3247",
+        "--max-num-seqs",
+        "96",
+        "--no-enable-prefix-caching",
+        "--kv-cache-memory-bytes",
+        "20000000000"
+      ],
+      "startup_s": 232.2,
+      "api": "completions",
+      "wall_time_s": 767.28,
+      "attention_backend_log": "FLASH_ATTN"
+    },
+    "blog_reference": {
+      "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+      "n": 1000,
+      "max_tokens": 1000,
+      "n_unique_default": 80,
+      "modal_count_default": 78,
+      "first_divergence_token_number": 103,
+      "n_unique_batch_invariant": 1
+    }
+  },
+  "duration_s": 1007.81,
+  "finished": "2026-10-08T12:47:30+0000"
+}

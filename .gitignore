@@ -39,9 +39,8 @@ models/
 *.bin
 *.safetensors
 
-# Results
-results/*.json
-results/*.csv
+# Results (run directories can be large; pack one with scripts/gb10/collect_results.sh)
+results/
 
 # IDE
 .vscode/

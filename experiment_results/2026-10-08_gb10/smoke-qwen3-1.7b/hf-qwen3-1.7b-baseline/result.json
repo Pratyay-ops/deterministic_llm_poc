@@ -1,0 +1,124 @@
+{
+  "job_id": "hf-qwen3-1.7b-baseline",
+  "experiment": "hf_invariance",
+  "model": "qwen3-1.7b",
+  "hf_id": "Qwen/Qwen3-1.7B",
+  "mode": "baseline",
+  "started": "2026-10-08T12:04:58+0000",
+  "status": "ok",
+  "summary": {
+    "model": "qwen3-1.7b",
+    "hf_id": "Qwen/Qwen3-1.7B",
+    "mode": "baseline",
+    "attn_implementation": "sdpa",
+    "prompt_tokens": 19,
+    "max_new_tokens": 24,
+    "forward": [
+      {
+        "batch_size": 1,
+        "position": "first",
+        "bitwise_equal": true,
+        "max_abs_diff": 0.0,
+        "argmax_agreement": 1.0
+      },
+      {
+        "batch_size": 2,
+        "position": "first",
+        "bitwise_equal": false,
+        "max_abs_diff": 0.75,
+        "argmax_agreement": 1.0
+      },
+      {
+        "batch_size": 2,
+        "position": "last",
+        "bitwise_equal": false,
+        "max_abs_diff": 0.75,
+        "argmax_agreement": 1.0
+      },
+      {
+        "batch_size": 4,
+        "position": "first",
+        "bitwise_equal": false,
+        "max_abs_diff": 0.6875,
+        "argmax_agreement": 1.0
+      },
+      {
+        "batch_size": 4,
+        "position": "last",
+        "bitwise_equal": false,
+        "max_abs_diff": 0.65234375,
+        "argmax_agreement": 1.0
+      }
+    ],
+    "forward_invariant": false,
+    "decode": [
+      {
+        "batch_size": 1,
+        "position": "first",
+        "tokens_equal": true,
+        "first_token_divergence": null,
+        "logprobs_bitwise_equal": true,
+        "first_logprob_mismatch": null,
+        "max_abs_logprob_diff": 0.0,
+        "identical": true
+      },
+      {
+        "batch_size": 2,
+        "position": "first",
+        "tokens_equal": true,
+        "first_token_divergence": null,
+        "logprobs_bitwise_equal": false,
+        "first_logprob_mismatch": 0,
+        "max_abs_logprob_diff": 0.056817710399627686,
+        "identical": false
+      },
+      {
+        "batch_size": 2,
+        "position": "last",
+        "tokens_equal": true,
+        "first_token_divergence": null,
+        "logprobs_bitwise_equal": false,
+        "first_logprob_mismatch": 0,
+        "max_abs_logprob_diff": 0.07693338394165039,
+        "identical": false
+      },
+      {
+        "batch_size": 4,
+        "position": "first",
+        "tokens_equal": true,
+        "first_token_divergence": null,
+        "logprobs_bitwise_equal": false,
+        "first_logprob_mismatch": 0,
+        "max_abs_logprob_diff": 0.06537547707557678,
+        "identical": false
+      },
+      {
+        "batch_size": 4,
+        "position": "last",
+        "tokens_equal": true,
+        "first_token_divergence": null,
+        "logprobs_bitwise_equal": false,
+        "first_logprob_mismatch": 0,
+        "max_abs_logprob_diff": 0.05681765079498291,
+        "identical": false
+      }
+    ],
+    "decode_invariant": false,
+    "decode_token_invariant": true,
+    "first_token_divergence": null,
+    "run_to_run": {
+      "tokens_equal": true,
+      "first_token_divergence": null,
+      "logprobs_bitwise_equal": true,
+      "first_logprob_mismatch": null,
+      "max_abs_logprob_diff": 0.0,
+      "identical": true
+    },
+    "examples": [],
+    "kernels": {
+      "mode": "baseline"
+    }
+  },
+  "duration_s": 36.25,
+  "finished": "2026-10-08T12:05:34+0000"
+}

@@ -1,0 +1,2 @@
+# The prompt used in the blog's "How nondeterministic are completions?" experiment.
+Tell me about Richard Feynman

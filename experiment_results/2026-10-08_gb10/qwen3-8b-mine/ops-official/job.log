@@ -1,0 +1,18 @@
+
+===== attempt 1 at 2026-10-08T13:04:18+0000 =====
+13:04:18 INFO detllm.job.ops-official: job ops-official: experiment=op_invariance model=None mode=official
+13:04:21 INFO detllm.job.ops-official: blog mm demo: {'max_abs_diff': 0.0, 'blog_value': 1669.25, 'batch_invariant': True}
+13:04:21 INFO detllm.job.ops-official: mm                         bfloat16  invariant=True run_to_run=True max|diff|=0.0 
+13:04:21 INFO detllm.job.ops-official: mm                         float32   invariant=True run_to_run=True max|diff|=0.0 
+13:04:21 INFO detllm.job.ops-official: mm                         float16   invariant=True run_to_run=True max|diff|=0.0 
+13:04:22 INFO detllm.job.ops-official: linear_bias                bfloat16  invariant=True run_to_run=True max|diff|=0.0 
+13:04:22 INFO detllm.job.ops-official: rmsnorm                    bfloat16  invariant=True run_to_run=True max|diff|=0.0 
+13:04:22 INFO detllm.job.ops-official: log_softmax_vocab          float32   invariant=True run_to_run=True max|diff|=0.0 
+13:04:22 INFO detllm.job.ops-official: softmax                    float32   invariant=True run_to_run=True max|diff|=0.0 
+13:04:22 INFO detllm.job.ops-official: softmax                    bfloat16  invariant=True run_to_run=True max|diff|=0.0 
+13:04:23 INFO detllm.job.ops-official: bmm_attention_scores       bfloat16  invariant=True run_to_run=True max|diff|=0.0 
+13:04:24 INFO detllm.job.ops-official: attention_eager_decode     bfloat16  invariant=True run_to_run=True max|diff|=0.0 
+13:04:25 INFO detllm.job.ops-official: attention_eager_prefill    bfloat16  invariant=True run_to_run=True max|diff|=0.0 
+13:04:26 INFO detllm.job.ops-official: attention_sdpa_decode      bfloat16  invariant=False run_to_run=True max|diff|=0.0009765625 
+13:04:26 INFO detllm.job.ops-official: attention_sdpa_prefill     bfloat16  invariant=True run_to_run=True max|diff|=0.0 
+13:04:26 INFO detllm.job.ops-official: job ops-official finished: ok in 8s

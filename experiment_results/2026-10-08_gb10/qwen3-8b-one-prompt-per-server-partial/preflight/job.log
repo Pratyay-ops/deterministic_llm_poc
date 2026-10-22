@@ -1,0 +1,11 @@
+
+===== attempt 1 at 2026-10-08T12:30:24+0000 =====
+12:30:24 INFO detllm.job.preflight: job preflight: experiment=preflight model=None mode=default
+12:30:38 INFO detllm.job.preflight: preflight cuda                     OK  {'torch_cuda': '13.0', 'cuda_available': True, 'name': 'NVIDIA GB10', 'capability': '12.1', 'sm_count': 48, 'total_memory_gb': 130.59, 'mem_get_info_free_gb': 111.35, 'mem_get_info_total_gb': 130.59, 'shared_memory_per_block_optin': 101376, 'cudnn': 92000, 'is_gb10': True}
+12:30:38 INFO detllm.job.preflight: preflight triton_compile_sm        OK  {'triton': '3.7.1'}
+12:30:38 INFO detllm.job.preflight: preflight batch_invariant_ops      OK  {'enabled': True, 'module_path': '/workspace/detllm/batch_invariant_ops/batch_invariant_ops/__init__.py', 'version': '0.1.0', 'submodule_commit': 'f22b1fbe534b1fe045080f44a970a441caaf3c4f', 'device_smem_optin_bytes': 101376, 'tile_smem_bytes': {'bfloat16': {'needed': 98304, 'fits': True}, 'float16':
+12:30:38 INFO detllm.job.preflight: preflight extra_triton_ops         OK  {'bmm_torch.bfloat16': 0.0038072405967843866, 'bmm_torch.float32': 3.304062081959647e-07, 'fp32_ieee_exact': True, 'softmax_max_abs_err': 1.0554311044921882e-09, 'dispatch': {'matmul_routed': True, 'softmax_routed': True}}
+12:30:38 INFO detllm.job.preflight: preflight custom_fixed_chunk_mode  OK  {'max_abs_err_vs_stock': 0.0, 'row0_bs1_vs_bs130_equal': True, 'chunked_calls': {'aten.mm.default': 2}, 'unchunked_calls': {}, 'decomposed_calls': {}}
+12:30:38 INFO detllm.job.preflight: preflight vllm                     OK  {'version': '0.31.0', 'kv_cache_memory_bytes': True, 'attention_backend_arg': True, 'attention_config_arg': True, 'batch_invariant_module': 'vllm.model_executor.determinism.batch_invariant', 'tuned_matmul_family': 'sm120', 'tuned_matmul_table_for_this_gpu': True}
+12:30:38 INFO detllm.job.preflight: preflight memory                   INFO  {'MemTotal_GB': 130.6, 'MemAvailable_GB': 111.7, 'PageCache_GB': 4.1, 'cudaMemGetInfo_free_GB': 107.9, 'cudaMemGetInfo_total_GB': 130.6}
+12:30:38 INFO detllm.job.preflight: job preflight finished: ok in 14s

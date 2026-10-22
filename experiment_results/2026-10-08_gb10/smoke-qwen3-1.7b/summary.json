@@ -1,0 +1,2597 @@
+{
+  "completions-qwen3-1.7b-baseline": {
+    "experiment": "vllm_completions",
+    "model": "qwen3-1.7b",
+    "mode": "baseline",
+    "status": "ok",
+    "summary": {
+      "model": "qwen3-1.7b",
+      "hf_id": "Qwen/Qwen3-1.7B",
+      "mode": "baseline",
+      "engine": "server",
+      "prompt": "Tell me about Richard Feynman",
+      "prompt_tokens": 19,
+      "n": 100,
+      "max_tokens": 256,
+      "compared_on": "token_ids+logprobs",
+      "n_valid": 100,
+      "n_failed": 0,
+      "n_unique": 3,
+      "modal_count": 68,
+      "counts": [
+        68,
+        24,
+        8
+      ],
+      "earliest_divergence": 126,
+      "divergence_positions": [
+        126,
+        126
+      ],
+      "unique": [
+        {
+          "rank": 0,
+          "count": 68,
+          "length": 256,
+          "first_divergence_vs_modal": null,
+          "example_index": 4
+        },
+        {
+          "rank": 1,
+          "count": 24,
+          "length": 256,
+          "first_divergence_vs_modal": 126,
+          "example_index": 10
+        },
+        {
+          "rank": 2,
+          "count": 8,
+          "length": 256,
+          "first_divergence_vs_modal": 126,
+          "example_index": 0
+        }
+      ],
+      "modal_index": 4,
+      "unit": "tokens",
+      "modal_length": 256,
+      "modal_logprob_variants": 6,
+      "modal_logprob_counts": [
+        20,
+        16,
+        8,
+        8,
+        8,
+        8
+      ],
+      "divergence_example": {
+        "position": 126,
+        "token_number": 127,
+        "shared_prefix_tail": " of California, Berkeley, and later at the University of Chicago, where he was a leading figure in the development of the",
+        "modal_continuation": " theory of quantum electrodynamics (QED). His work",
+        "other_continuation": " modern understanding of quantum electrodynamics (QED). His"
+      },
+      "modal_text_head": "Richard Feynman (1918\u20131988) was an American physicist, mathematician, and author, best known for his work in quantum mechanics and particle physics. He was a leading figure in the development of the quantum theory and played a crucial role in the Manhattan Project during World War II, which led to the creation of the atomic bomb.\n\nFeynman was renowned for his ability to explain complex scientific concepts in a clear and accessible manner. He was a professor at the University of California, Berkeley, and later at the University of Chicago, where he was a leading figure in the development of the",
+      "mean_output_tokens": 256.0,
+      "engine_info": {
+        "vllm_version": "0.31.0",
+        "engine_kwargs": {
+          "model": "Qwen/Qwen3-1.7B",
+          "dtype": "bfloat16",
+          "seed": 0,
+          "max_model_len": 4096,
+          "gpu_memory_utilization": 0.1156,
+          "max_num_seqs": 64,
+          "enable_prefix_caching": false,
+          "enforce_eager": false,
+          "kv_cache_memory_bytes": 6000000000
+        },
+        "command": [
+          "/usr/local/bin/vllm",
+          "serve",
+          "Qwen/Qwen3-1.7B",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "52545",
+          "--dtype",
+          "bfloat16",
+          "--seed",
+          "0",
+          "--max-model-len",
+          "4096",
+          "--gpu-memory-utilization",
+          "0.1156",
+          "--max-num-seqs",
+          "64",
+          "--no-enable-prefix-caching",
+          "--kv-cache-memory-bytes",
+          "6000000000"
+        ],
+        "startup_s": 181.4,
+        "api": "completions",
+        "wall_time_s": 10.8,
+        "attention_backend_log": "FLASH_ATTN"
+      },
+      "blog_reference": {
+        "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+        "n": 1000,
+        "max_tokens": 1000,
+        "n_unique_default": 80,
+        "modal_count_default": 78,
+        "first_divergence_token_number": 103,
+        "n_unique_batch_invariant": 1
+      }
+    }
+  },
+  "completions-qwen3-1.7b-batch_invariant": {
+    "experiment": "vllm_completions",
+    "model": "qwen3-1.7b",
+    "mode": "batch_invariant",
+    "status": "ok",
+    "summary": {
+      "model": "qwen3-1.7b",
+      "hf_id": "Qwen/Qwen3-1.7B",
+      "mode": "batch_invariant",
+      "engine": "server",
+      "prompt": "Tell me about Richard Feynman",
+      "prompt_tokens": 19,
+      "n": 100,
+      "max_tokens": 256,
+      "compared_on": "token_ids+logprobs",
+      "n_valid": 100,
+      "n_failed": 0,
+      "n_unique": 1,
+      "modal_count": 100,
+      "counts": [
+        100
+      ],
+      "earliest_divergence": null,
+      "divergence_positions": [],
+      "unique": [
+        {
+          "rank": 0,
+          "count": 100,
+          "length": 256,
+          "first_divergence_vs_modal": null,
+          "example_index": 0
+        }
+      ],
+      "modal_index": 0,
+      "unit": "tokens",
+      "modal_length": 256,
+      "modal_logprob_variants": 1,
+      "modal_logprob_counts": [
+        100
+      ],
+      "divergence_example": null,
+      "modal_text_head": "Richard Feynman (1918\u20131988) was an American physicist, mathematician, and author, best known for his work in quantum mechanics and particle physics. He was a leading figure in the development of the quantum theory and played a crucial role in the Manhattan Project during World War II, which led to the creation of the atomic bomb.\n\nFeynman was renowned for his ability to explain complex scientific concepts in a clear and accessible manner. He was a professor at the University of California, Berkeley, and later at the University of Chicago, where he was a leading figure in the development of the",
+      "mean_output_tokens": 256.0,
+      "engine_info": {
+        "vllm_version": "0.31.0",
+        "engine_kwargs": {
+          "model": "Qwen/Qwen3-1.7B",
+          "dtype": "bfloat16",
+          "seed": 0,
+          "max_model_len": 4096,
+          "gpu_memory_utilization": 0.1156,
+          "max_num_seqs": 64,
+          "enable_prefix_caching": false,
+          "enforce_eager": false,
+          "kv_cache_memory_bytes": 6000000000,
+          "attention_backend": "TRITON_ATTN"
+        },
+        "command": [
+          "/usr/local/bin/vllm",
+          "serve",
+          "Qwen/Qwen3-1.7B",
+          "--host",
+          "127.0.0.1",
+          "--port",
+          "58413",
+          "--dtype",
+          "bfloat16",
+          "--seed",
+          "0",
+          "--max-model-len",
+          "4096",
+          "--gpu-memory-utilization",
+          "0.1156",
+          "--max-num-seqs",
+          "64",
+          "--no-enable-prefix-caching",
+          "--kv-cache-memory-bytes",
+          "6000000000",
+          "--attention-backend",
+          "TRITON_ATTN"
+        ],
+        "startup_s": 99.7,
+        "api": "completions",
+        "wall_time_s": 19.63,
+        "attention_backend_log": null
+      },
+      "blog_reference": {
+        "model": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+        "n": 1000,
+        "max_tokens": 1000,
+        "n_unique_default": 80,
+        "modal_count_default": 78,
+        "first_divergence_token_number": 103,
+        "n_unique_batch_invariant": 1
+      }
+    }
+  },
+  "fp-nonassoc": {
+    "experiment": "fp_nonassoc",
+    "model": null,
+    "mode": "default",
+    "status": "ok",
+    "summary": {
+      "associativity": {
+        "(0.1 + 1e20) - 1e20": 0.0,
+        "0.1 + (1e20 - 1e20)": 0.1
+      },
+      "n_unique_sums": 258,
+      "blog_n_unique_sums": 102,
+      "matches_blog": false,
+      "min_sum": -2.220446049250313e-16,
+      "max_sum": 2.220446049250313e-16,
+      "python": "3.12.3",
+      "n_unique_builtin_sum": 102,
+      "builtin_sum_note": "Python >= 3.12 sum() uses compensated summation"
+    }
+  },
+  "hf-qwen3-1.7b-baseline": {
+    "experiment": "hf_invariance",
+    "model": "qwen3-1.7b",
+    "mode": "baseline",
+    "status": "ok",
+    "summary": {
+      "model": "qwen3-1.7b",
+      "hf_id": "Qwen/Qwen3-1.7B",
+      "mode": "baseline",
+      "attn_implementation": "sdpa",
+      "prompt_tokens": 19,
+      "max_new_tokens": 24,
+      "forward": [
+        {
+          "batch_size": 1,
+          "position": "first",
+          "bitwise_equal": true,
+          "max_abs_diff": 0.0,
+          "argmax_agreement": 1.0
+        },
+        {
+          "batch_size": 2,
+          "position": "first",
+          "bitwise_equal": false,
+          "max_abs_diff": 0.75,
+          "argmax_agreement": 1.0
+        },
+        {
+          "batch_size": 2,
+          "position": "last",
+          "bitwise_equal": false,
+          "max_abs_diff": 0.75,
+          "argmax_agreement": 1.0
+        },
+        {
+          "batch_size": 4,
+          "position": "first",
+          "bitwise_equal": false,
+          "max_abs_diff": 0.6875,
+          "argmax_agreement": 1.0
+        },
+        {
+          "batch_size": 4,
+          "position": "last",
+          "bitwise_equal": false,
+          "max_abs_diff": 0.65234375,
+          "argmax_agreement": 1.0
+        }
+      ],
+      "forward_invariant": false,
+      "decode": [
+        {
+          "batch_size": 1,
+          "position": "first",
+          "tokens_equal": true,
+          "first_token_divergence": null,
+          "logprobs_bitwise_equal": true,
+          "first_logprob_mismatch": null,
+          "max_abs_logprob_diff": 0.0,
+          "identical": true
+        },
+        {
+          "batch_size": 2,
+          "position": "first",
+          "tokens_equal": true,
+          "first_token_divergence": null,
+          "logprobs_bitwise_equal": false,
+          "first_logprob_mismatch": 0,
+          "max_abs_logprob_diff": 0.056817710399627686,
+          "identical": false
+        },
+        {
+          "batch_size": 2,
+          "position": "last",
+          "tokens_equal": true,
+          "first_token_divergence": null,
+          "logprobs_bitwise_equal": false,
+          "first_logprob_mismatch": 0,
+          "max_abs_logprob_diff": 0.07693338394165039,
+          "identical": false
+        },
+        {
+          "batch_size": 4,
+          "position": "first",
+          "tokens_equal": true,
+          "first_token_divergence": null,
+          "logprobs_bitwise_equal": false,
+          "first_logprob_mismatch": 0,
+          "max_abs_logprob_diff": 0.06537547707557678,
+          "identical": false
+        },
+        {
+          "batch_size": 4,
+          "position": "last",
+          "tokens_equal": true,
+          "first_token_divergence": null,
+          "logprobs_bitwise_equal": false,
+          "first_logprob_mismatch": 0,
+          "max_abs_logprob_diff": 0.05681765079498291,
+          "identical": false
+        }
+      ],
+      "decode_invariant": false,
+      "decode_token_invariant": true,
+      "first_token_divergence": null,
+      "run_to_run": {
+        "tokens_equal": true,
+        "first_token_divergence": null,
+        "logprobs_bitwise_equal": true,
+        "first_logprob_mismatch": null,
+        "max_abs_logprob_diff": 0.0,
+        "identical": true
+      },
+      "examples": [],
+      "kernels": {
+        "mode": "baseline"
+      }
+    }
+  },
+  "hf-qwen3-1.7b-custom": {
+    "experiment": "hf_invariance",
+    "model": "qwen3-1.7b",
+    "mode": "custom",
+    "status": "ok",
+    "summary": {
+      "model": "qwen3-1.7b",
+      "hf_id": "Qwen/Qwen3-1.7B",
+      "mode": "custom",
+      "attn_implementation": "eager",
+      "prompt_tokens": 19,
+      "max_new_tokens": 24,
+      "forward": [
+        {
+          "batch_size": 1,
+          "position": "first",
+          "bitwise_equal": true,
+          "max_abs_diff": 0.0,
+          "argmax_agreement": 1.0
+        },
+        {
+          "batch_size": 2,
+          "position": "first",
+          "bitwise_equal": false,
+          "max_abs_diff": 0.830078125,
+          "argmax_agreement": 1.0
+        },
+        {
+          "batch_size": 2,
+          "position": "last",
+          "bitwise_equal": false,
+          "max_abs_diff": 0.830078125,
+          "argmax_agreement": 1.0
+        },
+        {
+          "batch_size": 4,
+          "position": "first",
+          "bitwise_equal": false,
+          "max_abs_diff": 0.75,
+          "argmax_agreement": 1.0
+        },
+        {
+          "batch_size": 4,
+          "position": "last",
+          "bitwise_equal": false,
+          "max_abs_diff": 0.75,
+          "argmax_agreement": 1.0
+        }
+      ],
+      "forward_invariant": false,
+      "decode": [
+        {
+          "batch_size": 1,
+          "position": "first",
+          "tokens_equal": true,
+          "first_token_divergence": null,
+          "logprobs_bitwise_equal": true,
+          "first_logprob_mismatch": null,
+          "max_abs_logprob_diff": 0.0,
+          "identical": true
+        },
+        {
+          "batch_size": 2,
+          "position": "first",
+          "tokens_equal": true,
+          "first_token_divergence": null,
+          "logprobs_bitwise_equal": false,
+          "first_logprob_mismatch": 0,
+          "max_abs_logprob_diff": 0.04704248905181885,
+          "identical": false
+        },
+        {
+          "batch_size": 2,
+          "position": "last",
+          "tokens_equal": true,
+          "first_token_divergence": null,
+          "logprobs_bitwise_equal": false,
+          "first_logprob_mismatch": 0,
+          "max_abs_logprob_diff": 0.04704248905181885,
+          "identical": false
+        },
+        {
+          "batch_size": 4,
+          "position": "first",
+          "tokens_equal": true,
+          "first_token_divergence": null,
+          "logprobs_bitwise_equal": false,
+          "first_logprob_mismatch": 0,
+          "max_abs_logprob_diff": 0.06787928938865662,
+          "identical": false
+        },
+        {
+          "batch_size": 4,
+          "position": "last",
+          "tokens_equal": true,
+          "first_token_divergence": null,
+          "logprobs_bitwise_equal": false,
+          "first_logprob_mismatch": 0,
+          "max_abs_logprob_diff": 0.035538554191589355,
+          "identical": false
+        }
+      ],
+      "decode_invariant": false,
+      "decode_token_invariant": true,
+      "first_token_divergence": null,
+      "run_to_run": {
+        "tokens_equal": true,
+        "first_token_divergence": null,
+        "logprobs_bitwise_equal": true,
+        "first_logprob_mismatch": null,
+        "max_abs_logprob_diff": 0.0,
+        "identical": true
+      },
+      "examples": [],
+      "kernels": {
+        "mode": "custom",
+        "custom": {
+          "rows": 64,
+          "mats": 64,
+          "reduce_rows": 256,
+          "ops": [
+            "aten._log_softmax.default",
+            "aten._softmax.default",
+            "aten.addmm.default",
+            "aten.bmm.default",
+            "aten.mean.dim",
+            "aten.mm.default"
+          ]
+        },
+        "custom_stats": {
+          "chunked_calls": {
+            "aten.mean.dim": 19662
+          },
+          "unchunked_calls": {}
+        }
+      }
+    }
+  },
+  "hf-qwen3-1.7b-official_full": {
+    "experiment": "hf_invariance",
+    "model": "qwen3-1.7b",
+    "mode": "official_full",
+    "status": "ok",
+    "summary": {
+      "model": "qwen3-1.7b",
+      "hf_id": "Qwen/Qwen3-1.7B",
+      "mode": "official_full",
+      "attn_implementation": "eager",
+      "prompt_tokens": 19,
+      "max_new_tokens": 24,
+      "forward": [
+        {
+          "batch_size": 1,
+          "position": "first",
+          "bitwise_equal": true,
+          "max_abs_diff": 0.0,
+          "argmax_agreement": 1.0
+        },
+        {
+          "batch_size": 2,
+          "position": "first",
+          "bitwise_equal": true,
+          "max_abs_diff": 0.0,
+          "argmax_agreement": 1.0
+        },
+        {
+          "batch_size": 2,
+          "position": "last",
+          "bitwise_equal": true,
+          "max_abs_diff": 0.0,
+          "argmax_agreement": 1.0
+        },
+        {
+          "batch_size": 4,
+          "position": "first",
+          "bitwise_equal": true,
+          "max_abs_diff": 0.0,
+          "argmax_agreement": 1.0
+        },
+        {
+          "batch_size": 4,
+          "position": "last",
+          "bitwise_equal": true,
+          "max_abs_diff": 0.0,
+          "argmax_agreement": 1.0
+        }
+      ],
+      "forward_invariant": true,
+      "decode": [
+        {
+          "batch_size": 1,
+          "position": "first",
+          "tokens_equal": true,
+          "first_token_divergence": null,
+          "logprobs_bitwise_equal": true,
+          "first_logprob_mismatch": null,
+          "max_abs_logprob_diff": 0.0,
+          "identical": true
+        },
+        {
+          "batch_size": 2,
+          "position": "first",
+          "tokens_equal": true,
+          "first_token_divergence": null,
+          "logprobs_bitwise_equal": true,
+          "first_logprob_mismatch": null,
+          "max_abs_logprob_diff": 0.0,
+          "identical": true
+        },
+        {
+          "batch_size": 2,
+          "position": "last",
+          "tokens_equal": true,
+          "first_token_divergence": null,
+          "logprobs_bitwise_equal": true,
+          "first_logprob_mismatch": null,
+          "max_abs_logprob_diff": 0.0,
+          "identical": true
+        },
+        {
+          "batch_size": 4,
+          "position": "first",
+          "tokens_equal": true,
+          "first_token_divergence": null,
+          "logprobs_bitwise_equal": true,
+          "first_logprob_mismatch": null,
+          "max_abs_logprob_diff": 0.0,
+          "identical": true
+        },
+        {
+          "batch_size": 4,
+          "position": "last",
+          "tokens_equal": true,
+          "first_token_divergence": null,
+          "logprobs_bitwise_equal": true,
+          "first_logprob_mismatch": null,
+          "max_abs_logprob_diff": 0.0,
+          "identical": true
+        }
+      ],
+      "decode_invariant": true,
+      "decode_token_invariant": true,
+      "first_token_divergence": null,
+      "run_to_run": {
+        "tokens_equal": true,
+        "first_token_divergence": null,
+        "logprobs_bitwise_equal": true,
+        "first_logprob_mismatch": null,
+        "max_abs_logprob_diff": 0.0,
+        "identical": true
+      },
+      "examples": [],
+      "kernels": {
+        "mode": "official_full",
+        "official": {
+          "enabled": true,
+          "module_path": "/workspace/detllm/batch_invariant_ops/batch_invariant_ops/__init__.py",
+          "version": "0.1.0",
+          "submodule_commit": "f22b1fbe534b1fe045080f44a970a441caaf3c4f",
+          "device_smem_optin_bytes": 101376,
+          "tile_smem_bytes": {
+            "bfloat16": {
+              "needed": 98304,
+              "fits": true
+            },
+            "float16": {
+              "needed": 147456,
+              "fits": false
+            },
+            "float32": {
+              "needed": 98304,
+              "fits": true
+            }
+          },
+          "probes": {
+            "bfloat16": {
+              "ok": true,
+              "max_rel_err": 0.0035481639206409454
+            },
+            "float32": {
+              "ok": true,
+              "max_rel_err": 0.0007667768513783813
+            }
+          }
+        },
+        "extra_ops": {
+          "enabled": true,
+          "ops": [
+            "aten::bmm",
+            "aten::_softmax"
+          ],
+          "bmm_config": {
+            "BLOCK_M": 32,
+            "BLOCK_N": 64,
+            "BLOCK_K": 32,
+            "num_warps": 4,
+            "num_stages": 2
+          },
+          "softmax_block": 1024,
+          "dispatch_check": {
+            "matmul_routed": true,
+            "softmax_routed": true
+          }
+        }
+      }
+    }
+  },
+  "ops-baseline": {
+    "experiment": "op_invariance",
+    "model": null,
+    "mode": "baseline",
+    "status": "ok",
+    "summary": {
+      "mode": "baseline",
+      "blog_mm_demo": {
+        "max_abs_diff": 1641.0,
+        "blog_value": 1669.25,
+        "batch_invariant": false
+      },
+      "blog_run_to_run": {
+        "iterations": 100,
+        "mismatches": 0,
+        "run_to_run_deterministic": true
+      },
+      "results": [
+        {
+          "op": "mm",
+          "dtype": "bfloat16",
+          "shape": "[B,4096] @ [4096,4096]",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": false,
+          "first_variant_batch": 2,
+          "n_variant_batches": 5,
+          "max_abs_diff": 0.00390625,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.00390625,
+            "4": 0.00390625,
+            "16": 0.00390625,
+            "64": 0.00390625,
+            "256": 0.00390625
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 0.282,
+          "error": null
+        },
+        {
+          "op": "mm",
+          "dtype": "float32",
+          "shape": "[B,4096] @ [4096,4096]",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": false,
+          "first_variant_batch": 2,
+          "n_variant_batches": 5,
+          "max_abs_diff": 4.708766937255859e-06,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 3.5762786865234375e-06,
+            "4": 3.5762786865234375e-06,
+            "16": 4.708766937255859e-06,
+            "64": 3.4570693969726562e-06,
+            "256": 4.0531158447265625e-06
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 0.476,
+          "error": null
+        },
+        {
+          "op": "mm",
+          "dtype": "float16",
+          "shape": "[B,4096] @ [4096,4096]",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": false,
+          "first_variant_batch": 2,
+          "n_variant_batches": 5,
+          "max_abs_diff": 0.001953125,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.001953125,
+            "4": 0.001953125,
+            "16": 0.001953125,
+            "64": 0.001953125,
+            "256": 0.001953125
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 0.207,
+          "error": null
+        },
+        {
+          "op": "linear_bias",
+          "dtype": "bfloat16",
+          "shape": "F.linear([B,2048], W[6144,2048], bias)  (aten::addmm)",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": false,
+          "first_variant_batch": 2,
+          "n_variant_batches": 5,
+          "max_abs_diff": 7.62939453125e-06,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 7.62939453125e-06,
+            "4": 7.62939453125e-06,
+            "16": 7.62939453125e-06,
+            "64": 7.62939453125e-06,
+            "256": 7.62939453125e-06
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 0.146,
+          "error": null
+        },
+        {
+          "op": "rmsnorm",
+          "dtype": "bfloat16",
+          "shape": "HF RMSNorm over hidden=2048 (aten::mean.dim)",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 0.164,
+          "error": null
+        },
+        {
+          "op": "log_softmax_vocab",
+          "dtype": "float32",
+          "shape": "log_softmax over vocab=151936 (sampler logprobs)",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 2.921,
+          "error": null
+        },
+        {
+          "op": "softmax",
+          "dtype": "float32",
+          "shape": "softmax over 4096",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 0.762,
+          "error": null
+        },
+        {
+          "op": "softmax",
+          "dtype": "bfloat16",
+          "shape": "softmax over 4096",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 0.014,
+          "error": null
+        },
+        {
+          "op": "bmm_attention_scores",
+          "dtype": "bfloat16",
+          "shape": "q[B,16,1,128] @ k^T[B,16,128,1024]  (aten::bmm, batch=B*heads)",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 16.517,
+          "error": null
+        },
+        {
+          "op": "attention_eager_decode",
+          "dtype": "bfloat16",
+          "shape": "eager attention, 1 query vs 1024 cached keys, 16 heads",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 32.323,
+          "error": null
+        },
+        {
+          "op": "attention_eager_prefill",
+          "dtype": "bfloat16",
+          "shape": "eager causal attention, 128 queries, 16 heads",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 13.038,
+          "error": null
+        },
+        {
+          "op": "attention_sdpa_decode",
+          "dtype": "bfloat16",
+          "shape": "F.scaled_dot_product_attention, 1 query vs 1024 keys (not overridden by any mode)",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": false,
+          "first_variant_batch": 2,
+          "n_variant_batches": 5,
+          "max_abs_diff": 0.0009765625,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0009765625,
+            "4": 0.0009765625,
+            "16": 0.0009765625,
+            "64": 0.0009765625,
+            "256": 0.0009765625
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 9.678,
+          "error": null
+        },
+        {
+          "op": "attention_sdpa_prefill",
+          "dtype": "bfloat16",
+          "shape": "F.scaled_dot_product_attention causal, 128 queries, 16 heads",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 3.534,
+          "error": null
+        }
+      ],
+      "kernels": {
+        "mode": "baseline"
+      },
+      "n_ops": 13,
+      "n_invariant": 8,
+      "n_run_to_run": 13,
+      "n_errors": 0
+    }
+  },
+  "ops-cublaslt_ws1": {
+    "experiment": "op_invariance",
+    "model": null,
+    "mode": "cublaslt_ws1",
+    "status": "ok",
+    "summary": {
+      "mode": "cublaslt_ws1",
+      "blog_mm_demo": {
+        "max_abs_diff": 606.625,
+        "blog_value": 1669.25,
+        "batch_invariant": false
+      },
+      "blog_run_to_run": {
+        "iterations": 100,
+        "mismatches": 0,
+        "run_to_run_deterministic": true
+      },
+      "results": [
+        {
+          "op": "mm",
+          "dtype": "bfloat16",
+          "shape": "[B,4096] @ [4096,4096]",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 0.204,
+          "error": null
+        },
+        {
+          "op": "mm",
+          "dtype": "float32",
+          "shape": "[B,4096] @ [4096,4096]",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": false,
+          "first_variant_batch": 2,
+          "n_variant_batches": 5,
+          "max_abs_diff": 9.5367431640625e-06,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 3.5762786865234375e-06,
+            "4": 3.5762786865234375e-06,
+            "16": 3.5762786865234375e-06,
+            "64": 9.5367431640625e-06,
+            "256": 9.5367431640625e-06
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 1.317,
+          "error": null
+        },
+        {
+          "op": "mm",
+          "dtype": "float16",
+          "shape": "[B,4096] @ [4096,4096]",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 0.447,
+          "error": null
+        },
+        {
+          "op": "linear_bias",
+          "dtype": "bfloat16",
+          "shape": "F.linear([B,2048], W[6144,2048], bias)  (aten::addmm)",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": false,
+          "first_variant_batch": 2,
+          "n_variant_batches": 5,
+          "max_abs_diff": 0.00390625,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.00390625,
+            "4": 0.00390625,
+            "16": 0.00390625,
+            "64": 0.00390625,
+            "256": 0.00390625
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 0.191,
+          "error": null
+        },
+        {
+          "op": "rmsnorm",
+          "dtype": "bfloat16",
+          "shape": "HF RMSNorm over hidden=2048 (aten::mean.dim)",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 0.035,
+          "error": null
+        },
+        {
+          "op": "log_softmax_vocab",
+          "dtype": "float32",
+          "shape": "log_softmax over vocab=151936 (sampler logprobs)",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 3.524,
+          "error": null
+        },
+        {
+          "op": "softmax",
+          "dtype": "float32",
+          "shape": "softmax over 4096",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 0.015,
+          "error": null
+        },
+        {
+          "op": "softmax",
+          "dtype": "bfloat16",
+          "shape": "softmax over 4096",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 0.015,
+          "error": null
+        },
+        {
+          "op": "bmm_attention_scores",
+          "dtype": "bfloat16",
+          "shape": "q[B,16,1,128] @ k^T[B,16,128,1024]  (aten::bmm, batch=B*heads)",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": null,
+          "run_to_run_identical": null,
+          "error": "RuntimeError: CUDA error: CUBLAS_STATUS_INVALID_VALUE when calling `cublasLtMatmulAlgoGetHeuristic( ltHandle, computeDesc.descriptor(), Adesc.descriptor(), FakeBdesc.descriptor(), FakeCdesc.descriptor(), FakeCdesc.descriptor(), preference.descriptor(), 1, &heuristicResult, &returnedResult)`"
+        },
+        {
+          "op": "attention_eager_decode",
+          "dtype": "bfloat16",
+          "shape": "eager attention, 1 query vs 1024 cached keys, 16 heads",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": null,
+          "run_to_run_identical": null,
+          "error": "RuntimeError: CUDA error: CUBLAS_STATUS_INVALID_VALUE when calling `cublasLtMatmulAlgoGetHeuristic( ltHandle, computeDesc.descriptor(), Adesc.descriptor(), FakeBdesc.descriptor(), FakeCdesc.descriptor(), FakeCdesc.descriptor(), preference.descriptor(), 1, &heuristicResult, &returnedResult)`"
+        },
+        {
+          "op": "attention_eager_prefill",
+          "dtype": "bfloat16",
+          "shape": "eager causal attention, 128 queries, 16 heads",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 21.964,
+          "error": null
+        },
+        {
+          "op": "attention_sdpa_decode",
+          "dtype": "bfloat16",
+          "shape": "F.scaled_dot_product_attention, 1 query vs 1024 keys (not overridden by any mode)",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": false,
+          "first_variant_batch": 2,
+          "n_variant_batches": 5,
+          "max_abs_diff": 0.0009765625,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0009765625,
+            "4": 0.0009765625,
+            "16": 0.0009765625,
+            "64": 0.0009765625,
+            "256": 0.0009765625
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 16.976,
+          "error": null
+        },
+        {
+          "op": "attention_sdpa_prefill",
+          "dtype": "bfloat16",
+          "shape": "F.scaled_dot_product_attention causal, 128 queries, 16 heads",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 4.003,
+          "error": null
+        }
+      ],
+      "kernels": {
+        "mode": "cublaslt_ws1",
+        "preferred_blas_library": "_BlasBackend.Cublaslt",
+        "CUBLASLT_WORKSPACE_SIZE": "1",
+        "CUBLAS_WORKSPACE_CONFIG": ":16:8"
+      },
+      "n_ops": 13,
+      "n_invariant": 8,
+      "n_run_to_run": 11,
+      "n_errors": 2
+    }
+  },
+  "ops-custom": {
+    "experiment": "op_invariance",
+    "model": null,
+    "mode": "custom",
+    "status": "ok",
+    "summary": {
+      "mode": "custom",
+      "blog_mm_demo": {
+        "max_abs_diff": 0.0,
+        "blog_value": 1669.25,
+        "batch_invariant": true
+      },
+      "blog_run_to_run": {
+        "iterations": 100,
+        "mismatches": 0,
+        "run_to_run_deterministic": true
+      },
+      "results": [
+        {
+          "op": "mm",
+          "dtype": "bfloat16",
+          "shape": "[B,4096] @ [4096,4096]",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 0.798,
+          "error": null
+        },
+        {
+          "op": "mm",
+          "dtype": "float32",
+          "shape": "[B,4096] @ [4096,4096]",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 1.277,
+          "error": null
+        },
+        {
+          "op": "mm",
+          "dtype": "float16",
+          "shape": "[B,4096] @ [4096,4096]",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 0.671,
+          "error": null
+        },
+        {
+          "op": "linear_bias",
+          "dtype": "bfloat16",
+          "shape": "F.linear([B,2048], W[6144,2048], bias)  (aten::addmm)",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": false,
+          "first_variant_batch": 2,
+          "n_variant_batches": 5,
+          "max_abs_diff": 7.62939453125e-06,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 7.62939453125e-06,
+            "4": 7.62939453125e-06,
+            "16": 7.62939453125e-06,
+            "64": 7.62939453125e-06,
+            "256": 7.62939453125e-06
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 0.123,
+          "error": null
+        },
+        {
+          "op": "rmsnorm",
+          "dtype": "bfloat16",
+          "shape": "HF RMSNorm over hidden=2048 (aten::mean.dim)",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 0.08,
+          "error": null
+        },
+        {
+          "op": "log_softmax_vocab",
+          "dtype": "float32",
+          "shape": "log_softmax over vocab=151936 (sampler logprobs)",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 2.683,
+          "error": null
+        },
+        {
+          "op": "softmax",
+          "dtype": "float32",
+          "shape": "softmax over 4096",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 0.141,
+          "error": null
+        },
+        {
+          "op": "softmax",
+          "dtype": "bfloat16",
+          "shape": "softmax over 4096",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 0.016,
+          "error": null
+        },
+        {
+          "op": "bmm_attention_scores",
+          "dtype": "bfloat16",
+          "shape": "q[B,16,1,128] @ k^T[B,16,128,1024]  (aten::bmm, batch=B*heads)",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 14.892,
+          "error": null
+        },
+        {
+          "op": "attention_eager_decode",
+          "dtype": "bfloat16",
+          "shape": "eager attention, 1 query vs 1024 cached keys, 16 heads",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 17.931,
+          "error": null
+        },
+        {
+          "op": "attention_eager_prefill",
+          "dtype": "bfloat16",
+          "shape": "eager causal attention, 128 queries, 16 heads",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 13.444,
+          "error": null
+        },
+        {
+          "op": "attention_sdpa_decode",
+          "dtype": "bfloat16",
+          "shape": "F.scaled_dot_product_attention, 1 query vs 1024 keys (not overridden by any mode)",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": false,
+          "first_variant_batch": 2,
+          "n_variant_batches": 5,
+          "max_abs_diff": 0.0009765625,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0009765625,
+            "4": 0.0009765625,
+            "16": 0.0009765625,
+            "64": 0.0009765625,
+            "256": 0.0009765625
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 10.305,
+          "error": null
+        },
+        {
+          "op": "attention_sdpa_prefill",
+          "dtype": "bfloat16",
+          "shape": "F.scaled_dot_product_attention causal, 128 queries, 16 heads",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 4.048,
+          "error": null
+        }
+      ],
+      "kernels": {
+        "mode": "custom",
+        "custom": {
+          "rows": 64,
+          "mats": 64,
+          "reduce_rows": 256,
+          "ops": [
+            "aten._log_softmax.default",
+            "aten._softmax.default",
+            "aten.addmm.default",
+            "aten.bmm.default",
+            "aten.mean.dim",
+            "aten.mm.default"
+          ]
+        },
+        "custom_stats": {
+          "chunked_calls": {
+            "aten.mm.default": 151,
+            "aten.mean.dim": 16
+          },
+          "unchunked_calls": {}
+        }
+      },
+      "n_ops": 13,
+      "n_invariant": 11,
+      "n_run_to_run": 13,
+      "n_errors": 0
+    }
+  },
+  "ops-official_full": {
+    "experiment": "op_invariance",
+    "model": null,
+    "mode": "official_full",
+    "status": "ok",
+    "summary": {
+      "mode": "official_full",
+      "blog_mm_demo": {
+        "max_abs_diff": 0.0,
+        "blog_value": 1669.25,
+        "batch_invariant": true
+      },
+      "blog_run_to_run": {
+        "iterations": 100,
+        "mismatches": 0,
+        "run_to_run_deterministic": true
+      },
+      "results": [
+        {
+          "op": "mm",
+          "dtype": "bfloat16",
+          "shape": "[B,4096] @ [4096,4096]",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 0.39,
+          "error": null
+        },
+        {
+          "op": "mm",
+          "dtype": "float32",
+          "shape": "[B,4096] @ [4096,4096]",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 0.548,
+          "error": null
+        },
+        {
+          "op": "mm",
+          "dtype": "float16",
+          "shape": "[B,4096] @ [4096,4096]",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 1.08,
+          "error": null
+        },
+        {
+          "op": "linear_bias",
+          "dtype": "bfloat16",
+          "shape": "F.linear([B,2048], W[6144,2048], bias)  (aten::addmm)",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 0.575,
+          "error": null
+        },
+        {
+          "op": "rmsnorm",
+          "dtype": "bfloat16",
+          "shape": "HF RMSNorm over hidden=2048 (aten::mean.dim)",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 0.166,
+          "error": null
+        },
+        {
+          "op": "log_softmax_vocab",
+          "dtype": "float32",
+          "shape": "log_softmax over vocab=151936 (sampler logprobs)",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 2.851,
+          "error": null
+        },
+        {
+          "op": "softmax",
+          "dtype": "float32",
+          "shape": "softmax over 4096",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 0.017,
+          "error": null
+        },
+        {
+          "op": "softmax",
+          "dtype": "bfloat16",
+          "shape": "softmax over 4096",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 0.062,
+          "error": null
+        },
+        {
+          "op": "bmm_attention_scores",
+          "dtype": "bfloat16",
+          "shape": "q[B,16,1,128] @ k^T[B,16,128,1024]  (aten::bmm, batch=B*heads)",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 5.659,
+          "error": null
+        },
+        {
+          "op": "attention_eager_decode",
+          "dtype": "bfloat16",
+          "shape": "eager attention, 1 query vs 1024 cached keys, 16 heads",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 10.051,
+          "error": null
+        },
+        {
+          "op": "attention_eager_prefill",
+          "dtype": "bfloat16",
+          "shape": "eager causal attention, 128 queries, 16 heads",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 14.241,
+          "error": null
+        },
+        {
+          "op": "attention_sdpa_decode",
+          "dtype": "bfloat16",
+          "shape": "F.scaled_dot_product_attention, 1 query vs 1024 keys (not overridden by any mode)",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": false,
+          "first_variant_batch": 2,
+          "n_variant_batches": 5,
+          "max_abs_diff": 0.0009765625,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0009765625,
+            "4": 0.0009765625,
+            "16": 0.0009765625,
+            "64": 0.0009765625,
+            "256": 0.0009765625
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 9.955,
+          "error": null
+        },
+        {
+          "op": "attention_sdpa_prefill",
+          "dtype": "bfloat16",
+          "shape": "F.scaled_dot_product_attention causal, 128 queries, 16 heads",
+          "batch_sizes": [
+            1,
+            2,
+            4,
+            16,
+            64,
+            256
+          ],
+          "batch_invariant": true,
+          "first_variant_batch": null,
+          "n_variant_batches": 0,
+          "max_abs_diff": 0.0,
+          "max_abs_diff_by_batch": {
+            "1": 0.0,
+            "2": 0.0,
+            "4": 0.0,
+            "16": 0.0,
+            "64": 0.0,
+            "256": 0.0
+          },
+          "run_to_run_identical": true,
+          "ms_at_max_batch": 3.216,
+          "error": null
+        }
+      ],
+      "kernels": {
+        "mode": "official_full",
+        "official": {
+          "enabled": true,
+          "module_path": "/workspace/detllm/batch_invariant_ops/batch_invariant_ops/__init__.py",
+          "version": "0.1.0",
+          "submodule_commit": "f22b1fbe534b1fe045080f44a970a441caaf3c4f",
+          "device_smem_optin_bytes": 101376,
+          "tile_smem_bytes": {
+            "bfloat16": {
+              "needed": 98304,
+              "fits": true
+            },
+            "float16": {
+              "needed": 147456,
+              "fits": false
+            },
+            "float32": {
+              "needed": 98304,
+              "fits": true
+            }
+          },
+          "probes": {
+            "bfloat16": {
+              "ok": true,
+              "max_rel_err": 0.0035481639206409454
+            },
+            "float32": {
+              "ok": true,
+              "max_rel_err": 0.0007667768513783813
+            }
+          }
+        },
+        "extra_ops": {
+          "enabled": true,
+          "ops": [
+            "aten::bmm",
+            "aten::_softmax"
+          ],
+          "bmm_config": {
+            "BLOCK_M": 32,
+            "BLOCK_N": 64,
+            "BLOCK_K": 32,
+            "num_warps": 4,
+            "num_stages": 2
+          },
+          "softmax_block": 1024,
+          "dispatch_check": {
+            "matmul_routed": true,
+            "softmax_routed": true
+          }
+        }
+      },
+      "n_ops": 13,
+      "n_invariant": 12,
+      "n_run_to_run": 13,
+      "n_errors": 0
+    }
+  },
+  "preflight": {
+    "experiment": "preflight",
+    "model": null,
+    "mode": "default",
+    "status": "ok",
+    "summary": {
+      "ok": true,
+      "checks": [
+        {
+          "name": "cuda",
+          "ok": true,
+          "critical": true,
+          "detail": {
+            "torch_cuda": "13.0",
+            "cuda_available": true,
+            "name": "NVIDIA GB10",
+            "capability": "12.1",
+            "sm_count": 48,
+            "total_memory_gb": 130.59,
+            "mem_get_info_free_gb": 108.97,
+            "mem_get_info_total_gb": 130.59,
+            "shared_memory_per_block_optin": 101376,
+            "cudnn": 92000,
+            "is_gb10": true
+          }
+        },
+        {
+          "name": "triton_compile_sm",
+          "ok": true,
+          "critical": true,
+          "detail": {
+            "triton": "3.7.1"
+          }
+        },
+        {
+          "name": "batch_invariant_ops",
+          "ok": true,
+          "critical": true,
+          "detail": {
+            "enabled": true,
+            "module_path": "/workspace/detllm/batch_invariant_ops/batch_invariant_ops/__init__.py",
+            "version": "0.1.0",
+            "submodule_commit": "f22b1fbe534b1fe045080f44a970a441caaf3c4f",
+            "device_smem_optin_bytes": 101376,
+            "tile_smem_bytes": {
+              "bfloat16": {
+                "needed": 98304,
+                "fits": true
+              },
+              "float16": {
+                "needed": 147456,
+                "fits": false
+              },
+              "float32": {
+                "needed": 98304,
+                "fits": true
+              }
+            },
+            "probes": {
+              "bfloat16": {
+                "ok": true,
+                "max_rel_err": 0.0035481639206409454
+              },
+              "float32": {
+                "ok": true,
+                "max_rel_err": 0.0007667768513783813
+              },
+              "float16": {
+                "ok": true,
+                "max_rel_err": 0.0004808909143321216
+              }
+            }
+          }
+        },
+        {
+          "name": "extra_triton_ops",
+          "ok": true,
+          "critical": true,
+          "detail": {
+            "bmm_torch.bfloat16": 0.0038072405967843866,
+            "bmm_torch.float32": 3.304062081959647e-07,
+            "fp32_ieee_exact": true,
+            "softmax_max_abs_err": 1.0554311044921882e-09,
+            "dispatch": {
+              "matmul_routed": true,
+              "softmax_routed": true
+            }
+          }
+        },
+        {
+          "name": "custom_fixed_chunk_mode",
+          "ok": true,
+          "critical": true,
+          "detail": {
+            "max_abs_err_vs_stock": 0.0,
+            "row0_bs1_vs_bs130_equal": true,
+            "chunked_calls": {
+              "aten.mm.default": 2
+            },
+            "unchunked_calls": {}
+          }
+        },
+        {
+          "name": "vllm",
+          "ok": true,
+          "critical": true,
+          "detail": {
+            "version": "0.31.0",
+            "kv_cache_memory_bytes": true,
+            "attention_backend_arg": true,
+            "attention_config_arg": true,
+            "batch_invariant_module": "vllm.model_executor.determinism.batch_invariant",
+            "tuned_matmul_family": "sm120",
+            "tuned_matmul_table_for_this_gpu": true
+          }
+        },
+        {
+          "name": "memory",
+          "ok": null,
+          "critical": false,
+          "detail": {
+            "MemTotal_GB": 130.6,
+            "MemAvailable_GB": 108.2,
+            "PageCache_GB": 5.4,
+            "cudaMemGetInfo_free_GB": 103.4,
+            "cudaMemGetInfo_total_GB": 130.6
+          }
+        }
+      ],
+      "packages": {
+        "torch": "2.13.0+cu130",
+        "triton": "3.7.1",
+        "vllm": "0.31.0",
+        "transformers": "5.17.0",
+        "flashinfer-python": "0.7.0.post1",
+        "batch-invariant-ops": null,
+        "huggingface-hub": "1.33.0",
+        "httpx": "0.28.1",
+        "numpy": "2.2.6"
+      },
+      "nvidia_smi": {
+        "name": "NVIDIA GB10",
+        "driver_version": "595.91.07",
+        "compute_cap": "12.1",
+        "memory.total": "[N/A]"
+      },
+      "smem_optin_bytes": 101376
+    }
+  },
+  "sweep-qwen3-1.7b-baseline": {
+    "experiment": "vllm_batch_sweep",
+    "model": "qwen3-1.7b",
+    "mode": "baseline",
+    "status": "ok",
+    "summary": {
+      "model": "qwen3-1.7b",
+      "hf_id": "Qwen/Qwen3-1.7B",
+      "mode": "baseline",
+      "max_tokens": 64,
+      "reference_tokens": 64,
+      "reference_text_head": "Richard Feynman (1918\u20131988) was an American physicist, mathematician, and author, best known for his work in quantum mechanics and particle physics. He was a leading figure in the development of the quantum theory and played a crucial role in the Manhattan Project during World War II,",
+      "run_to_run": {
+        "tokens_equal": true,
+        "first_token_divergence": null,
+        "logprobs_bitwise_equal": true,
+        "first_logprob_mismatch": null,
+        "max_abs_logprob_diff": 0.0,
+        "identical": true
+      },
+      "results": [
+        {
+          "batch_size": 1,
+          "trial": 0,
+          "position": 0,
+          "tokens_equal": true,
+          "first_token_divergence": null,
+          "logprobs_bitwise_equal": true,
+          "first_logprob_mismatch": null,
+          "max_abs_logprob_diff": 0.0,
+          "identical": true
+        },
+        {
+          "batch_size": 8,
+          "trial": 0,
+          "position": 6,
+          "tokens_equal": true,
+          "first_token_divergence": null,
+          "logprobs_bitwise_equal": false,
+          "first_logprob_mismatch": 0,
+          "max_abs_logprob_diff": 0.10197871923446655,
+          "identical": false
+        },
+        {
+          "batch_size": 32,
+          "trial": 0,
+          "position": 18,
+          "tokens_equal": true,
+          "first_token_divergence": null,
+          "logprobs_bitwise_equal": false,
+          "first_logprob_mismatch": 0,
+          "max_abs_logprob_diff": 0.10266625881195068,
+          "identical": false
+        }
+      ],
+      "n_trials": 3,
+      "n_identical": 1,
+      "n_token_mismatch": 0,
+      "n_logprob_only_mismatch": 2,
+      "variant_batch_sizes": [
+        8,
+        32
+      ],
+      "earliest_token_divergence": null,
+      "engine_info": {
+        "vllm_version": "0.31.0",
+        "engine_kwargs": {
+          "model": "Qwen/Qwen3-1.7B",
+          "dtype": "bfloat16",
+          "seed": 0,
+          "max_model_len": 4096,
+          "gpu_memory_utilization": 0.1156,
+          "max_num_seqs": 64,
+          "enable_prefix_caching": false,
+          "enforce_eager": false,
+          "kv_cache_memory_bytes": 6000000000
+        },
+        "startup_s": 162.5,
+        "attention_backend_log": "FLASH_ATTN"
+      }
+    }
+  },
+  "sweep-qwen3-1.7b-batch_invariant": {
+    "experiment": "vllm_batch_sweep",
+    "model": "qwen3-1.7b",
+    "mode": "batch_invariant",
+    "status": "ok",
+    "summary": {
+      "model": "qwen3-1.7b",
+      "hf_id": "Qwen/Qwen3-1.7B",
+      "mode": "batch_invariant",
+      "max_tokens": 64,
+      "reference_tokens": 64,
+      "reference_text_head": "Richard Feynman (1918\u20131988) was an American physicist, mathematician, and author, best known for his work in quantum mechanics and particle physics. He was a leading figure in the development of the quantum theory and played a crucial role in the Manhattan Project during World War II,",
+      "run_to_run": {
+        "tokens_equal": true,
+        "first_token_divergence": null,
+        "logprobs_bitwise_equal": true,
+        "first_logprob_mismatch": null,
+        "max_abs_logprob_diff": 0.0,
+        "identical": true
+      },
+      "results": [
+        {
+          "batch_size": 1,
+          "trial": 0,
+          "position": 0,
+          "tokens_equal": true,
+          "first_token_divergence": null,
+          "logprobs_bitwise_equal": true,
+          "first_logprob_mismatch": null,
+          "max_abs_logprob_diff": 0.0,
+          "identical": true
+        },
+        {
+          "batch_size": 8,
+          "trial": 0,
+          "position": 6,
+          "tokens_equal": true,
+          "first_token_divergence": null,
+          "logprobs_bitwise_equal": true,
+          "first_logprob_mismatch": null,
+          "max_abs_logprob_diff": 0.0,
+          "identical": true
+        },
+        {
+          "batch_size": 32,
+          "trial": 0,
+          "position": 18,
+          "tokens_equal": true,
+          "first_token_divergence": null,
+          "logprobs_bitwise_equal": true,
+          "first_logprob_mismatch": null,
+          "max_abs_logprob_diff": 0.0,
+          "identical": true
+        }
+      ],
+      "n_trials": 3,
+      "n_identical": 3,
+      "n_token_mismatch": 0,
+      "n_logprob_only_mismatch": 0,
+      "variant_batch_sizes": [],
+      "earliest_token_divergence": null,
+      "engine_info": {
+        "vllm_version": "0.31.0",
+        "engine_kwargs": {
+          "model": "Qwen/Qwen3-1.7B",
+          "dtype": "bfloat16",
+          "seed": 0,
+          "max_model_len": 4096,
+          "gpu_memory_utilization": 0.1156,
+          "max_num_seqs": 64,
+          "enable_prefix_caching": false,
+          "enforce_eager": false,
+          "kv_cache_memory_bytes": 6000000000,
+          "attention_backend": "TRITON_ATTN"
+        },
+        "startup_s": 100.2,
+        "attention_backend_log": null
+      }
+    }
+  }
+}

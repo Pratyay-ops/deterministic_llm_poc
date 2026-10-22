@@ -1,0 +1,19 @@
+
+===== attempt 1 at 2026-10-08T12:04:58+0000 =====
+12:04:58 INFO detllm.job.ops-cublaslt_ws1: job ops-cublaslt_ws1: experiment=op_invariance model=None mode=cublaslt_ws1
+[W1008 12:05:00.096101533 Context.cpp:597] Warning: torch.backends.cuda.preferred_blas_library is an experimental feature. If you see any error or unexpected behavior when this flag is set please file an issue on GitHub. (function operator())
+12:05:01 INFO detllm.job.ops-cublaslt_ws1: blog mm demo: {'max_abs_diff': 606.625, 'blog_value': 1669.25, 'batch_invariant': False}
+12:05:01 INFO detllm.job.ops-cublaslt_ws1: mm                         bfloat16  invariant=True run_to_run=True max|diff|=0.0 
+12:05:01 INFO detllm.job.ops-cublaslt_ws1: mm                         float32   invariant=False run_to_run=True max|diff|=9.5367431640625e-06 
+12:05:01 INFO detllm.job.ops-cublaslt_ws1: mm                         float16   invariant=True run_to_run=True max|diff|=0.0 
+12:05:01 INFO detllm.job.ops-cublaslt_ws1: linear_bias                bfloat16  invariant=False run_to_run=True max|diff|=0.00390625 
+12:05:01 INFO detllm.job.ops-cublaslt_ws1: rmsnorm                    bfloat16  invariant=True run_to_run=True max|diff|=0.0 
+12:05:01 INFO detllm.job.ops-cublaslt_ws1: log_softmax_vocab          float32   invariant=True run_to_run=True max|diff|=0.0 
+12:05:01 INFO detllm.job.ops-cublaslt_ws1: softmax                    float32   invariant=True run_to_run=True max|diff|=0.0 
+12:05:01 INFO detllm.job.ops-cublaslt_ws1: softmax                    bfloat16  invariant=True run_to_run=True max|diff|=0.0 
+12:05:01 INFO detllm.job.ops-cublaslt_ws1: bmm_attention_scores       bfloat16  invariant=None run_to_run=None max|diff|=None RuntimeError: CUDA error: CUBLAS_STATUS_INVALID_VALUE when calling `cublasLtMatmulAlgoGetHeuristic( ltHandle, computeDesc.descriptor(), Adesc.descriptor(), FakeBdesc.descriptor(), FakeCdesc.descriptor(), FakeCdesc.descriptor(), preference.descriptor(), 1, &heuristicResult, &returnedResult)`
+12:05:01 INFO detllm.job.ops-cublaslt_ws1: attention_eager_decode     bfloat16  invariant=None run_to_run=None max|diff|=None RuntimeError: CUDA error: CUBLAS_STATUS_INVALID_VALUE when calling `cublasLtMatmulAlgoGetHeuristic( ltHandle, computeDesc.descriptor(), Adesc.descriptor(), FakeBdesc.descriptor(), FakeCdesc.descriptor(), FakeCdesc.descriptor(), preference.descriptor(), 1, &heuristicResult, &returnedResult)`
+12:05:02 INFO detllm.job.ops-cublaslt_ws1: attention_eager_prefill    bfloat16  invariant=True run_to_run=True max|diff|=0.0 
+12:05:02 INFO detllm.job.ops-cublaslt_ws1: attention_sdpa_decode      bfloat16  invariant=False run_to_run=True max|diff|=0.0009765625 
+12:05:02 INFO detllm.job.ops-cublaslt_ws1: attention_sdpa_prefill     bfloat16  invariant=True run_to_run=True max|diff|=0.0 
+12:05:02 INFO detllm.job.ops-cublaslt_ws1: job ops-cublaslt_ws1 finished: ok in 4s

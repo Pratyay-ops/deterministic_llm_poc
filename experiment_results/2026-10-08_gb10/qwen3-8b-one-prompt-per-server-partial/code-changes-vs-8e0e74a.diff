@@ -1,0 +1,247 @@
+diff --git a/docs/EXPERIMENTS.md b/docs/EXPERIMENTS.md
+index ee15c08..b1669ec 100644
+--- a/docs/EXPERIMENTS.md
++++ b/docs/EXPERIMENTS.md
+@@ -30,10 +30,11 @@ page-cache numbers.
+ 
+ The blog's two demos: `(0.1 + 1e20) - 1e20 = 0` vs `0.1 + (1e20 - 1e20) = 0.1`, and summing
+ `[1e-10, 1e-5, 1e-2, 1]` and their negatives in 10,000 random orders, which gives **102 distinct
+-results**. Python 3.12 (the containers' Python) changed the built-in `sum()` to compensated
+-summation, so the demo uses an explicit left-to-right loop (what `sum()` did when the blog was
+-written). The 3.12 `sum()` count is reported next to it: a different reduction algorithm, a
+-different answer.
++results**. The snippet is run as written: Python 3.12's built-in `sum()` (the containers' Python)
++compensates float additions, but the list holds the *int* `1`, which is added uncompensated - and
++that mix gives exactly the blog's 102 (with `1.0` it would give 1). A plain left-to-right loop over
++the same orders (what `sum()` did up to 3.11) is reported next to it and gives 258: a different
++reduction algorithm, a different answer.
+ 
+ ## `op_invariance` - kernels are deterministic, but not batch-invariant
+ 
+diff --git a/src/detllm/analysis/report.py b/src/detllm/analysis/report.py
+index d18f3a0..6bb799d 100644
+--- a/src/detllm/analysis/report.py
++++ b/src/detllm/analysis/report.py
+@@ -134,7 +134,8 @@ def _fp(run: dict[str, Any]) -> str:
+     return (
+         "## Floating-point non-associativity (CPU)\n\n"
+         f"- {assoc}\n- Summing the same 8 numbers in 10,000 random orders gives **{s.get('n_unique_sums')}** "
+-        f"distinct results (blog: {s.get('blog_n_unique_sums')})."
++        f"distinct results with the blog's snippet (blog: {s.get('blog_n_unique_sums')}); a plain left-to-right "
++        f"loop over the same orders gives {s.get('n_unique_left_to_right', '-')}."
+     )
+ 
+ 
+diff --git a/src/detllm/engines/vllm_engine.py b/src/detllm/engines/vllm_engine.py
+index 5860f4e..634032d 100644
+--- a/src/detllm/engines/vllm_engine.py
++++ b/src/detllm/engines/vllm_engine.py
+@@ -32,14 +32,15 @@ log = logging.getLogger(__name__)
+ # sm_121 in every image. Baseline jobs keep vLLM's own default unless told otherwise.
+ DEFAULT_BI_ATTENTION_BACKEND = "TRITON_ATTN"
+ 
++# Transient start-up shortages only. "kv cache memory" is not here: vLLM prints an INFO line with it on
++# every start when kv_cache_memory_bytes is set, and "...larger than the available KV cache memory" /
++# "no available memory for the cache blocks" are configuration errors that a retry cannot fix.
+ _MEMORY_ERRORS = (
+     "less than desired gpu memory utilization",
+-    "no available memory for the cache blocks",
+     "not enough memory",
+     "insufficient memory",
+     "out of memory",
+     "free memory on device",
+-    "kv cache memory",
+ )
+ # Boolean engine args whose default is True, so False must be passed explicitly on the CLI.
+ _DEFAULT_TRUE_BOOLS = {"enable_prefix_caching", "enable_chunked_prefill"}
+diff --git a/src/detllm/engines/vllm_server.py b/src/detllm/engines/vllm_server.py
+index 2a02de6..3d58aad 100644
+--- a/src/detllm/engines/vllm_server.py
++++ b/src/detllm/engines/vllm_server.py
+@@ -244,8 +244,17 @@ async def _send_all(
+     seed: int,
+     timeout_s: float,
+ ) -> list[dict[str, Any]]:
++    import resource
++
+     import httpx
+ 
++    # One socket per in-flight request: 1000 concurrent requests exceed the usual soft limit of
++    # 1024 open files once CUDA and the logs hold a few dozen, and the excess fail with ConnectError.
++    soft, hard = resource.getrlimit(resource.RLIMIT_NOFILE)
++    want = 65536 if hard == resource.RLIM_INFINITY else min(hard, 65536)
++    if soft != resource.RLIM_INFINITY and soft < want:
++        resource.setrlimit(resource.RLIMIT_NOFILE, (want, hard))
++
+     rng = random.Random(seed)
+     delays = [rng.uniform(0.0, jitter_s) if jitter_s > 0 else 0.0 for _ in payloads]
+     limit = max(1, min(concurrency, len(payloads)))
+diff --git a/src/detllm/experiments/fp_nonassoc.py b/src/detllm/experiments/fp_nonassoc.py
+index 595d90b..04d8fbe 100644
+--- a/src/detllm/experiments/fp_nonassoc.py
++++ b/src/detllm/experiments/fp_nonassoc.py
+@@ -1,11 +1,11 @@
+ """Blog section "The original sin: floating-point non-associativity" - the blog's demos (CPU).
+ 
+-Note on Python versions: the blog's snippet uses the built-in ``sum()``. Up to Python 3.11 that
+-was a plain left-to-right double accumulation; since Python 3.12 ``sum()`` of floats uses
+-compensated (Neumaier) summation, which hides most of the effect. The containers ship Python 3.12,
+-so the blog's number is reproduced with an explicit left-to-right loop (what ``sum()`` used to do),
+-and the 3.12 built-in result is reported next to it - itself a nice illustration that changing the
+-reduction algorithm changes the answer.
++Note on Python versions: the blog's snippet uses the built-in ``sum()``. Since Python 3.12 that is
++compensated (Neumaier) summation for floats, but the blog's list holds the *int* ``1`` (and ``-1``),
++which CPython adds without compensation - and that exact mix gives the blog's 102 unique results
++(with ``1.0`` instead of ``1`` it gives 1). The containers ship Python 3.12, so the blog's snippet is
++reproduced as written; a plain left-to-right loop (what ``sum()`` did up to 3.11) is reported next to
++it and gives 258 - itself a nice illustration that changing the reduction algorithm changes the answer.
+ """
+ 
+ from __future__ import annotations
+@@ -47,15 +47,19 @@ def run(ctx) -> dict[str, Any]:  # noqa: ANN001
+     }
+     naive, builtin = unique_sums(seed=int(ctx.param("seed_sum", 42)))
+     ctx.save_json("unique_sums.json", {"left_to_right": naive, "builtin_sum": builtin})
+-    ctx.log.info("left-to-right: %d unique results (blog: %d); built-in sum(): %d", len(naive), BLOG_UNIQUE_SUMS, len(builtin))
++    ctx.log.info("built-in sum(): %d unique results (blog: %d); left-to-right loop: %d", len(builtin), BLOG_UNIQUE_SUMS, len(naive))
+     return {
+         "associativity": associativity,
+-        "n_unique_sums": len(naive),
++        "n_unique_sums": len(builtin),
+         "blog_n_unique_sums": BLOG_UNIQUE_SUMS,
+-        "matches_blog": len(naive) == BLOG_UNIQUE_SUMS,
+-        "min_sum": naive[0],
+-        "max_sum": naive[-1],
++        "matches_blog": len(builtin) == BLOG_UNIQUE_SUMS,
++        "min_sum": builtin[0],
++        "max_sum": builtin[-1],
+         "python": sys.version.split()[0],
+-        "n_unique_builtin_sum": len(builtin),
+-        "builtin_sum_note": "Python >= 3.12 sum() uses compensated summation" if sys.version_info >= (3, 12) else "plain summation",
++        "n_unique_left_to_right": len(naive),
++        "builtin_sum_note": (
++            "Python >= 3.12 sum(): compensated for floats, the int 1 is added uncompensated"
++            if sys.version_info >= (3, 12)
++            else "plain left-to-right summation"
++        ),
+     }
+diff --git a/src/detllm/experiments/vllm_completions.py b/src/detllm/experiments/vllm_completions.py
+index 7842271..d9a1069 100644
+--- a/src/detllm/experiments/vllm_completions.py
++++ b/src/detllm/experiments/vllm_completions.py
+@@ -132,6 +132,13 @@ def run(ctx) -> dict[str, Any]:  # noqa: ANN001
+     logprobs = [c.logprobs for c in completions] if use_tokens else None
+     summary = summarize_sequences(seqs, logprobs=logprobs)
+ 
++    # A verdict over the surviving requests only would be wrong, so failed requests fail the job
++    # (completions.jsonl above keeps them for inspection).
++    max_failed = float(p.get("max_failed_fraction", 0.0)) * n
++    if summary["n_failed"] > max_failed:
++        first_error = next((c.error for c in completions if c.error), None)
++        raise RuntimeError(f"{summary['n_failed']}/{n} requests failed; first error: {first_error}")
++
+     example = None
+     if summary["n_unique"] > 1 and summary["unique"][1]["first_divergence_vs_modal"] is not None:
+         modal = seqs[summary["modal_index"]]
+diff --git a/src/detllm/experiments/vllm_perf.py b/src/detllm/experiments/vllm_perf.py
+index d57e4c7..a1c911c 100644
+--- a/src/detllm/experiments/vllm_perf.py
++++ b/src/detllm/experiments/vllm_perf.py
+@@ -54,6 +54,9 @@ def run(ctx) -> dict[str, Any]:  # noqa: ANN001
+         info = {**server.info(), "attention_backend_log": backend_in_logs(ctx, server)}
+ 
+     ok = [r for r in results if r.get("ok")]
++    if len(ok) < n:
++        first_error = next((r.get("error") for r in results if not r.get("ok")), None)
++        raise RuntimeError(f"{n - len(ok)}/{n} requests failed, timing would be meaningless; first error: {first_error}")
+     out_tokens = 0
+     for r, length in zip(results, lengths):
+         if r.get("ok"):
+diff --git a/src/detllm/kernels/custom.py b/src/detllm/kernels/custom.py
+index f179ac6..61895fa 100644
+--- a/src/detllm/kernels/custom.py
++++ b/src/detllm/kernels/custom.py
+@@ -14,7 +14,9 @@ zero-padded chunks - always exactly ``rows`` rows for mm/addmm, ``mats`` matrice
+ every time). The vendor kernel therefore always sees identical shapes and computes every row in
+ the same way, no matter how many other rows the batch contains. Interception happens at the
+ dispatcher with a ``TorchDispatchMode``, i.e. *below* F.linear / torch.matmul / softmax, and calling
+-the original kernel from inside the mode cannot recurse.
++the original kernel from inside the mode cannot recurse. Under ``torch.inference_mode()`` those
++composite ops reach the mode undecomposed (``aten.linear``, ``aten.matmul``, ``aten.softmax.int``),
++so the mode decomposes them itself before chunking.
+ 
+ It is slower (Python dispatch, padding, copies) - the point is a correct, independent second
+ implementation to compare with the Triton kernels of batch_invariant_ops.
+@@ -39,6 +41,8 @@ class FixedChunkMode(TorchDispatchMode):
+         self.reduce_rows = reduce_rows
+         self.calls: Counter[str] = Counter()
+         self.passthrough: Counter[str] = Counter()
++        self.decomposed: Counter[str] = Counter()
++        self._has_composite: dict[Any, bool] = {}
+         self._handlers = {
+             aten.mm.default: self._mm,
+             aten.addmm.default: self._addmm,
+@@ -57,7 +61,11 @@ class FixedChunkMode(TorchDispatchMode):
+         }
+ 
+     def stats(self) -> dict[str, Any]:
+-        return {"chunked_calls": dict(self.calls), "unchunked_calls": dict(self.passthrough)}
++        return {
++            "chunked_calls": dict(self.calls),
++            "unchunked_calls": dict(self.passthrough),
++            "decomposed_calls": dict(self.decomposed),
++        }
+ 
+     def __torch_dispatch__(self, func, types, args=(), kwargs=None):  # noqa: ANN001
+         kwargs = kwargs or {}
+@@ -68,8 +76,26 @@ class FixedChunkMode(TorchDispatchMode):
+                 self.calls[str(func)] += 1
+                 return out
+             self.passthrough[str(func)] += 1
++            return func(*args, **kwargs)
++        # Under torch.inference_mode() CompositeImplicitAutograd ops (aten.linear, aten.matmul,
++        # aten.softmax.int, ...) reach the mode undecomposed, so their mm/addmm/bmm/_softmax would
++        # never be chunked. Decompose them with the mode re-entered (it is popped while
++        # __torch_dispatch__ runs), which is what the dispatcher does by itself under no_grad.
++        if self._is_composite(func):
++            with self:
++                out = func.decompose(*args, **kwargs)
++            if out is not NotImplemented:
++                self.decomposed[str(func)] += 1
++                return out
+         return func(*args, **kwargs)
+ 
++    def _is_composite(self, func) -> bool:  # noqa: ANN001
++        known = self._has_composite.get(func)
++        if known is None:
++            known = torch._C._dispatch_has_kernel_for_dispatch_key(func.name(), "CompositeImplicitAutograd")
++            self._has_composite[func] = known
++        return known
++
+     # ---------------------------------------------------------------- helpers
+ 
+     @staticmethod
+diff --git a/tests/unit/test_fp_nonassoc.py b/tests/unit/test_fp_nonassoc.py
+index 442dd8c..9622e84 100644
+--- a/tests/unit/test_fp_nonassoc.py
++++ b/tests/unit/test_fp_nonassoc.py
+@@ -1,3 +1,7 @@
++import sys
++
++import pytest
++
+ from detllm.experiments.fp_nonassoc import BLOG_UNIQUE_SUMS, naive_sum, unique_sums
+ 
+ 
+@@ -11,7 +15,8 @@ def test_naive_sum_is_left_to_right():
+     assert naive_sum([1e20, -1e20, 0.1]) == 0.1
+ 
+ 
+-def test_blog_reports_102_unique_left_to_right_sums():
++@pytest.mark.skipif(sys.version_info < (3, 12), reason="the blog's count comes from Python >= 3.12 sum()")
++def test_blog_snippet_gives_102_unique_sums():
+     naive, builtin = unique_sums()
+-    assert len(naive) == BLOG_UNIQUE_SUMS
+-    assert builtin  # Python >= 3.12 sum() is compensated; its count is reported, not asserted
++    assert len(builtin) == BLOG_UNIQUE_SUMS
++    assert len(naive) == 258  # plain left-to-right accumulation of the same orders

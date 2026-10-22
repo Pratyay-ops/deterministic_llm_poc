@@ -1,0 +1,5 @@
+
+===== attempt 1 at 2026-10-08T13:04:08+0000 =====
+13:04:08 INFO detllm.job.fp-nonassoc: job fp-nonassoc: experiment=fp_nonassoc model=None mode=default
+13:04:08 INFO detllm.job.fp-nonassoc: built-in sum(): 102 unique results (blog: 102); left-to-right loop: 258
+13:04:08 INFO detllm.job.fp-nonassoc: job fp-nonassoc finished: ok in 0s

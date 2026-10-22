@@ -1,0 +1,32 @@
+{
+  "suite": "qwen3-30b-mine",
+  "updated": "2026-10-08T15:18:45+0000",
+  "jobs": [
+    {
+      "id": "mine-all-qwen3-30b-a3b-instruct-2507-baseline",
+      "experiment": "vllm_completions",
+      "model": "qwen3-30b-a3b-instruct-2507",
+      "mode": "baseline",
+      "status": "ok",
+      "attempts": 1,
+      "mem_gb": 92.1,
+      "exclusive": false,
+      "duration_s": 1988.4,
+      "resumed": false,
+      "message": ""
+    },
+    {
+      "id": "mine-all-qwen3-30b-a3b-instruct-2507-batch_invariant",
+      "experiment": "vllm_completions",
+      "model": "qwen3-30b-a3b-instruct-2507",
+      "mode": "batch_invariant",
+      "status": "ok",
+      "attempts": 1,
+      "mem_gb": 92.1,
+      "exclusive": false,
+      "duration_s": 1838.4,
+      "resumed": false,
+      "message": ""
+    }
+  ]
+}
