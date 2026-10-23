@@ -20,7 +20,7 @@ speed (464 vs 467 tokens/s). One measurement each, not a dedicated throughput te
 | Disk | ~60 GB free for Qwen3-8B; ~125 GB if Qwen3-30B-A3B is included | image 24 GB, Qwen3-8B 16 GB, Qwen3-30B-A3B 61 GB, results < 0.1 GB per run, frozen package +8.4 GB |
 | Downloads | ~10 GB container image + model weights | 10.1 GB image; 16 GB (8B, ~3 min) and 61 GB (30B, ~10 min) at ~100 MB/s |
 | Software | DGX OS 7 (Ubuntu 24.04), NVIDIA driver >= 580, Docker + NVIDIA Container Toolkit | driver 595.91.07, Docker 29.6, image `vllm/vllm-openai:v0.31.0` |
-| Code | this repo, branch `deterministic_llm_poc`, with the `batch_invariant_ops` submodule | runs used commit `2fc6a27`; launcher scripts added after |
+| Code | this repo, branch `main`, with the `batch_invariant_ops` submodule | runs used commit `1b12b5f`; launcher scripts added after |
 | Access | sudo once (Docker group); GitHub access to the repo; Docker Hub and huggingface.co reachable | Hugging Face token optional (public models) |
 | People | 1 engineer: Linux, Docker, Python; no CUDA expertise needed | |
 | Time | ~1-2 h reading; ~30 min setup; ~1 h device time for the Qwen3-8B experiment; +~1 h for Qwen3-30B-A3B | measured 50 min (8B) and 64 min (30B) on 2026-10-08 |
@@ -66,8 +66,8 @@ Qwen3-30B-A3B-Instruct-2507 (mixture of experts). Hybrid linear-attention / Mamb
 **Steps** (details in `docs/GB10_RUNBOOK.md`):
 
 ```bash
-git clone --recurse-submodules -b deterministic_llm_poc https://github.com/pratyay-roy_ZSinc/Deterministic_llm_poc.git
-cd Deterministic_llm_poc
+git clone --recurse-submodules https://github.com/Pratyay-ops/deterministic_llm_poc.git
+cd deterministic_llm_poc
 bash scripts/gb10/setup.sh --suite smoke --suite qwen3-8b-mine      # checks, image, Qwen3-1.7B + Qwen3-8B (~15 min)
 bash scripts/gb10/run_suite.sh smoke                                # sanity check (~5 min)
 bash scripts/gb10/run_suite.sh configs/suites/qwen3-8b-mine.yaml --exclude 'sweep-*'   # the experiment (~1 h)

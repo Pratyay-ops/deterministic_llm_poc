@@ -17,8 +17,8 @@ bits depending on what it was batched with. Batch-invariant kernels fix that.
 ## Quick start (on the GB10)
 
 ```bash
-git clone --recurse-submodules -b deterministic_llm_poc https://github.com/pratyay-roy_ZSinc/Deterministic_llm_poc.git
-cd Deterministic_llm_poc
+git clone --recurse-submodules https://github.com/Pratyay-ops/deterministic_llm_poc.git
+cd deterministic_llm_poc
 bash scripts/gb10/setup.sh                 # host checks, container image, model download
 bash scripts/gb10/run_suite.sh smoke       # ~10-20 min: is everything working?
 bash scripts/gb10/run_suite.sh parallel    # main reproduction (small models, run side by side)

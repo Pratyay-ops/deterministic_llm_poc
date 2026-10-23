@@ -7,6 +7,9 @@ Dell Pro Max GB10 (DGX OS 7.2.3, GB10 cc 12.1, 121 GiB unified memory, driver 59
 `vllm/vllm-openai:v0.31.0` (vLLM 0.31.0, torch 2.13.0+cu130, Triton 3.7.1, transformers 5.17.0) -
 repo `8e0e74a` plus the changes in each run's `code-changes-vs-8e0e74a.diff`.
 
+The run files record commit IDs from before the history was rewritten (commit metadata only): `8e0e74a` is
+now `f15762a` and `2fc6a27` is now `1b12b5f` (same file contents).
+
 ## Headline: Qwen3-8B, `configs/prompts/my_prompts.txt` (run `qwen3-8b-mine/`)
 
 All 8 prompts x 200 requests, temperature 0, up to 1000 tokens, **mixed in one `vllm serve` instance**

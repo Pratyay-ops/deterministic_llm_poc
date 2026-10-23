@@ -44,9 +44,9 @@ Facts about the platform that shaped this setup:
 ## 2. Get the code
 
 ```bash
-git clone --recurse-submodules -b deterministic_llm_poc \
-    https://github.com/pratyay-roy_ZSinc/Deterministic_llm_poc.git
-cd Deterministic_llm_poc
+git clone --recurse-submodules \
+    https://github.com/Pratyay-ops/deterministic_llm_poc.git
+cd deterministic_llm_poc
 ```
 
 `--recurse-submodules` fetches `batch_invariant_ops/` (thinking-machines-lab/batch_invariant_ops,

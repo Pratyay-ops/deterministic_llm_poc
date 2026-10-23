@@ -1,8 +1,8 @@
 # Deterministic LLM inference on an NVIDIA GB10 - combined experiment report
 
 **Models:** Qwen3-8B (dense) and Qwen3-30B-A3B-Instruct-2507 (mixture of experts) -
-**Runs:** 2026-10-08 on one Dell Pro Max GB10 - **Code:** branch `deterministic_llm_poc` (runs at commit
-`2fc6a27`) - **Data:** this directory. Every number below is computed from the run files in this directory.
+**Runs:** 2026-10-08 on one Dell Pro Max GB10 - **Code:** branch `main` (runs at commit
+`1b12b5f`) - **Data:** this directory. Every number below is computed from the run files in this directory.
 
 ## 1. Executive summary
 
@@ -220,7 +220,7 @@ start: ~2.5 min; log confirms `VLLM_BATCH_INVARIANT=1` and TRITON_ATTN.
   `result.json`, `env.json`, logs, and every completion with its token ids and logprobs
   (`completions.jsonl.zst`, `zstd -d` to unpack). Runs: `qwen3-8b-mine/`, `qwen3-30b-a3b-mine/`,
   `qwen3-8b-one-prompt-per-server-partial/`, `smoke-qwen3-1.7b/`; `code-changes-vs-8e0e74a.diff` records the
-  code each run used (identical to commit `2fc6a27`).
+  code each run used (identical to commit `1b12b5f`).
 - **Reproduce** (see `docs/GB10_RUNBOOK.md`, `docs/RESOURCES.md`):
 
   ```bash
